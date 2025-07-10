@@ -1,6 +1,5 @@
-import { db } from "./utils/db.js";
+import db from "./db/db.js";
 import app from "./app.js";
-
 const port = 8080 || process.env.PORT;
 
 db()
@@ -12,4 +11,5 @@ db()
   })
   .catch((error) => {
     console.log("Failed to connect to the database", error.message);
+    process.exit(1)
   });
