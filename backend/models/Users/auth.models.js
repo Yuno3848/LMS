@@ -1,6 +1,9 @@
 import mongoose, { Schema } from "mongoose";
 import bcrypt from "bcryptjs";
 import crypto from "crypto";
+import jwt from "jsonwebtoken"
+import instructorProfile from "./instructorProfile.models";
+import studentProfile from "./studentProfile.models";
 const userSchema = new Schema(
   {
     avatar: {
@@ -62,6 +65,8 @@ const userSchema = new Schema(
     forgotPasswordToken: {
       type: String,
     },
+    instructorProfile: instructorProfile,
+    studentProfile: studentProfile,
   },
   { timestamps: true }
 );
