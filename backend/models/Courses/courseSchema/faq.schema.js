@@ -1,7 +1,7 @@
 import mongoose, { Schema } from "mongoose";
 
 export const faqSchema = new Schema({
-  questions: {
+  question: {
     type: String,
     required: true,
   },

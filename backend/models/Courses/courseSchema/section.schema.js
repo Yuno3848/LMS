@@ -1,4 +1,5 @@
 import mongoose, { Schema } from "mongoose";
+import { itemSchema } from "./items.schema.js";
 
 export const sectionSchema = new Schema({
   title: {
@@ -15,5 +16,5 @@ export const sectionSchema = new Schema({
     type: Number,
     required: true,
   },
-  items: [itemsSchema],
+  items: [itemSchema],
 });

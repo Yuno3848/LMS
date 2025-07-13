@@ -7,6 +7,7 @@ export const enrollmentHistorySchema = new Schema({
   },
   enrolledAt: {
     type: Date,
+    default: Date.now,
   },
   completedAt: {
     type: Date,
