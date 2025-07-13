@@ -1,6 +1,7 @@
 import mongoose, { Schema } from "mongoose";
 import Section, { sectionSchema } from "./courseSchema/section.schema";
 import { discussionSchema } from "./courseSchema/discussion.schema";
+import { faqSchema } from "./courseSchema/faq.schema";
 
 const courseSchema = new Schema({
   instructorId: {
