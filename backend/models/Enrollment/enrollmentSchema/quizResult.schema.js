@@ -1,5 +1,5 @@
 import mongoose, { Schema } from "mongoose";
-import { attemptSchema } from "./attemptSchema.schema";
+import { attemptSchema } from "./attemptSchema.schema.js";
 
 export const quizResultSchema = new Schema({
   quizId: {

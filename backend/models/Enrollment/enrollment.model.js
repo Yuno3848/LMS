@@ -1,5 +1,5 @@
 import mongoose, { Schema } from "mongoose";
-import { sectionProgressSchema } from "./enrollmentSchema/sectionProgress.schema";
+import { sectionProgressSchema } from "./enrollmentSchema/sectionProgress.schema.js";
 
 const enrollmentSchema = new Schema(
   {

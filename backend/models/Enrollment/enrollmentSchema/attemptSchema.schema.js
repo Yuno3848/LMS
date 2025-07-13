@@ -1,4 +1,5 @@
 import mongoose, { Schema } from "mongoose";
+import { answerSchema } from "./answer.schema.js";
 
 export const attemptSchema = new Schema({
   score: {
