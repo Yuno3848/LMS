@@ -1,9 +1,9 @@
 import mongoose, { Schema } from "mongoose";
-import Section from "./section.models";
+import Section, { sectionSchema } from "./courseSchema/section.schema";
 
 const courseSchema = new Schema({
   instructorId: {
-    type: mongoose.Schema.Types.ObjectId,
+    type: Schema.Types.ObjectId,
     ref: "User",
   },
   title: {
@@ -33,7 +33,13 @@ const courseSchema = new Schema({
     type: Boolean,
     default: false,
   },
-  sections: Section,
+  sections: [sectionSchema],
+  items: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: "Item",
+    },
+  ],
 });
 const Course = mongoose.model("Course", courseSchema);
 export default Course;

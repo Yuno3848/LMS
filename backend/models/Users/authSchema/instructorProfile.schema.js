@@ -1,6 +1,6 @@
 import mongoose, { Schema } from "mongoose";
 
-const instructorProfileSchema = new Schema(
+export const instructorProfileSchema = new Schema(
   {
     bio: {
       type: String,
@@ -15,22 +15,19 @@ const instructorProfileSchema = new Schema(
     ],
     rating: {
       type: Number,
+      default: 0,
     },
     totalCourses: {
       type: Number,
+      default: 0,
     },
-    isVerifiedInstructor: { type: Boolean },
+    isVerifiedInstructor: { type: Boolean, default: false },
     courses: [
       {
-        type: mongoose.Schema.Types.ObjectId,
+        type: Schema.Types.ObjectId,
         ref: "Course",
       },
     ],
   },
   { timestamps: true }
 );
-const instructorProfile = mongoose.model(
-  "instructorProfile",
-  instructorProfileSchema
-);
-export default instructorProfile;

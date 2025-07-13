@@ -1,6 +1,6 @@
 import mongoose, { Schema } from "mongoose";
 
-const sectionSchema = new Schema({
+export const sectionSchema = new Schema({
   title: {
     type: String,
     required: true,
@@ -15,6 +15,5 @@ const sectionSchema = new Schema({
     type: Number,
     required: true,
   },
+  items: [itemsSchema],
 });
-const Section = mongoose.model("Section", sectionSchema);
-export default Section;

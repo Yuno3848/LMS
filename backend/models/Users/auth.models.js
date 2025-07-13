@@ -1,9 +1,9 @@
 import mongoose, { Schema } from "mongoose";
 import bcrypt from "bcryptjs";
 import crypto from "crypto";
-import jwt from "jsonwebtoken"
-import instructorProfile from "./instructorProfile.models";
-import studentProfile from "./studentProfile.models";
+import jwt from "jsonwebtoken";
+import { instructorProfileSchema } from "./authSchema/instructorProfile.schema";
+import { studentProfileSchema } from "./authSchema/studentProfile.schema";
 const userSchema = new Schema(
   {
     avatar: {
@@ -37,7 +37,7 @@ const userSchema = new Schema(
     },
     DOB: {
       type: Date,
-      require: true,
+      required: true,
     },
     password: {
       type: String,
@@ -48,6 +48,7 @@ const userSchema = new Schema(
       required: true,
       trim: true,
       unique: true,
+      index: true,
     },
     isEmailVerified: {
       type: Boolean,
@@ -65,8 +66,8 @@ const userSchema = new Schema(
     forgotPasswordToken: {
       type: String,
     },
-    instructorProfile: instructorProfile,
-    studentProfile: studentProfile,
+    instructorProfile: { type: instructorProfileSchema, required: false },
+    studentProfile: { type: studentProfileSchema, required: false },
   },
   { timestamps: true }
 );
