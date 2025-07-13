@@ -1,5 +1,6 @@
 import mongoose, { Schema } from "mongoose";
 import Section, { sectionSchema } from "./courseSchema/section.schema";
+import { discussionSchema } from "./courseSchema/discussion.schema";
 
 const courseSchema = new Schema({
   instructorId: {
@@ -34,12 +35,9 @@ const courseSchema = new Schema({
     default: false,
   },
   sections: [sectionSchema],
-  items: [
-    {
-      type: Schema.Types.ObjectId,
-      ref: "Item",
-    },
-  ],
+  discussions: [discussionSchema],
+  announcements: [announcementSchema],
+  faqs: [faqSchema],
 });
 const Course = mongoose.model("Course", courseSchema);
 export default Course;
