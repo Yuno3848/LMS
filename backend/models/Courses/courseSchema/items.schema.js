@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import { questionsSchema } from "./questions.schema";
+import { questionsSchema } from "./questions.schema.js";
 
 export const itemSchema = new mongoose.Schema({
   type: {

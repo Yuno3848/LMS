@@ -3,6 +3,7 @@ import Section, { sectionSchema } from "./courseSchema/section.schema.js";
 import { discussionSchema } from "./courseSchema/discussion.schema.js";
 import { faqSchema } from "./courseSchema/faq.schema.js";
 import { announcementSchema } from "./courseSchema/announcement.schema.js";
+import { statSchema } from "./courseSchema/stat.schema.js";
 
 const courseSchema = new Schema({
   instructorId: {
@@ -40,6 +41,7 @@ const courseSchema = new Schema({
   discussions: [discussionSchema],
   announcements: [announcementSchema],
   faqs: [faqSchema],
+  stat: { statSchema },
 });
 const Course = mongoose.model("Course", courseSchema);
 export default Course;

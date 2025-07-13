@@ -2,8 +2,8 @@ import mongoose, { Schema } from "mongoose";
 import bcrypt from "bcryptjs";
 import crypto from "crypto";
 import jwt from "jsonwebtoken";
-import { instructorProfileSchema } from "./authSchema/instructorProfile.schema";
-import { studentProfileSchema } from "./authSchema/studentProfile.schema";
+import { instructorProfileSchema } from "./authSchema/instructorProfile.schema.js";
+import { studentProfileSchema } from "./authSchema/studentProfile.schema.js";
 const userSchema = new Schema(
   {
     avatar: {

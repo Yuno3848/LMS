@@ -1,5 +1,5 @@
 import mongoose, { Schema } from "mongoose";
-import { enrollmentHistorySchema } from "./enrollmentHistory.schema";
+import { enrollmentHistorySchema } from "./enrollmentHistory.schema.js";
 
 export const studentProfileSchema = new Schema(
   {
