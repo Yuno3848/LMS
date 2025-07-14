@@ -2,6 +2,7 @@ import User from '../models/Users/auth.models.js';
 import ApiResponse from '../utils/ApiResponse.js';
 import { asyncHandler } from '../utils/asyncHandler.js';
 import { uploadOnCloudinary } from '../utils/cloudinary';
+import { sendMail } from '../utils/mail.js';
 
 export const registeredUser = asyncHandler(async (req, res) => {
   // user details from request body
@@ -28,8 +29,9 @@ export const registeredUser = asyncHandler(async (req, res) => {
   if (!avatar) {
     throw new Error(500, 'Failed to upload avatar');
   }
+
   // create a new user instance
-  const newUser = new User({
+  const newUser = await User.create({
     username: username.toLowerCase(),
     fullname,
     email,
@@ -39,9 +41,27 @@ export const registeredUser = asyncHandler(async (req, res) => {
       localPath: avatarLocalPath,
     },
   });
+  // if user creation fails, throw an error
+  if (!newUser) {
+    throw new Error(500, 'Failed to create user');
+  }
+  // generate email verification token
+  const { unhashedToken, hashedToken, tokenExpiry } = newUser.generateEmailVerificationToken();
+  newUser.emailVerifiedToken = hashedToken;
+  newUser.emailVerificationTokenExpiry = tokenExpiry;
+
   //save the new user to the database
   await newUser.save();
-
+  //send email verification link to the user
+  await sendMail({
+    username: newUser.username,
+    email: newUser.email,
+    subject: 'Email Verification',
+    mailGenContent: newUser.generateEmailVerificationMail(
+      newUser.username,
+      `${process.env.BASE_URL}/api/v1/auth/verify-email/${unhashedToken}`,
+    ),
+  });
   // exclude sensitive fields from the response
   const createdUser = await User.findById(
     newUser._id,
@@ -56,4 +76,133 @@ export const registeredUser = asyncHandler(async (req, res) => {
   );
   // send the response with the created user data
   res.status(201).json(new ApiResponse(201, 'User registered successfully', createdUser));
+});
+
+export const verifyMail = asyncHandler(async (req, res) => {
+  // Extract token from query parameters
+  const { token } = req.params;
+  //create a hash of the token to match with the stored token
+  const emailVerifiedToken = crypto.createHash('sha256').update(token).digest('hex');
+
+  // Find user by email verification token
+  const user = await User.findOne({
+    emailVerifiedToken,
+    emailVerificationTokenExpiry: { $gt: Date.now() },
+  });
+
+  // If user not found, throw an error
+  if (!user) {
+    throw new Error(404, 'User not found or token is invalid');
+  }
+  // If token has expired, throw an error
+  if (user.emailVerificationTokenExpiry < Date.now()) {
+    throw new Error(400, 'Token has expired');
+  }
+  // Update user's email verification status
+  user.isEmailVerified = true;
+  user.emailVerifiedToken = undefined;
+  user.emailVerificationTokenExpiry = undefined;
+
+  // Save the updated user document
+  await user.save();
+
+  // Send success response
+  res.status(200).json(new ApiResponse(200, 'Email verified successfully'));
+});
+
+//function for generating access and refresh tokens
+export const generateAccessAndRefreshTokens = asyncHandler(async (userId) => {
+  const user = await User.findById(userId);
+  if (!user) {
+    throw new Error(404, 'User not found');
+  }
+  // Generate access token
+  const accessToken = user.generateAccessToken();
+  // Generate refresh token
+  const refreshToken = user.generateRefreshToken();
+
+  // Save the refresh token in the user's document
+  user.refreshToken = refreshToken;
+  // Save the user document with the new refresh token
+  await user.save();
+  // Return both tokens
+  return { accessToken, refreshToken };
+});
+
+// Function to handle user login
+export const loginUser = asyncHandler(async (req, res) => {
+  // Extract email and password from request body
+  const { email, password } = req.body;
+
+  // Find user by email
+  const user = await User.findOne({ email });
+  // If user not found, throw an error
+  if (!user) {
+    throw new Error(404, 'User not found');
+  }
+  // Check if the password is correct
+  const isPasswordValid = await user.comparePassword(password);
+  // If password is invalid, throw an error
+  if (!isPasswordValid) {
+    throw new Error(401, 'Invalid password');
+  }
+  // Generate access and refresh tokens
+  const { accessToken, refreshToken } = await generateAccessAndRefreshTokens(user._id);
+
+  // If tokens are not generated, throw an error
+  if (!accessToken || !refreshToken) {
+    throw new Error(500, 'Failed to generate tokens');
+  }
+  // Set cookies for access and refresh tokens
+  const acccesTokenCookieOptions = {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    maxAge: 24 * 60 * 60 * 1000,
+  };
+  // Set cookies for refresh token
+  const refreshTokenCookieOptions = {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    maxAge: 7 * 24 * 60 * 60 * 1000,
+  };
+  // Exclude sensitive fields from the user response
+  const userResponse = await User.findById(
+    user._id,
+    {
+      password: 0,
+      emailVerifiedToken: 0,
+      emailVerificationTokenExpiry: 0,
+      forgotPasswordExpiry: 0,
+      isEmailVerified: 0,
+    },
+    { lean: true },
+  );
+  // If user response is not found, throw an error
+
+  if (!userResponse) {
+    throw new Error(404, 'User not found');
+  }
+  // Send the response with the tokens and user data
+  return res
+    .status(200)
+    .cookie('accessToken', accessToken, acccesTokenCookieOptions)
+    .cookie('refreshToken', refreshToken, refreshTokenCookieOptions)
+    .json(new ApiResponse(200, 'User logged in successfully', userResponse));
+});
+
+export const logoutUser = asyncHandler(async (req, res) => {
+  // Clear the cookies for access and refresh tokens
+  res
+    .clearCookie('accessToken', { httpOnly: true, secure: process.env.NODE_ENV === 'production' })
+    .clearCookie('refreshToken', { httpOnly: true, secure: process.env.NODE_ENV === 'production' })
+    .status(200)
+    .json(new ApiResponse(200, 'User logged out successfully'));
+});
+
+export const forgotPassword = asyncHandler(async (req, res) => {
+  // Extract email from request body
+  const { email } = req.body;
+
+  //Find user by email
+  const user = await User.findOne({ email });
 });

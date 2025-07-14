@@ -68,6 +68,9 @@ const userSchema = new Schema(
     forgotPasswordToken: {
       type: String,
     },
+    refreshToken: {
+      type: String,
+    },
     instructorProfile: { type: instructorProfileSchema, required: false },
     studentProfile: { type: studentProfileSchema, required: false },
   },
@@ -81,6 +84,11 @@ userSchema.pre('save', async function (next) {
   this.password = await bcrypt.hash(this.password, 10);
   next();
 });
+
+userSchema.methods.comparePassword = async function (password) {
+  return await bcrypt.compare(password, this.password);
+};
+
 userSchema.methods.generateAccessToken = function () {
   return jwt.sign(
     {

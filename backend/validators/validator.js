@@ -1,4 +1,5 @@
 import { body } from 'express-validator';
+import { param } from 'express-validator';
 
 export const validateRegistration = () => {
   return [
@@ -12,7 +13,11 @@ export const validateRegistration = () => {
       .withMessage('Full name is required')
       .isLength({ min: 3 })
       .withMessage('Full name must be at least 3 characters long'),
-    body('email').isEmail().withMessage('Invalid email address'),
+    body('email')
+      .notEmpty()
+      .withMessage('Email is required')
+      .isEmail()
+      .withMessage('Invalid email address'),
     body('password')
       .notEmpty()
       .withMessage('Password is required')
@@ -27,5 +32,41 @@ export const validateRegistration = () => {
         }
         return true;
       }),
+  ];
+};
+
+export const validateVerifyEmail = () => {
+  return [
+    param('token')
+      .notEmpty()
+      .withMessage('Token is required')
+      .isString()
+      .withMessage('Token must be a string'),
+  ];
+};
+
+export const validateloginUser = () => {
+  return [
+    body('email')
+      .notEmpty()
+      .withMessage('Email is required')
+      .isEmail()
+      .withMessage('Invalid email address'),
+
+    body('password')
+      .notEmpty()
+      .withMessage('Password is required')
+      .isLength({ min: 6 })
+      .withMessage('Password must be at least 6 characters long'),
+  ];
+};
+
+export const validateForgotPassword = () => {
+  return [
+    body('email')
+      .notEmpty()
+      .withMessage('Email is required')
+      .isEmail()
+      .withMessage('Invalid email address'),
   ];
 };
