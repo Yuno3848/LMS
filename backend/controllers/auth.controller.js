@@ -2,7 +2,7 @@ import User from '../models/Users/auth.models.js';
 import ApiResponse from '../utils/ApiResponse.js';
 import { asyncHandler } from '../utils/asyncHandler.js';
 import { uploadOnCloudinary } from '../utils/cloudinary.js';
-import { generateMail, sendMail } from '../utils/mail.js';
+import { forgotPasswordMail, generateMail, sendMail } from '../utils/mail.js';
 
 export const registeredUser = asyncHandler(async (req, res) => {
   // user details from request body
@@ -210,4 +210,83 @@ export const forgotPassword = asyncHandler(async (req, res) => {
   if (!user) {
     throw new Api(400, `User not found`);
   }
+
+  // Generate access and refresh tokens
+  const { accessToken, refreshToken } = await generateAccessAndRefreshTokens(user._id);
+
+  // If tokens are not generated, throw an error
+  if (!accessToken || !refreshToken) {
+    throw new Error(500, 'Failed to generate tokens');
+  }
+  // generate email verification token
+  const { unhashedToken, hashedToken, tokenExpiry } = newUser.generateAccessToken();
+  newUser.emailVerifiedToken = hashedToken;
+  newUser.emailVerificationTokenExpiry = tokenExpiry;
+
+  //save the new user to the database
+  await newUser.save();
+  //send email verification link to the user
+  await sendMail({
+    username: newUser.username,
+    email: newUser.email,
+    subject: 'Email Verification',
+    mailGenContent: forgotPasswordMail(
+      newUser.username,
+      `${process.env.BASE_URL}/api/v1/auth/reset-password/${unhashedToken}`,
+    ),
+  });
+
+  // Send the response
+  return res.status(200).json(
+    new ApiResponse(200, 'Password forgot successfully', {
+      _id: user._id,
+      email: user.email,
+      password: user.password,
+      username: user.username,
+      isEmailVerified: user.isEmailVerified,
+      createdAt: user.createdAt,
+      updatedAt: user.updatedAt,
+    }),
+  );
+});
+export const resetPassword = asyncHandler(async (req, res) => {
+  const { token } = req.params;
+  const { password, confirmPassword } = req.body;
+  if (!token) {
+    throw new ApiError(400, 'Invalid Token...');
+  }
+  if (!password || !confirmPassword) {
+    throw new ApiError(400, 'Both password fields are required.');
+  }
+
+  if (password !== confirmPassword) {
+    throw new ApiError(400, 'Passwords do not match.');
+  }
+  const forgotPasswordToken = crypto.createHash('sha256').update(token).digest('hex');
+
+  const user = await User.findOneAndUpdate(
+    {
+      forgotPasswordToken,
+      forgotPasswordExpiry: { $gt: Date.now() },
+    },
+    {
+      $set: {
+        password,
+        isEmailVerified: true,
+        emailVerifiedToken: undefined,
+        emailVerificationTokenExpiry: undefined,
+      },
+    },
+    {
+      new: true,
+    },
+  );
+
+  if (!user) {
+    throw new ApiError(404, 'user or token not found...');
+  }
+
+  await user.save();
+
+  return res.status(200).json(new ApiResponse(200, 'password reset successfully...', user));
 });
