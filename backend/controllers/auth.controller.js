@@ -1,12 +1,12 @@
 import User from '../models/Users/auth.models.js';
 import ApiResponse from '../utils/ApiResponse.js';
 import { asyncHandler } from '../utils/asyncHandler.js';
-import { uploadOnCloudinary } from '../utils/cloudinary';
-import { sendMail } from '../utils/mail.js';
+import { uploadOnCloudinary } from '../utils/cloudinary.js';
+import { generateMail, sendMail } from '../utils/mail.js';
 
 export const registeredUser = asyncHandler(async (req, res) => {
   // user details from request body
-  const { username, fullname, email, password, confirmPassword } = req.body;
+  const { username, fullname, email, password, confirmPassword, DOB } = req.body;
   //validate required fields in validator.js
 
   //check whether user exists in the database
@@ -17,8 +17,9 @@ export const registeredUser = asyncHandler(async (req, res) => {
   if (isUserExist) {
     throw new Error(400, 'Username or Email already exists');
   }
+
   //fetch the path of the uploaded avatar file
-  const avatarLocalPath = req?.files?.avatar?.[0]?.path || null;
+  const avatarLocalPath = req?.file?.path || null;
   // if avatar is not provided, throw an error
   if (!avatarLocalPath) {
     throw new Error(400, 'Avatar is required');
@@ -36,6 +37,7 @@ export const registeredUser = asyncHandler(async (req, res) => {
     fullname,
     email,
     password,
+
     avatar: {
       url: avatar.url,
       localPath: avatarLocalPath,
@@ -46,7 +48,7 @@ export const registeredUser = asyncHandler(async (req, res) => {
     throw new Error(500, 'Failed to create user');
   }
   // generate email verification token
-  const { unhashedToken, hashedToken, tokenExpiry } = newUser.generateEmailVerificationToken();
+  const { unhashedToken, hashedToken, tokenExpiry } = newUser.generateAccessToken();
   newUser.emailVerifiedToken = hashedToken;
   newUser.emailVerificationTokenExpiry = tokenExpiry;
 
@@ -57,7 +59,7 @@ export const registeredUser = asyncHandler(async (req, res) => {
     username: newUser.username,
     email: newUser.email,
     subject: 'Email Verification',
-    mailGenContent: newUser.generateEmailVerificationMail(
+    mailGenContent: generateMail(
       newUser.username,
       `${process.env.BASE_URL}/api/v1/auth/verify-email/${unhashedToken}`,
     ),
@@ -205,4 +207,7 @@ export const forgotPassword = asyncHandler(async (req, res) => {
 
   //Find user by email
   const user = await User.findOne({ email });
+  if (!user) {
+    throw new Api(400, ``);
+  }
 });

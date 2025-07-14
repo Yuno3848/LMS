@@ -18,6 +18,7 @@ export const validateRegistration = () => {
       .withMessage('Email is required')
       .isEmail()
       .withMessage('Invalid email address'),
+
     body('password')
       .notEmpty()
       .withMessage('Password is required')
