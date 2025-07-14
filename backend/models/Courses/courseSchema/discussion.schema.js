@@ -9,9 +9,8 @@ export const discussionSchema = new Schema(
     },
     parentId: { type: Schema.Types.ObjectId },
     username: {
-      type: String,
-      required: true,
-      trim: true,
+      type: Schema.Types.ObjectId,
+      ref: "User",
     },
     title: {
       type: String,
