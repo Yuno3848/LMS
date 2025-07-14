@@ -208,6 +208,6 @@ export const forgotPassword = asyncHandler(async (req, res) => {
   //Find user by email
   const user = await User.findOne({ email });
   if (!user) {
-    throw new Api(400, ``);
+    throw new Api(400, `User not found`);
   }
 });
