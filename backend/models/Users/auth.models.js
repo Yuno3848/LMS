@@ -39,7 +39,6 @@ const userSchema = new Schema(
     },
     DOB: {
       type: Date,
-      required: true,
     },
     password: {
       type: String,
