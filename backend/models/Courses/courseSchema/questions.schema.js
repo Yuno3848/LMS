@@ -1,4 +1,4 @@
-import mongoose, { Schema } from "mongoose";
+import mongoose, { Schema } from 'mongoose';
 
 export const questionsSchema = new Schema({
   questionText: {
@@ -8,7 +8,7 @@ export const questionsSchema = new Schema({
   },
   questionType: {
     type: String,
-    enum: ["multiple_choice", "true_false", "short_answer"],
+    enum: ['multiple_choice', 'true_false', 'short_answer'],
     required: true,
   },
   options: [

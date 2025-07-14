@@ -1,5 +1,5 @@
-import mongoose, { Schema } from "mongoose";
-import { enrollmentHistorySchema } from "./enrollmentHistory.schema.js";
+import mongoose, { Schema } from 'mongoose';
+import { enrollmentHistorySchema } from './enrollmentHistory.schema.js';
 
 export const studentProfileSchema = new Schema(
   {
@@ -10,10 +10,10 @@ export const studentProfileSchema = new Schema(
     enrolledCourses: [
       {
         type: Schema.Types.ObjectId,
-        ref: "Course",
+        ref: 'Course',
       },
     ],
     enrolledHistory: [enrollmentHistorySchema],
   },
-  { timestamps: true }
+  { timestamps: true },
 );

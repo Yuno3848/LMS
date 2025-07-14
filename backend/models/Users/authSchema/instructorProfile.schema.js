@@ -1,4 +1,4 @@
-import mongoose, { Schema } from "mongoose";
+import mongoose, { Schema } from 'mongoose';
 
 export const instructorProfileSchema = new Schema(
   {
@@ -27,9 +27,9 @@ export const instructorProfileSchema = new Schema(
     courses: [
       {
         type: Schema.Types.ObjectId,
-        ref: "Course",
+        ref: 'Course',
       },
     ],
   },
-  { timestamps: true }
+  { timestamps: true },
 );

@@ -1,20 +1,20 @@
-import mongoose, { Schema } from "mongoose";
+import mongoose, { Schema } from 'mongoose';
 
 export const notificationSchema = new Schema(
   {
     userId: {
       type: Schema.Types.ObjectId,
-      ref: "User",
+      ref: 'User',
       required: true,
     },
     courseId: {
       type: Schema.Types.ObjectId,
-      ref: "Course",
+      ref: 'Course',
       required: true,
     },
     type: {
       type: String,
-      enum: ["announcement", "discussion", "quiz", "general"],
+      enum: ['announcement', 'discussion', 'quiz', 'general'],
       required: true,
     },
     message: {
@@ -28,10 +28,10 @@ export const notificationSchema = new Schema(
     },
     relatedId: {
       type: Schema.Types.ObjectId,
-      refPath: "type", // This allows the relatedId to reference different models based on the type
+      refPath: 'type', // This allows the relatedId to reference different models based on the type
       required: true,
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
-export const Notification = mongoose.model("Notification", notificationSchema);
+export const Notification = mongoose.model('Notification', notificationSchema);

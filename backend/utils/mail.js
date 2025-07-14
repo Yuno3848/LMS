@@ -1,14 +1,14 @@
-import nodemailer from "nodemailer";
-import dotenv from "dotenv";
-import Mailgen from "mailgen";
+import nodemailer from 'nodemailer';
+import dotenv from 'dotenv';
+import Mailgen from 'mailgen';
 dotenv.config();
 
 const sendMail = async (options) => {
   const mailGenerator = new Mailgen({
-    theme: "default",
+    theme: 'default',
     product: {
-      name: "Mailgen",
-      link: "https://mailgen.js/",
+      name: 'Mailgen',
+      link: 'https://mailgen.js/',
     },
   });
 
@@ -26,7 +26,7 @@ const sendMail = async (options) => {
   });
 
   const handleMail = {
-    from: "support@gmail.com",
+    from: 'support@gmail.com',
     to: options.email,
     subject: options.subject,
     text: emailText,
@@ -42,10 +42,10 @@ const generateMail = (username, verificationUrl) => {
       intro: `Hi ${username}, welcome to our app! We're thrilled to have you join our community.`,
       action: {
         instructions:
-          "To activate your account and get started, please verify your email address by clicking the button below:",
+          'To activate your account and get started, please verify your email address by clicking the button below:',
         button: {
-          color: "#22BC66",
-          text: "Verify Email",
+          color: '#22BC66',
+          text: 'Verify Email',
           link: verificationUrl,
         },
       },
@@ -62,15 +62,15 @@ const forgotPasswordMail = (username, passwordResetUrl) => {
       intro: `Hi ${username}, we received a request to reset your password.`,
       action: {
         instructions:
-          "Click the button below to reset your password. This link will expire after a short time for security reasons.",
+          'Click the button below to reset your password. This link will expire after a short time for security reasons.',
         button: {
-          color: "#22BC66",
-          text: "Reset Your Password",
+          color: '#22BC66',
+          text: 'Reset Your Password',
           link: passwordResetUrl,
         },
       },
       outro:
-        "If you didn’t request a password reset, you can safely ignore this email. If you need any help, just reply to this message — we’re here for you!",
+        'If you didn’t request a password reset, you can safely ignore this email. If you need any help, just reply to this message — we’re here for you!',
     },
   };
 };

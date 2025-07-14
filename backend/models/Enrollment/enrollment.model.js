@@ -1,15 +1,15 @@
-import mongoose, { Schema } from "mongoose";
-import { sectionProgressSchema } from "./enrollmentSchema/sectionProgress.schema.js";
+import mongoose, { Schema } from 'mongoose';
+import { sectionProgressSchema } from './enrollmentSchema/sectionProgress.schema.js';
 
 const enrollmentSchema = new Schema(
   {
     studentId: {
       type: Schema.Types.ObjectId,
-      ref: "User",
+      ref: 'User',
     },
     courseId: {
       type: Schema.Types.ObjectId,
-      ref: "Course",
+      ref: 'Course',
     },
     enrolledAt: {
       type: Date,
@@ -32,6 +32,6 @@ const enrollmentSchema = new Schema(
       default: Date.now,
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
-export const Enrollment = mongoose.model("Enrollment", enrollmentSchema);
+export const Enrollment = mongoose.model('Enrollment', enrollmentSchema);

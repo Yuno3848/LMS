@@ -1,16 +1,16 @@
-import mongoose, { Schema } from "mongoose";
+import mongoose, { Schema } from 'mongoose';
 
 export const discussionSchema = new Schema(
   {
     userId: {
       type: Schema.Types.ObjectId,
-      ref: "User",
+      ref: 'User',
       required: true,
     },
     parentId: { type: Schema.Types.ObjectId },
     username: {
       type: Schema.Types.ObjectId,
-      ref: "User",
+      ref: 'User',
     },
     title: {
       type: String,
@@ -23,5 +23,5 @@ export const discussionSchema = new Schema(
       trim: true,
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );

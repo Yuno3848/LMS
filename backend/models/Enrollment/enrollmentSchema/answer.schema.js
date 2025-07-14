@@ -1,9 +1,9 @@
-import mongoose, { Schema } from "mongoose";
+import mongoose, { Schema } from 'mongoose';
 
 export const answerSchema = new Schema({
   questionId: {
     type: Schema.Types.ObjectId,
-    ref: "Question",
+    ref: 'Question',
     required: true,
   },
   studentAnswer: {

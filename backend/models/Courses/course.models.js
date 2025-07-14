@@ -1,15 +1,15 @@
-import mongoose, { Schema } from "mongoose";
-import Section, { sectionSchema } from "./courseSchema/section.schema.js";
-import { discussionSchema } from "./courseSchema/discussion.schema.js";
-import { faqSchema } from "./courseSchema/faq.schema.js";
-import { announcementSchema } from "./courseSchema/announcement.schema.js";
-import { statSchema } from "./courseSchema/stat.schema.js";
+import mongoose, { Schema } from 'mongoose';
+import Section, { sectionSchema } from './courseSchema/section.schema.js';
+import { discussionSchema } from './courseSchema/discussion.schema.js';
+import { faqSchema } from './courseSchema/faq.schema.js';
+import { announcementSchema } from './courseSchema/announcement.schema.js';
+import { statSchema } from './courseSchema/stat.schema.js';
 
 const courseSchema = new Schema(
   {
     instructorId: {
       type: Schema.Types.ObjectId,
-      ref: "User",
+      ref: 'User',
       required: true,
     },
     title: {
@@ -46,7 +46,7 @@ const courseSchema = new Schema(
     faqs: [faqSchema],
     stat: { statSchema },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
-const Course = mongoose.model("Course", courseSchema);
+const Course = mongoose.model('Course', courseSchema);
 export default Course;

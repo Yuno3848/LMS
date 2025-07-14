@@ -5,7 +5,10 @@
   "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "server": "node --watch index.js"
+    "dev": "nodemon index.js",
+    "start": "node index.js",
+    "server": "node --watch index.js",
+    "format": "prettier --write ."
   },
   "keywords": [],
   "author": "",
@@ -25,5 +28,9 @@
     "mongoose": "^8.16.2",
     "multer": "^2.0.1",
     "nodemailer": "^7.0.5"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.10",
+    "prettier": "^3.6.2"
   }
 }

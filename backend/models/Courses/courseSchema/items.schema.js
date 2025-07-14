@@ -1,10 +1,10 @@
-import mongoose from "mongoose";
-import { questionsSchema } from "./questions.schema.js";
+import mongoose from 'mongoose';
+import { questionsSchema } from './questions.schema.js';
 
 export const itemSchema = new mongoose.Schema({
   type: {
     type: String,
-    enum: ["video", "text", "quiz", "assignment"],
+    enum: ['video', 'text', 'quiz', 'assignment'],
     required: true,
   },
   title: {

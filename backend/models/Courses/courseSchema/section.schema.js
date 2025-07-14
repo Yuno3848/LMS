@@ -1,5 +1,5 @@
-import mongoose, { Schema } from "mongoose";
-import { itemSchema } from "./items.schema.js";
+import mongoose, { Schema } from 'mongoose';
+import { itemSchema } from './items.schema.js';
 
 export const sectionSchema = new Schema({
   title: {

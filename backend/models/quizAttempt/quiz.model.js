@@ -1,25 +1,25 @@
-import mongoose, { Schema } from "mongoose";
+import mongoose, { Schema } from 'mongoose';
 
 const quizAttemptSchema = new Schema(
   {
     studentId: {
       type: Schema.Types.ObjectId,
-      ref: "User",
+      ref: 'User',
       required: true,
     },
     courseId: {
       type: Schema.Types.ObjectId,
-      ref: "Course",
+      ref: 'Course',
       required: true,
     },
     quizId: {
       type: Schema.Types.ObjectId,
-      ref: "Quiz",
+      ref: 'Quiz',
       required: true,
     },
     enrollmentId: {
       type: Schema.Types.ObjectId,
-      ref: "Enrollment",
+      ref: 'Enrollment',
       required: true,
     },
     score: {
@@ -49,7 +49,7 @@ const quizAttemptSchema = new Schema(
       {
         questionId: {
           type: Schema.Types.ObjectId,
-          ref: "Question",
+          ref: 'Question',
           required: true,
         },
         studentAnswer: {
@@ -67,6 +67,6 @@ const quizAttemptSchema = new Schema(
       },
     ],
   },
-  { timestamps: true }
+  { timestamps: true },
 );
-export const quizAttempt = mongoose.model("quizAttempt", quizAttemptSchema);
+export const quizAttempt = mongoose.model('quizAttempt', quizAttemptSchema);

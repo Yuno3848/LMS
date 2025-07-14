@@ -1,10 +1,10 @@
-import mongoose, { Schema } from "mongoose";
-import bcrypt from "bcryptjs";
-import crypto from "crypto";
-import jwt from "jsonwebtoken";
-import dotenv from "dotenv";
-import { instructorProfileSchema } from "./authSchema/instructorProfile.schema.js";
-import { studentProfileSchema } from "./authSchema/studentProfile.schema.js";
+import mongoose, { Schema } from 'mongoose';
+import bcrypt from 'bcryptjs';
+import crypto from 'crypto';
+import jwt from 'jsonwebtoken';
+import dotenv from 'dotenv';
+import { instructorProfileSchema } from './authSchema/instructorProfile.schema.js';
+import { studentProfileSchema } from './authSchema/studentProfile.schema.js';
 dotenv.config();
 const userSchema = new Schema(
   {
@@ -14,8 +14,8 @@ const userSchema = new Schema(
         localPath: String,
       },
       default: {
-        url: "",
-        localPath: "",
+        url: '',
+        localPath: '',
       },
     },
     username: {
@@ -34,8 +34,8 @@ const userSchema = new Schema(
 
     role: {
       type: String,
-      enum: ["student", "instructor", "admin"],
-      default: "student",
+      enum: ['student', 'instructor', 'admin'],
+      default: 'student',
     },
     DOB: {
       type: Date,
@@ -71,11 +71,11 @@ const userSchema = new Schema(
     instructorProfile: { type: instructorProfileSchema, required: false },
     studentProfile: { type: studentProfileSchema, required: false },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
-userSchema.pre("save", async function (next) {
-  if (!this.isModified("password")) {
+userSchema.pre('save', async function (next) {
+  if (!this.isModified('password')) {
     return next();
   }
   this.password = await bcrypt.hash(this.password, 10);
@@ -90,7 +90,7 @@ userSchema.methods.generateAccessToken = function () {
       email: this.email,
     },
     process.env.ACCESS_SECRET_KEY,
-    { expiresIn: "24h" }
+    { expiresIn: process.env.ACCESS_TOKEN_EXPIRES_IN },
   );
 };
 
@@ -103,18 +103,15 @@ userSchema.methods.generateRefreshToken = function () {
       email: this.email,
     },
     process.env.REFRESH_SECRET_KEY,
-    { expiresIn: "7d" }
+    { expiresIn: process.env.REFRESH_TOKEN_EXPIRES_IN },
   );
 };
 
 userSchema.methods.generateTemporaryToken = function () {
-  const unhashedToken = crypto.randomBytes(32).toString("hex");
-  const hashedToken = crypto
-    .createHash("sha256")
-    .update(unhashedToken)
-    .digest("hex");
+  const unhashedToken = crypto.randomBytes(32).toString('hex');
+  const hashedToken = crypto.createHash('sha256').update(unhashedToken).digest('hex');
   const tokenExpiry = Date.now() + 20 * 60 * 1000;
   return { unhashedToken, hashedToken, tokenExpiry };
 };
-const User = mongoose.model("User", userSchema);
+const User = mongoose.model('User', userSchema);
 export default User;
