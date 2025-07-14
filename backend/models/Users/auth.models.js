@@ -2,8 +2,10 @@ import mongoose, { Schema } from "mongoose";
 import bcrypt from "bcryptjs";
 import crypto from "crypto";
 import jwt from "jsonwebtoken";
+import dotenv from "dotenv";
 import { instructorProfileSchema } from "./authSchema/instructorProfile.schema.js";
 import { studentProfileSchema } from "./authSchema/studentProfile.schema.js";
+dotenv.config();
 const userSchema = new Schema(
   {
     avatar: {
@@ -87,7 +89,7 @@ userSchema.methods.generateAccessToken = function () {
       role: this.role,
       email: this.email,
     },
-    process.env.SECRET_KEY,
+    process.env.ACCESS_SECRET_KEY,
     { expiresIn: "24h" }
   );
 };
@@ -100,7 +102,7 @@ userSchema.methods.generateRefreshToken = function () {
       role: this.role,
       email: this.email,
     },
-    process.env.SECRET_KEY,
+    process.env.REFRESH_SECRET_KEY,
     { expiresIn: "7d" }
   );
 };

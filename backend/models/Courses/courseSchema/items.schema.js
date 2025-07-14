@@ -18,6 +18,7 @@ export const itemSchema = new mongoose.Schema({
     required: true,
     trim: true,
   },
+
   orderIndex: {
     type: Number,
     required: true,
