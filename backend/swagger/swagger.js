@@ -5,32 +5,21 @@ const options = {
   definition: {
     openapi: '3.0.0',
     info: {
-      title: 'LMS Book API Documentation',
+      title: 'LMS Book API',
       version: '1.0.0',
-      description: 'API documentation for Learning Management System Book Application',
+      description: 'Learning Management System API Documentation',
     },
     servers: [
       {
-        url: 'http://localhost:8000',
-        description: 'Local Development Server',
-      },
-    ],
-    components: {
-      securitySchemes: {
-        bearerAuth: {
-          type: 'http',
-          scheme: 'bearer',
-          bearerFormat: 'JWT',
-        },
-      },
-    },
-    security: [
-      {
-        bearerAuth: [],
+        url: 'http://localhost:8080/api/v1', // Changed from 8000 to 8080
+        description: 'Development server',
       },
     ],
   },
-  apis: ['./routes/*.js'], // Path to your route files
+  apis: [
+    './routes/*.js',
+    './swagger/*.swagger.js', // Make sure this path is correct
+  ],
 };
 
 const swaggerSpec = swaggerJsdoc(options);

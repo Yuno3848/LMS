@@ -28,6 +28,8 @@ auth.post(
   registeredUser,
 );
 
+
+
 auth.get('/verify-email/:token', validateVerifyEmail(), validatorError, verifyMail);
 
 auth.post('/login', validateloginUser(), validatorError, loginUser);
