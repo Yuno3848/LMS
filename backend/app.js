@@ -12,5 +12,5 @@ app.use(
     credentials: true,
   }),
 );
-app.use('/api/v1/user', auth);
+app.use('/api/v1/auth', auth);
 export default app;

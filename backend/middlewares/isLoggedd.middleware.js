@@ -20,6 +20,7 @@ export const isLogged = async (req, res, next) => {
     // Attach the decoded user information to the request object
     req.user = decoded;
     // Call the next middleware or route handler
+
     next();
   } catch (error) {
     // If an error occurs during token verification, return a 500 Internal Server Error response

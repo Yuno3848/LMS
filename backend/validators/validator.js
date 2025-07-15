@@ -71,3 +71,27 @@ export const validateForgotPassword = () => {
       .withMessage('Invalid email address'),
   ];
 };
+
+export const validateResetPassword = () => {
+  return [
+    param('token')
+      .notEmpty()
+      .withMessage('Token is required')
+      .isString()
+      .withMessage('Token must be a string'),
+    body('newPassword')
+      .notEmpty()
+      .withMessage('New password is required')
+      .isLength({ min: 6 })
+      .withMessage('New password must be at least 6 characters long'),
+    body('confirmPassword')
+      .notEmpty()
+      .withMessage('Confirm password is required')
+      .custom((value, { req }) => {
+        if (value !== req.body.newPassword) {
+          throw new Error('Passwords do not match');
+        }
+        return true;
+      }),
+  ];
+};

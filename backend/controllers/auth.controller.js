@@ -4,6 +4,7 @@ import ApiResponse from '../utils/ApiResponse.js';
 import { asyncHandler } from '../utils/asyncHandler.js';
 import { uploadOnCloudinary } from '../utils/cloudinary.js';
 import { forgotPasswordMail, generateMail, sendMail } from '../utils/mail.js';
+import ApiError from '../utils/ApiError.js';
 
 export const registeredUser = asyncHandler(async (req, res) => {
   // user details from request body
@@ -16,20 +17,20 @@ export const registeredUser = asyncHandler(async (req, res) => {
   });
   // if user exists, throw an error
   if (isUserExist) {
-    throw new Error(400, 'Username or Email already exists');
+    throw new ApiError(400, 'Username or Email already exists');
   }
 
   //fetch the path of the uploaded avatar file
   const avatarLocalPath = req?.file?.path || null;
   // if avatar is not provided, throw an error
   if (!avatarLocalPath) {
-    throw new Error(400, 'Avatar is required');
+    throw new ApiError(400, 'Avatar is required');
   }
   // upload avatar to cloudinary
   const avatar = await uploadOnCloudinary(avatarLocalPath);
   // if upload fails, throw an error
   if (!avatar) {
-    throw new Error(500, 'Failed to upload avatar');
+    throw new ApiError(500, 'Failed to upload avatar');
   }
 
   // create a new user instance
@@ -46,7 +47,7 @@ export const registeredUser = asyncHandler(async (req, res) => {
   });
   // if user creation fails, throw an error
   if (!newUser) {
-    throw new Error(500, 'Failed to create user');
+    throw new ApiError(500, 'Failed to create user');
   }
   // generate email verification token
   const { unhashedToken, hashedToken, tokenExpiry } = newUser.generateTemporaryToken();
@@ -67,7 +68,7 @@ export const registeredUser = asyncHandler(async (req, res) => {
   });
   // exclude sensitive fields from the response
   const createdUser = await User.findById(
-    newUser._id,
+    newUser.id,
     {
       password: 0,
       emailVerifiedToken: 0,
@@ -97,7 +98,7 @@ export const verifyMail = asyncHandler(async (req, res) => {
 
   // If user not found, throw an error
   if (!user) {
-    throw new Error(404, 'User not found or token is invalid');
+    throw new ApiError(404, 'User not found or token is invalid');
   }
 
   // Update user's email verification status
@@ -116,7 +117,7 @@ export const verifyMail = asyncHandler(async (req, res) => {
 export const generateAccessAndRefreshTokens = asyncHandler(async (userId) => {
   const user = await User.findById(userId);
   if (!user) {
-    throw new Error(404, 'User not found');
+    throw new ApiError(404, 'User not found');
   }
   // Generate access token
   const accessToken = user.generateAccessToken();
@@ -142,20 +143,20 @@ export const loginUser = asyncHandler(async (req, res) => {
   );
   // If user not found, throw an error
   if (!user) {
-    throw new Error(404, 'User not found');
+    throw new ApiError(404, 'User not found');
   }
   // Check if the password is correct
   const isPasswordValid = await user.comparePassword(password);
   // If password is invalid, throw an error
   if (!isPasswordValid) {
-    throw new Error(401, 'Invalid password');
+    throw new ApiError(401, 'Invalid password');
   }
   // Generate access and refresh tokens
   const accessToken = await user.generateAccessToken();
   const refreshToken = await user.generateRefreshToken();
   // If tokens are not generated, throw an error
   if (!accessToken || !refreshToken) {
-    throw new Error(500, 'Failed to generate tokens');
+    throw new ApiError(500, 'Failed to generate tokens');
   }
   // Set cookies for access and refresh tokens
   const acccesTokenCookieOptions = {
@@ -171,7 +172,7 @@ export const loginUser = asyncHandler(async (req, res) => {
   };
   // Exclude sensitive fields from the user response
   const userResponse = await User.findById(
-    user._id,
+    user.id,
     {
       password: 0,
       emailVerifiedToken: 0,
@@ -184,7 +185,7 @@ export const loginUser = asyncHandler(async (req, res) => {
   // If user response is not found, throw an error
 
   if (!userResponse) {
-    throw new Error(404, 'User not found');
+    throw new ApiError(404, 'User not found');
   }
   // Send the response with the tokens and user data
   return res
@@ -209,10 +210,10 @@ export const forgotPassword = asyncHandler(async (req, res) => {
 
   //Find user by email
   const user = await User.findOne({ email }).select(
-    '-emailVerifiedToken -emailVerificationTokenExpiry -forgotPasswordExpiry -isEmailVerified',
+    '-emailVerifiedToken -emailVerificationTokenExpiry',
   );
   if (!user) {
-    throw new Api(400, `User not found`);
+    throw new ApiError(400, `User not found`);
   }
 
   // Generate access and refresh tokens
@@ -220,7 +221,7 @@ export const forgotPassword = asyncHandler(async (req, res) => {
   const refreshToken = await user.generateRefreshToken();
   // If tokens are not generated, throw an error
   if (!accessToken || !refreshToken) {
-    throw new Error(500, 'Failed to generate tokens');
+    throw new ApiError(500, 'Failed to generate tokens');
   }
   // generate email verification token
   const { unhashedToken, hashedToken, tokenExpiry } = user.generateTemporaryToken();
@@ -243,7 +244,7 @@ export const forgotPassword = asyncHandler(async (req, res) => {
   // Send the response
   return res.status(200).json(
     new ApiResponse(200, 'Password forgot successfully', {
-      _id: user._id,
+      _id: user.id,
       email: user.email,
       password: user.password,
       username: user.username,
@@ -258,18 +259,7 @@ export const resetPassword = asyncHandler(async (req, res) => {
   console.log('Reset password request received');
   const { token } = req.params;
   const { newPassword, confirmPassword } = req.body;
-  // Validate token and passwords
-  if (!token) {
-    throw new ApiError(400, 'Invalid Token...');
-  }
-  if (!newPassword || !confirmPassword) {
-    throw new ApiError(400, 'Both password fields are required.');
-  }
 
-  // Check if passwords match
-  if (newPassword !== confirmPassword) {
-    throw new ApiError(400, 'Passwords do not match.');
-  }
   // Hash the token to match with the stored token
   const forgotPasswordToken = crypto.createHash('sha256').update(token).digest('hex');
   // Find user by forgot password token and check if the token is still valid
@@ -298,4 +288,33 @@ export const resetPassword = asyncHandler(async (req, res) => {
   await user.save();
   // Send success response
   return res.status(200).json(new ApiResponse(200, 'password reset successfully...', user));
+});
+
+export const profile = asyncHandler(async (req, res) => {
+  // Get user from request object
+  const user = req.user.id;
+
+  // If user is not found, throw an error
+  if (!user) {
+    throw new ApiError(404, 'User not found');
+  }
+
+  // Exclude sensitive fields from the response
+  const userResponse = await User.findById(
+    user,
+    {
+      password: 0,
+      emailVerifiedToken: 0,
+      emailVerificationTokenExpiry: 0,
+      forgotPasswordExpiry: 0,
+      isEmailVerified: 0,
+    },
+    { lean: true },
+  );
+  // If user response is not found, throw an error
+  if (!userResponse) {
+    throw new ApiError(404, 'User not found');
+  }
+  // Send the response with the user data
+  res.status(200).json(new ApiResponse(200, 'User profile fetched successfully', userResponse));
 });
