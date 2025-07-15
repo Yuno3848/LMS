@@ -1,3 +1,4 @@
+import crypto from 'crypto';
 import User from '../models/Users/auth.models.js';
 import ApiResponse from '../utils/ApiResponse.js';
 import { asyncHandler } from '../utils/asyncHandler.js';
@@ -48,7 +49,7 @@ export const registeredUser = asyncHandler(async (req, res) => {
     throw new Error(500, 'Failed to create user');
   }
   // generate email verification token
-  const { unhashedToken, hashedToken, tokenExpiry } = newUser.generateAccessToken();
+  const { unhashedToken, hashedToken, tokenExpiry } = newUser.generateTemporaryToken();
   newUser.emailVerifiedToken = hashedToken;
   newUser.emailVerificationTokenExpiry = tokenExpiry;
 
@@ -90,16 +91,15 @@ export const verifyMail = asyncHandler(async (req, res) => {
   const user = await User.findOne({
     emailVerifiedToken,
     emailVerificationTokenExpiry: { $gt: Date.now() },
-  });
+  }).select(
+    '-password -emailVerifiedToken -emailVerificationTokenExpiry -forgotPasswordExpiry -isEmailVerified',
+  );
 
   // If user not found, throw an error
   if (!user) {
     throw new Error(404, 'User not found or token is invalid');
   }
-  // If token has expired, throw an error
-  if (user.emailVerificationTokenExpiry < Date.now()) {
-    throw new Error(400, 'Token has expired');
-  }
+
   // Update user's email verification status
   user.isEmailVerified = true;
   user.emailVerifiedToken = undefined;
@@ -109,7 +109,7 @@ export const verifyMail = asyncHandler(async (req, res) => {
   await user.save();
 
   // Send success response
-  res.status(200).json(new ApiResponse(200, 'Email verified successfully'));
+  res.status(200).json(new ApiResponse(200, 'Email verified successfully', user));
 });
 
 //function for generating access and refresh tokens
@@ -137,7 +137,9 @@ export const loginUser = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
 
   // Find user by email
-  const user = await User.findOne({ email });
+  const user = await User.findOne({ email }).select(
+    '-emailVerifiedToken -emailVerificationTokenExpiry -forgotPasswordExpiry -isEmailVerified',
+  );
   // If user not found, throw an error
   if (!user) {
     throw new Error(404, 'User not found');
@@ -149,8 +151,8 @@ export const loginUser = asyncHandler(async (req, res) => {
     throw new Error(401, 'Invalid password');
   }
   // Generate access and refresh tokens
-  const { accessToken, refreshToken } = await generateAccessAndRefreshTokens(user._id);
-
+  const accessToken = await user.generateAccessToken();
+  const refreshToken = await user.generateRefreshToken();
   // If tokens are not generated, throw an error
   if (!accessToken || !refreshToken) {
     throw new Error(500, 'Failed to generate tokens');
@@ -206,32 +208,34 @@ export const forgotPassword = asyncHandler(async (req, res) => {
   const { email } = req.body;
 
   //Find user by email
-  const user = await User.findOne({ email });
+  const user = await User.findOne({ email }).select(
+    '-emailVerifiedToken -emailVerificationTokenExpiry -forgotPasswordExpiry -isEmailVerified',
+  );
   if (!user) {
     throw new Api(400, `User not found`);
   }
 
   // Generate access and refresh tokens
-  const { accessToken, refreshToken } = await generateAccessAndRefreshTokens(user._id);
-
+  const accessToken = await user.generateAccessToken();
+  const refreshToken = await user.generateRefreshToken();
   // If tokens are not generated, throw an error
   if (!accessToken || !refreshToken) {
     throw new Error(500, 'Failed to generate tokens');
   }
   // generate email verification token
-  const { unhashedToken, hashedToken, tokenExpiry } = newUser.generateAccessToken();
-  newUser.emailVerifiedToken = hashedToken;
-  newUser.emailVerificationTokenExpiry = tokenExpiry;
+  const { unhashedToken, hashedToken, tokenExpiry } = user.generateTemporaryToken();
+  user.forgotPasswordToken = hashedToken;
+  user.forgotPasswordExpiry = tokenExpiry;
 
   //save the new user to the database
-  await newUser.save();
+  await user.save();
   //send email verification link to the user
   await sendMail({
-    username: newUser.username,
-    email: newUser.email,
+    username: user.username,
+    email: user.email,
     subject: 'Email Verification',
     mailGenContent: forgotPasswordMail(
-      newUser.username,
+      user.username,
       `${process.env.BASE_URL}/api/v1/auth/reset-password/${unhashedToken}`,
     ),
   });
@@ -250,20 +254,25 @@ export const forgotPassword = asyncHandler(async (req, res) => {
   );
 });
 export const resetPassword = asyncHandler(async (req, res) => {
+  // Extract token and password from request
+  console.log('Reset password request received');
   const { token } = req.params;
-  const { password, confirmPassword } = req.body;
+  const { newPassword, confirmPassword } = req.body;
+  // Validate token and passwords
   if (!token) {
     throw new ApiError(400, 'Invalid Token...');
   }
-  if (!password || !confirmPassword) {
+  if (!newPassword || !confirmPassword) {
     throw new ApiError(400, 'Both password fields are required.');
   }
 
-  if (password !== confirmPassword) {
+  // Check if passwords match
+  if (newPassword !== confirmPassword) {
     throw new ApiError(400, 'Passwords do not match.');
   }
+  // Hash the token to match with the stored token
   const forgotPasswordToken = crypto.createHash('sha256').update(token).digest('hex');
-
+  // Find user by forgot password token and check if the token is still valid
   const user = await User.findOneAndUpdate(
     {
       forgotPasswordToken,
@@ -271,22 +280,22 @@ export const resetPassword = asyncHandler(async (req, res) => {
     },
     {
       $set: {
-        password,
+        password: newPassword,
         isEmailVerified: true,
-        emailVerifiedToken: undefined,
-        emailVerificationTokenExpiry: undefined,
+        forgotPasswordToken: undefined,
+        forgotPasswordExpiry: undefined,
       },
     },
     {
       new: true,
     },
   );
-
+  // If user not found, throw an error
   if (!user) {
     throw new ApiError(404, 'user or token not found...');
   }
-
+  // Save the updated user document
   await user.save();
-
+  // Send success response
   return res.status(200).json(new ApiResponse(200, 'password reset successfully...', user));
 });
