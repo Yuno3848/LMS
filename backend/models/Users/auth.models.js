@@ -70,6 +70,7 @@ const userSchema = new Schema(
     refreshToken: {
       type: String,
     },
+
     instructorProfile: { type: instructorProfileSchema, required: false },
     studentProfile: { type: studentProfileSchema, required: false },
   },

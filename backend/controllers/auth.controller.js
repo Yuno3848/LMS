@@ -114,7 +114,7 @@ export const verifyMail = asyncHandler(async (req, res) => {
 });
 
 //function for generating access and refresh tokens
-export const generateAccessAndRefreshTokens = asyncHandler(async (userId) => {
+const generateAccessAndRefreshTokens = async (userId) => {
   const user = await User.findById(userId);
   if (!user) {
     throw new ApiError(404, 'User not found');
@@ -130,7 +130,7 @@ export const generateAccessAndRefreshTokens = asyncHandler(async (userId) => {
   await user.save();
   // Return both tokens
   return { accessToken, refreshToken };
-});
+};
 
 // Function to handle user login
 export const loginUser = asyncHandler(async (req, res) => {
@@ -152,8 +152,7 @@ export const loginUser = asyncHandler(async (req, res) => {
     throw new ApiError(401, 'Invalid password');
   }
   // Generate access and refresh tokens
-  const accessToken = await user.generateAccessToken();
-  const refreshToken = await user.generateRefreshToken();
+  const { accessToken, refreshToken } = await generateAccessAndRefreshTokens(user._id);
   // If tokens are not generated, throw an error
   if (!accessToken || !refreshToken) {
     throw new ApiError(500, 'Failed to generate tokens');
@@ -217,8 +216,7 @@ export const forgotPassword = asyncHandler(async (req, res) => {
   }
 
   // Generate access and refresh tokens
-  const accessToken = await user.generateAccessToken();
-  const refreshToken = await user.generateRefreshToken();
+  const { accessToken, refreshToken } = await user._id;
   // If tokens are not generated, throw an error
   if (!accessToken || !refreshToken) {
     throw new ApiError(500, 'Failed to generate tokens');
@@ -317,4 +315,50 @@ export const profile = asyncHandler(async (req, res) => {
   }
   // Send the response with the user data
   res.status(200).json(new ApiResponse(200, 'User profile fetched successfully', userResponse));
+});
+
+export const refreshAccessToken = asyncHandler(async (req, res) => {
+  // Get user id from cookies
+  const userId = req.user.id;
+  // If user id is not found, throw an error
+  if (!userId) {
+    throw new ApiError(401, 'Refresh token not found');
+  }
+  // Find user by refresh token
+  const user = await User.findById(userId).select(
+    '-emailVerifiedToken -emailVerificationTokenExpiry -forgotPasswordExpiry -isEmailVerified',
+  );
+  // If user not found, throw an error
+  if (!user) {
+    throw new ApiError(404, 'User not found');
+  }
+  // Generate a new access token
+  const { accessToken, refreshToken } = await generateAccessAndRefreshTokens(user._id);
+  // If access token is not generated, throw an error
+  if (!accessToken || !refreshToken) {
+    throw new ApiError(500, 'Failed to generate access token');
+  }
+  // Set cookies for access and refresh tokens
+  const acccesTokenCookieOptions = {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    maxAge: 24 * 60 * 60 * 1000,
+  };
+  // Set cookies for refresh token
+  const refreshTokenCookieOptions = {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    maxAge: 7 * 24 * 60 * 60 * 1000,
+  };
+  // Send the response with the new access token
+  res
+    .status(200)
+    .cookie('accessToken', accessToken, acccesTokenCookieOptions)
+    .cookie('refreshToken', refreshToken, refreshTokenCookieOptions)
+    .json(
+      new ApiResponse(200, 'Access token refreshed successfully', {
+        accessToken,
+        refreshAccessToken,
+      }),
+    );
 });

@@ -13,6 +13,7 @@ import {
   loginUser,
   logoutUser,
   profile,
+  refreshAccessToken,
   registeredUser,
   resetPassword,
   verifyMail,
@@ -28,8 +29,6 @@ auth.post(
   registeredUser,
 );
 
-
-
 auth.get('/verify-email/:token', validateVerifyEmail(), validatorError, verifyMail);
 
 auth.post('/login', validateloginUser(), validatorError, loginUser);
@@ -40,3 +39,4 @@ auth.patch('/reset-password/:token', validateResetPassword(), validatorError, re
 
 auth.get('/profile', isLogged, profile);
 export default auth;
+auth.get('/refresh-token', isLogged, refreshAccessToken);
