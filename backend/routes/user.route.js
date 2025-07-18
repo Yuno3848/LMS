@@ -8,7 +8,7 @@ import {
   validateRegistration,
   validateResetPassword,
   validateVerifyEmail,
-} from '../validators/validator.js';
+} from '../validators/auth.validator.js';
 import { validatorError } from '../middlewares/validatorError.js';
 import {
   changePassword,
