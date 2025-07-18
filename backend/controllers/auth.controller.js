@@ -288,6 +288,30 @@ export const resetPassword = asyncHandler(async (req, res) => {
   return res.status(200).json(new ApiResponse(200, 'password reset successfully...', user));
 });
 
+export const changePassword = asyncHandler(async (req, res) => {
+  //get user id from request from object
+  const userId = req.user.id;
+
+  const { password, confirmPassword } = req.body;
+  //If user is not found, throw an error
+  if (!userId) {
+    throw new ApiError(404, 'User not found.');
+  }
+  //find user
+  const user = await User.findById(userId).select(
+    '-password -emailVerificationTokenExpiry -forgotPasswordExpiry -forgotPasswordToken -refreshToken',
+  );
+  //sav
+  user.password = password;
+  await user.save();
+  //if user is not found, throw an error
+  if (!user) {
+    throw new ApiError(404, 'User not found');
+  }
+
+  return res.status(200).json(new ApiResponse(200, 'password changed successfully', user));
+});
+
 export const profile = asyncHandler(async (req, res) => {
   // Get user from request object
   const user = req.user.id;
@@ -391,4 +415,9 @@ export const updateProfile = asyncHandler(async (req, res) => {
   }
   // Send the response with the user details
   return res.status(200).json(new ApiResponse(200, 'profile updated successfully', user));
+});
+
+export const updateProfileAvatar = asyncHandler(async (req, res) => {
+  //extract user id from cookies
+  const userId = req.user.id;
 });

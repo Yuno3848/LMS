@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { upload } from '../middlewares/multer.middleware.js';
 import {
+  validateChangePassword,
   validateForgotPassword,
   validateloginUser,
   validateProfile,
@@ -10,6 +11,7 @@ import {
 } from '../validators/validator.js';
 import { validatorError } from '../middlewares/validatorError.js';
 import {
+  changePassword,
   forgotPassword,
   loginUser,
   logoutUser,
@@ -43,3 +45,4 @@ auth.get('/profile', isLogged, profile);
 export default auth;
 auth.get('/refresh-token', isLogged, refreshAccessToken);
 auth.patch('/update-profile', validateProfile(), validatorError, isLogged, updateProfile);
+auth.patch('/change-password', validateChangePassword(), validatorError, isLogged, changePassword);
