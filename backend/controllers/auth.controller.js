@@ -295,7 +295,7 @@ export const changePassword = asyncHandler(async (req, res) => {
   const { password, confirmPassword } = req.body;
   //If user is not found, throw an error
   if (!userId) {
-    throw new ApiError(404, 'User not found.');
+    throw new ApiError(401, 'User not authenticated.');
   }
   //find user
   const user = await User.findById(userId).select(
@@ -420,4 +420,32 @@ export const updateProfile = asyncHandler(async (req, res) => {
 export const updateProfileAvatar = asyncHandler(async (req, res) => {
   //extract user id from cookies
   const userId = req.user.id;
+
+  if (!userId) {
+    throw new ApiError(401, 'User not authenticated');
+  }
+  // find user by id
+  const user = await User.findById(userId).select(
+    '-password -emailVerifiedToken -emailVerificationTokenExpiry -forgotPasswordExpiry -forgotPasswordToken -refreshToken',
+  );
+  //if user not found, throw an error
+  if (!user) {
+    throw new ApiError(404, 'User not found');
+  }
+  //fetch avatar local path
+  const avatarLocalPath = req.file?.path || null;
+  if (!avatarLocalPath) {
+    throw new ApiError(404, 'Avatar is required');
+  }
+
+  const avatar = await uploadOnCloudinary(avatarLocalPath);
+  if (!avatar) {
+    throw new ApiError(500, 'failed to upload avatar');
+  }
+
+  user.avatar.url = avatar.url;
+  user.avatar.localPath = avatarLocalPath;
+  user.save();
+
+  return res.status(200).json(new ApiResponse(200, 'avatar updated successfully', user));
 });

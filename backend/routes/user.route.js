@@ -20,6 +20,7 @@ import {
   registeredUser,
   resetPassword,
   updateProfile,
+  updateProfileAvatar,
   verifyMail,
 } from '../controllers/auth.controller.js';
 import { isLogged } from '../middlewares/isLoggedd.middleware.js';
@@ -46,3 +47,4 @@ export default auth;
 auth.get('/refresh-token', isLogged, refreshAccessToken);
 auth.patch('/update-profile', validateProfile(), validatorError, isLogged, updateProfile);
 auth.patch('/change-password', validateChangePassword(), validatorError, isLogged, changePassword);
+auth.patch('/update-avatar', upload.single('avatar'), isLogged, updateProfileAvatar);
