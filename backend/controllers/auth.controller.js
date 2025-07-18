@@ -8,7 +8,7 @@ import ApiError from '../utils/ApiError.js';
 
 export const registeredUser = asyncHandler(async (req, res) => {
   // user details from request body
-  const { username, fullname, email, password, confirmPassword, DOB } = req.body;
+  const { username, fullname, email, password, confirmPassword } = req.body;
   //validate required fields in validator.js
 
   //check whether user exists in the database
@@ -361,4 +361,34 @@ export const refreshAccessToken = asyncHandler(async (req, res) => {
         refreshAccessToken,
       }),
     );
+});
+
+export const updateProfile = asyncHandler(async (req, res) => {
+  //get id from cookies
+  const userId = req.user.id;
+  console.log('userId', userId);
+  const { username, fullname } = req.body;
+  // If user id is not found, throw an error
+  if (!userId) {
+    throw new ApiError(401, 'User not authenticated');
+  }
+  // Find user by id and update
+  const user = await User.findByIdAndUpdate(
+    userId,
+    {
+      username,
+      fullname,
+    },
+    {
+      new: true,
+    },
+  ).select(
+    '-password -emailVerifiedToken -emailVerificationTokenExpiry -forgotPasswordExpiry -forgotPasswordToken -refreshToken',
+  );
+  // If user not found, throw an error
+  if (!user) {
+    throw new ApiError(404, ' User not found');
+  }
+  // Send the response with the user details
+  return res.status(200).json(new ApiResponse(200, 'profile updated successfully', user));
 });

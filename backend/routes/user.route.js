@@ -3,6 +3,7 @@ import { upload } from '../middlewares/multer.middleware.js';
 import {
   validateForgotPassword,
   validateloginUser,
+  validateProfile,
   validateRegistration,
   validateResetPassword,
   validateVerifyEmail,
@@ -16,6 +17,7 @@ import {
   refreshAccessToken,
   registeredUser,
   resetPassword,
+  updateProfile,
   verifyMail,
 } from '../controllers/auth.controller.js';
 import { isLogged } from '../middlewares/isLoggedd.middleware.js';
@@ -40,3 +42,4 @@ auth.patch('/reset-password/:token', validateResetPassword(), validatorError, re
 auth.get('/profile', isLogged, profile);
 export default auth;
 auth.get('/refresh-token', isLogged, refreshAccessToken);
+auth.patch('/update-profile', validateProfile(), validatorError, isLogged, updateProfile);

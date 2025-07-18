@@ -37,9 +37,7 @@ const userSchema = new Schema(
       enum: ['student', 'instructor', 'admin'],
       default: 'student',
     },
-    DOB: {
-      type: Date,
-    },
+
     password: {
       type: String,
       required: true,

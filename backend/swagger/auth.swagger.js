@@ -177,4 +177,25 @@
  *               $ref: '#/components/schemas/UserProfile'
  *       401:
  *         description: Not authenticated
+ *
+ * /update-profile:
+ *   patch:
+ *     summary: Update user profile
+ *     tags: [Authentication]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               username:
+ *                 type: string
+ *               fullname:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Profile updated successfully
+ *       404:
+ *         description: User not found
  */
