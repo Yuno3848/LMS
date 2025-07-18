@@ -434,18 +434,22 @@ export const updateProfileAvatar = asyncHandler(async (req, res) => {
   }
   //fetch avatar local path
   const avatarLocalPath = req.file?.path || null;
+
+  // if avatar is not provided, throw an error
   if (!avatarLocalPath) {
     throw new ApiError(404, 'Avatar is required');
   }
-
+  // upload avatar to cloudinary
   const avatar = await uploadOnCloudinary(avatarLocalPath);
   if (!avatar) {
     throw new ApiError(500, 'failed to upload avatar');
   }
-
+  // update user avatar
   user.avatar.url = avatar.url;
+  // update user avatar local path
   user.avatar.localPath = avatarLocalPath;
+  // save the user document
   user.save();
-
+  // send the response with the updated user data
   return res.status(200).json(new ApiResponse(200, 'avatar updated successfully', user));
 });

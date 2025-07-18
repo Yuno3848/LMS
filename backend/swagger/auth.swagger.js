@@ -198,4 +198,57 @@
  *         description: Profile updated successfully
  *       404:
  *         description: User not found
+ *
+ *
+ * /auth/update-avatar:
+ *   patch:
+ *     summary: Update user profile avatar
+ *     description: Allows an authenticated user to upload and update their profile avatar.
+ *     tags: [Authentication]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               avatar:
+ *                 type: string
+ *                 format: binary
+ *     responses:
+ *       200:
+ *         description: Avatar updated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 statusCode:
+ *                   type: integer
+ *                   example: 200
+ *                 message:
+ *                   type: string
+ *                   example: avatar updated successfully
+ *                 data:
+ *                   $ref: '#/components/schemas/User'
+ *       401:
+ *         description: User not authenticated
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ApiError'
+ *       404:
+ *         description: Avatar file missing or user not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ApiError'
+ *       500:
+ *         description: Failed to upload avatar
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ApiError'
+ *     security:
+ *       - bearerAuth: []
  */

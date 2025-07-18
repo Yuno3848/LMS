@@ -13,17 +13,23 @@ export const instructorProfileSchema = new Schema(
         trim: true,
       },
     ],
+    socialLinks: {
+      linkedin: String,
+      twitter: String,
+      facebook: String,
+      instagram: String,
+    },
     rating: {
       type: Number,
       min: 0,
       max: 5,
       default: 0,
     },
-    totalCourses: {
-      type: Number,
-      default: 0,
+
+    isVerifiedInstructor: {
+      type: Boolean,
+      default: false,
     },
-    isVerifiedInstructor: { type: Boolean, default: false },
     courses: [
       {
         type: Schema.Types.ObjectId,

@@ -7,13 +7,6 @@ export const studentProfileSchema = new Schema(
       type: Boolean,
       default: false,
     },
-    enrolledCourses: [
-      {
-        type: Schema.Types.ObjectId,
-        ref: 'Course',
-      },
-    ],
-    enrolledHistory: [enrollmentHistorySchema],
   },
   { timestamps: true },
 );
