@@ -2,7 +2,11 @@ import { Router } from 'express';
 import { validatorError } from '../middlewares/validatorError.js';
 import { isLogged } from '../middlewares/isLoggedd.middleware.js';
 import { validateStudentProfile } from '../validators/studentProfile.validator.js';
-import { createStudentProfile, updatedStudentProfile } from '../controllers/profile.controller.js';
+import {
+  createStudentProfile,
+  getStudentProfile,
+  updatedStudentProfile,
+} from '../controllers/profile.controller.js';
 
 const studentProfile = Router();
 
@@ -20,4 +24,6 @@ studentProfile.patch(
   isLogged,
   updatedStudentProfile,
 );
+
+studentProfile.get('/get-student-profile', isLogged, getStudentProfile);
 export default studentProfile;
