@@ -2,7 +2,12 @@ import { body } from 'express-validator';
 
 export const validateStudentProfile = () => {
   return [
-    body('bio').optional().isString().withMessage('Bio must be a string'),
+    body('bio')
+      .optional()
+      .isLength({ max: 500 })
+      .withMessage("bio can't be more than 500 characters")
+      .isString()
+      .withMessage('Bio must be a string'),
     body('skills')
       .optional()
       .isArray()
@@ -12,11 +17,31 @@ export const validateStudentProfile = () => {
       .withMessage('Each skill must be a string'),
     body('socialLinks').optional().isObject().withMessage('Social links must be an object'),
 
-    body('socialLinks.linkedin').optional().isString().withMessage('LinkedIn must be a string'),
-    body('socialLinks.twitter').optional().isString().withMessage('Twitter must be a string'),
-    body('socialLinks.facebook').optional().isString().withMessage('Facebook must be a  string'),
-    body('socialLinks.instagram').optional().isString().withMessage('Instagram must be a string'),
-    body('education').optional().isArray().withMessage('Education must be an array of objects'),
+    body('socialLinks.linkedin')
+      .optional()
+      .isURL()
+      .isString()
+      .withMessage('LinkedIn must be a string'),
+    body('socialLinks.twitter')
+      .optional()
+      .isURL()
+      .isString()
+      .withMessage('Twitter must be a string'),
+    body('socialLinks.facebook')
+      .optional()
+      .isURL()
+      .isString()
+      .withMessage('Facebook must be a  string'),
+    body('socialLinks.instagram')
+      .optional()
+      .isURL()
+      .isString()
+      .withMessage('Instagram must be a string'),
+    body('education')
+      .notEmpty()
+      .withMessage('education field required')
+      .isLength({ max: 500 })
+      .withMessage("bio can't be more than 500 characters"),
     body('interests')
       .optional()
       .isArray()

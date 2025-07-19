@@ -69,8 +69,11 @@ const userSchema = new Schema(
       type: String,
     },
 
-    instructorProfile: { type: instructorProfileSchema, ref: 'instructorProfileSchema' },
-    studentProfile: { type: studentProfileSchema, required: false },
+    instructorProfile: {
+      type: Schema.Types.ObjectId,
+      ref: 'instructorProfile',
+    },
+    studentProfile: { type: Schema.Types.ObjectId, ref: 'studentProfile' },
   },
   { timestamps: true },
 );

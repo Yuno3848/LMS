@@ -1,3 +1,5 @@
+import mongoose, { Schema } from 'mongoose';
+
 export const studentProfileSchema = new Schema(
   {
     bio: {
@@ -35,3 +37,4 @@ export const studentProfileSchema = new Schema(
   },
   { timestamps: true },
 );
+export const studentProfile = mongoose.model('studentProfile', studentProfileSchema);
