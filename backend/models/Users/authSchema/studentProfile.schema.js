@@ -30,9 +30,10 @@ export const studentProfileSchema = new Schema(
         trim: true,
       },
     ],
-    isVerifiedStudent: {
-      type: Boolean,
-      default: false,
+    verificationStatus: {
+      type: String,
+      enum: ['not_requested', 'pending', 'verified', 'rejected'],
+      default: 'not_requested',
     },
   },
   { timestamps: true },

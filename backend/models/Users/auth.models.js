@@ -3,8 +3,7 @@ import bcrypt from 'bcryptjs';
 import crypto from 'crypto';
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
-import { instructorProfileSchema } from './authSchema/instructorProfile.schema.js';
-import { studentProfileSchema } from './authSchema/studentProfile.schema.js';
+
 dotenv.config();
 const userSchema = new Schema(
   {

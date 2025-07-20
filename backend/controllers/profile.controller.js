@@ -73,53 +73,131 @@ export const updatedStudentProfile = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, 'Student profile updated successfully', updatedProfile));
 });
 
-export const getStudentProfile = asyncHandler(async (req, res) => {
+export const verifyStudentProfile = asyncHandler(async (req, res) => {
   const userId = req.user.id;
+
   if (!userId) {
-    throw new ApiError(401, 'User not authorized');
+    throw new ApiError(401, 'User not authrozied');
   }
 
-  const studentProfile = await User.findById(userId).populate('studentProfile');
+  const user = await User.findById(userId).populate('studentProfile');
 
-  if (!studentProfile) {
-    throw new ApiError(404, 'student profile not found');
+  if (!user) {
+    throw new ApiError(404, 'user not found');
+  }
+  if (user.studentProfile.verificationStatus === 'pending') {
+    throw new ApiError(400, 'user student profile verificaiton is in already in pending');
   }
 
-  const customStudentProfile = await User.aggregate([
-    {
-      $match: {
-        _id: new mongoose.Types.ObjectId(userId),
-      },
-    },
-    {
-      $lookup: {
-        from: 'studentprofiles',
-        localField: 'studentProfile',
-        foreignField: '_id',
-        as: 'studentProfile',
-      },
-    },
-    {
-      $unwind: '$studentProfile',
-    },
-    {
-      $project: {
-        _id: 1,
-        username: 1,
-        email: 1,
-        studentProfile: {
-          bio: '$studentProfile.bio',
-          skills: '$studentProfile.skills',
-          socialLinks: '$studentProfile.socialLinks',
-          education: '$studentProfile.education',
-          interests: '$studentProfile.interests',
-          isVerifiedStudent: '$studentProfile.isVerifiedStudent',
-        },
-      },
-    },
-  ]);
+  user.studentProfile.verificationStatus = 'pending';
+  await user.studentProfile.save();
 
   return res
     .status(200)
-    .json(new ApiResponse(200, 'student profile successfully', customStudentProfile));
+    .json(new ApiResponse(200, 'student profile verification sent successfully', user));
 });
+
+// export const getStudentProfile = asyncHandler(async (req, res) => {
+//   const userId = req.user.id;
+//   if (!userId) {
+//     throw new ApiError(401, 'User not authorized');
+//   }
+
+//   const studentProfile = await User.findById(userId);
+
+//   if (!studentProfile) {
+//     throw new ApiError(404, 'student profile not found');
+//   }
+
+//   const customStudentProfile = await User.aggregate([
+//     {
+//       $match: {
+//         _id: new mongoose.Types.ObjectId(userId),
+//       },
+//     },
+//     {
+//       $lookup: {
+//         from: 'studentprofiles',
+//         localField: 'studentProfile',
+//         foreignField: '_id',
+//         as: 'studentProfile',
+//       },
+//     },
+//     {
+//       $unwind: '$studentProfile',
+//     },
+//     {
+//       $project: {
+//         _id: 1,
+//         username: 1,
+//         email: 1,
+//         studentProfile: {
+//           bio: '$studentProfile.bio',
+//           skills: '$studentProfile.skills',
+//           socialLinks: '$studentProfile.socialLinks',
+//           education: '$studentProfile.education',
+//           interests: '$studentProfile.interests',
+//           isVerifiedStudent: '$studentProfile.isVerifiedStudent',
+//         },
+//       },
+//     },
+//   ]);
+
+//   return res
+//     .status(200)
+//     .json(new ApiResponse(200, 'student profile successfully', customStudentProfile));
+// });
+
+// export const getStudentProfileById = asyncHandler(async (req, res) => {
+//   const userId = req.params.id;
+//   if (!userId) {
+//     throw new ApiError(401, 'User not authorized');
+//   }
+
+//   const studentProfile = await User.findById(userId).populate('studentProfile');
+//   if (!studentProfile) {
+//     throw new ApiError(404, 'student profile not found');
+//   }
+
+//   return res
+//     .status(200)
+//     .json(new ApiResponse(200, 'student profile successfully', studentProfile.studentProfile));
+// });
+
+// export const getAllStudentProfiles = asyncHandler(async (req, res) => {
+//   const studentProfiles = await User.aggreate([
+//     {
+//       $lookup: {
+//         from: 'studentprofiles',
+//         localField: 'studentProfile',
+//         foreignField: '_id',
+//         as: 'studentProfile',
+//       },
+//     },
+//     {
+//       $unwind: '$studentProfile',
+//     },
+//     {
+//       $project: {
+//         _id: 1,
+//         username: 1,
+//         email: 1,
+//         studentProfile: {
+//           bio: '$studentProfile.bio',
+//           skills: '$studentProfile.skills',
+//           socialLinks: '$studentProfile.socialLinks',
+//           education: '$studentProfile.education',
+//           interests: '$studentProfile.interests',
+//           isVerifiedStudent: '$studentProfile.isVerifiedStudent',
+//         },
+//       },
+//     },
+//   ]);
+
+//   if (!studentProfiles || studentProfiles.length === 0) {
+//     throw new ApiError(404, 'No student profiles found');
+//   }
+//   return res
+//     .status(200)
+//     .json(new ApiResponse(200, 'All student profiles retrieved successfully', studentProfiles));
+// });

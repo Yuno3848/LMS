@@ -4,8 +4,8 @@ import { isLogged } from '../middlewares/isLoggedd.middleware.js';
 import { validateStudentProfile } from '../validators/studentProfile.validator.js';
 import {
   createStudentProfile,
-  getStudentProfile,
   updatedStudentProfile,
+  verifyStudentProfile,
 } from '../controllers/profile.controller.js';
 
 const studentProfile = Router();
@@ -25,5 +25,11 @@ studentProfile.patch(
   updatedStudentProfile,
 );
 
-studentProfile.get('/get-student-profile', isLogged, getStudentProfile);
+studentProfile.get('/verifyStudentProfile', isLogged, verifyStudentProfile);
+
+// studentProfile.get('/get-student-profile', isLogged, getStudentProfile);
+// export default studentProfile;
+
+// studentProfile.get('/get-student-profile-byId/:id', isLogged, getStudentProfileById);
+
 export default studentProfile;
