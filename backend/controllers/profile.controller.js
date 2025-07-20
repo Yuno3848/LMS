@@ -7,7 +7,7 @@ import mongoose from 'mongoose';
 export const createStudentProfile = async (req, res) => {
   const userId = req.user.id;
 
-  if (!userId) {
+  if (!userId || !mongoose.Types.ObjectId.isValid(userId.toString())) {
     throw new ApiError(401, 'User not authenticated');
   }
 
@@ -68,6 +68,7 @@ export const updatedStudentProfile = asyncHandler(async (req, res) => {
     },
     { new: true, runValidators: true },
   );
+
   return res
     .status(200)
     .json(new ApiResponse(200, 'Student profile updated successfully', updatedProfile));
@@ -76,7 +77,7 @@ export const updatedStudentProfile = asyncHandler(async (req, res) => {
 export const verifyStudentProfile = asyncHandler(async (req, res) => {
   const userId = req.user.id;
 
-  if (!userId) {
+  if (!userId || !mongoose.Types.ObjectId.isValid(userId.toString())) {
     throw new ApiError(401, 'User not authrozied');
   }
 
@@ -89,12 +90,53 @@ export const verifyStudentProfile = asyncHandler(async (req, res) => {
     throw new ApiError(400, 'user student profile verificaiton is in already in pending');
   }
 
-  user.studentProfile.verificationStatus = 'pending';
-  await user.studentProfile.save();
+  const updatedStudentProfile = await studentProfile.findByIdAndUpdate(
+    user.studentProfile._id,
+
+    {
+      $set: { verificationStatus: 'pending' },
+    },
+    {
+      new: true,
+    },
+  );
+  if (!updatedStudentProfile) {
+    throw new ApiError(404, 'student profile verified student status could not be updated');
+  }
+
+  const studentProfileDetails = await studentProfile.aggregate([
+    {
+      $match: {
+        _id: new mongoose.Types.ObjectId(user.studentProfile),
+      },
+    },
+    {
+      $lookup: {
+        from: 'users',
+        foreignField: 'studentProfile',
+        localField: '_id',
+        as: 'studentProfileDetails',
+      },
+    },
+    {
+      $unwind: '$studentProfileDetails',
+    },
+    {
+      $project: {
+        username: '$studentProfileDetails.username',
+        role: '$studentProfileDetails.role',
+        email: '$studentProfileDetails.email',
+        isEmailVerified: '$studentProfileDetails.isEmailVerified',
+        isVerifiedStudent: 1,
+      },
+    },
+  ]);
 
   return res
     .status(200)
-    .json(new ApiResponse(200, 'student profile verification sent successfully', user));
+    .json(
+      new ApiResponse(200, 'student profile verification sent successfully', studentProfileDetails),
+    );
 });
 
 // export const getStudentProfile = asyncHandler(async (req, res) => {

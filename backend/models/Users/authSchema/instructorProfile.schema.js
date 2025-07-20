@@ -1,6 +1,6 @@
 import mongoose, { Schema } from 'mongoose';
 
-export const instructorProfileSchema = new Schema(
+const instructorProfileSchema = new Schema(
   {
     bio: {
       type: String,
@@ -27,8 +27,9 @@ export const instructorProfileSchema = new Schema(
     },
 
     isVerifiedInstructor: {
-      type: Boolean,
-      default: false,
+      type: String,
+      enum: ['not_requested', 'pending', 'verified', 'rejected'],
+      default: 'not_requested',
     },
     courses: [
       {
@@ -39,3 +40,5 @@ export const instructorProfileSchema = new Schema(
   },
   { timestamps: true },
 );
+
+export const instructorProfile = mongoose.model('instructorProfile', instructorProfileSchema);

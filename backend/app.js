@@ -4,6 +4,8 @@ import cors from 'cors';
 import auth from './routes/user.route.js';
 import morgan from 'morgan';
 import studentProfile from './routes/studentProfile.route.js';
+import instructor from './routes/instructorProfile.route.js';
+
 const app = express();
 app.use(morgan('dev'));
 app.use(cookie());
@@ -17,4 +19,5 @@ app.use(
 );
 app.use('/api/v1/auth', auth);
 app.use('/api/v1/studentProfile', studentProfile);
+app.use('/api/v1/instructorProfile', instructor);
 export default app;
