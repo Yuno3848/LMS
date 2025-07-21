@@ -40,3 +40,5 @@ const enrollmentSchema = new Schema({
     ref: 'Transaction',
   },
 });
+
+export const Enrollment = mongoose.model('Enrollment', enrollmentSchema);
