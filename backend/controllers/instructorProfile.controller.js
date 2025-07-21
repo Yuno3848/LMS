@@ -1,9 +1,9 @@
 import mongoose from 'mongoose';
 import ApiError from '../utils/ApiError.js';
 import { asyncHandler } from '../utils/asyncHandler.js';
-import User from '../models/Users/auth.models.js';
+import User from '../models/auth.models.js';
 import ApiResponse from '../utils/ApiResponse.js';
-import { instructorProfile } from '../models/Users/authSchema/instructorProfile.schema.js';
+import { instructorProfile } from '../models/instructorProfile.model.js';
 
 export const createInstructorProfile = asyncHandler(async (req, res) => {
   console;

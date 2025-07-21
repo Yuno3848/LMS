@@ -1,5 +1,5 @@
-import User from '../models/Users/auth.models.js';
-import { studentProfile } from '../models/Users/authSchema/studentProfile.schema.js';
+import User from '../models/auth.models.js';
+import { studentProfile } from '../models/studentProfile.model.js';
 import ApiError from '../utils/ApiError.js';
 import ApiResponse from '../utils/ApiResponse.js';
 import { asyncHandler } from '../utils/asyncHandler.js';
