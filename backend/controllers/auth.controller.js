@@ -1,5 +1,5 @@
 import crypto from 'crypto';
-import User from '../models/Users/auth.models.js';
+import User from '../models/auth.models.js';
 import ApiResponse from '../utils/ApiResponse.js';
 import { asyncHandler } from '../utils/asyncHandler.js';
 import { uploadOnCloudinary } from '../utils/cloudinary.js';

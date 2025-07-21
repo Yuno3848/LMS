@@ -72,10 +72,10 @@ const userSchema = new Schema(
       type: Schema.Types.ObjectId,
       ref: 'instructorProfile',
     },
-    studentProfile: { 
+    studentProfile: {
       type: Schema.Types.ObjectId,
-       ref: 'studentProfile'
-       },
+      ref: 'studentProfile',
+    },
   },
   { timestamps: true },
 );
