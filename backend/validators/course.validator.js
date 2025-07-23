@@ -1,4 +1,4 @@
-import { body } from 'express-validator';
+import { body, param } from 'express-validator';
 import mongoose from 'mongoose';
 
 export const validateCreateCourse = () => {
@@ -30,22 +30,19 @@ export const validateCreateCourse = () => {
       .custom((arr) => arr.every((id) => mongoose.Types.ObjectId.isValid(id)))
       .withMessage('Each course must be an valid mongo objectId'),
 
-    body('price.base')
+    body('base')
       .notEmpty()
       .withMessage('Base price is required')
       .isFloat({ min: 0 })
       .withMessage('Base price must be a number ≥ 0'),
 
-    body('price.final')
+    body('final')
       .notEmpty()
       .withMessage('Final price is required')
       .isFloat({ min: 0 })
       .withMessage('Final price must be a number ≥ 0'),
 
-    body('price.currency')
-      .optional()
-      .isIn(['INR', 'USD'])
-      .withMessage('Currency must be INR or USD'),
+    body('currency').optional().isIn(['INR', 'USD']).withMessage('Currency must be INR or USD'),
 
     body('courseExpiry')
       .notEmpty()
@@ -72,5 +69,15 @@ export const validateCreateCourse = () => {
       .isString()
       .withMessage('Category must be a string')
       .trim(),
+  ];
+};
+
+export const validateCourseId = () => {
+  return [
+    param('courseId')
+      .notEmpty()
+      .withMessage('cousreId is required ')
+      .isString()
+      .withMessage('course id must be string'),
   ];
 };
