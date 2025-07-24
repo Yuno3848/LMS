@@ -6,7 +6,6 @@ import ApiResponse from '../utils/ApiResponse.js';
 import { instructorProfile } from '../models/instructorProfile.model.js';
 
 export const createInstructorProfile = asyncHandler(async (req, res) => {
-  console;
   const userId = req.user.id;
   const { bio, expertise, socialLinks, rating } = req.body;
 

@@ -131,21 +131,27 @@ export const getCourseById = asyncHandler(async (req, res) => {
 
 export const isPublish = asyncHandler(async (req, res) => {
   const userId = req.user.id;
+  console.log(userId);
   const { courseId } = req.params;
+  console.log(courseId);
   if (!userId || !mongoose.Types.ObjectId.isValid(userId.toString())) {
     throw new ApiError(401, 'User not authorized');
   }
 
   const user = await User.findById(userId).populate('instructorProfile');
 
-  if (!course) {
-    throw new ApiError(404, 'Course not found');
+  if (!courseId) {
+    throw new ApiError(404, 'Invalid course id');
   }
 
   if (!user || !user.instructorProfile) {
     throw new ApiError(400, 'Instructor profile not found');
   }
   const course = await Course.findById(courseId);
+  if (!course) {
+    throw new ApiError(404, 'Course not found');
+  }
+
   const ownsCourse = user.instructorProfile.courses.some((id) => id.toString() === courseId);
 
   if (!ownsCourse) {
