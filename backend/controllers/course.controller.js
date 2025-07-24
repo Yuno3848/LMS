@@ -116,32 +116,16 @@ export const getCourseById = asyncHandler(async (req, res) => {
     throw new ApiError(401, 'User not authorized');
   }
 
-  const course = await Course.aggregate([
-    {
-      $match: {
-        _id: new mongoose.Types.ObjectId(courseId),
-      },
-    },
-    {
-      $lookup: {
-        from: 'users',
-        localField: 'instructor',
-        foreignField: '_id',
-        as: 'instructor',
-      },
-    },
-    {
-      $unwind: '$instructor',
-    },
-    {
-      $project: {
-        title: 1,
-        description: 1,
-        tags: 1,
-        category: 1,
-      },
-    },
-  ]);
+  const course = await Course.findById(courseId);
+  if (!course) {
+    throw new ApiError(404, 'Course not found');
+  }
+
+  const instructor = await User.findOne({
+    role : 'instructor'
+  })
+
+
 
   return res.status(200).json(new ApiResponse(200, 'Course fetched successfully', course));
 });

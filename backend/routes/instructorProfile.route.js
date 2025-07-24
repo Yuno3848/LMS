@@ -7,6 +7,7 @@ import {
   updateInstructoProfile,
   verifyInstructor,
 } from '../controllers/instructorProfile.controller.js';
+import { instructorRole } from '../middlewares/instructor.middleware.js';
 
 const instructor = Router();
 
@@ -15,6 +16,7 @@ instructor.post(
   validateInstructorProfile(),
   validatorError,
   isLogged,
+  instructorRole,
   createInstructorProfile,
 );
 
@@ -23,6 +25,7 @@ instructor.patch(
   validateInstructorProfile(),
   validatorError,
   isLogged,
+  instructorRole,
   updateInstructoProfile,
 );
 
@@ -31,6 +34,7 @@ instructor.get(
   validateInstructorProfile(),
   validatorError,
   isLogged,
+  instructorRole,
   verifyInstructor,
 );
 export default instructor;
