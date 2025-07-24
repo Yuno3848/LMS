@@ -1,6 +1,6 @@
 import User from '../models/auth.models.js';
-import instructor from '../routes/instructorProfile.route.js';
 import ApiError from '../utils/ApiError.js';
+import ApiResponse from '../utils/ApiResponse.js';
 
 import { asyncHandler } from '../utils/asyncHandler.js';
 

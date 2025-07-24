@@ -74,61 +74,46 @@ export const updateInstructoProfile = asyncHandler(async (req, res) => {
   return res.status(200).json(new ApiResponse(200, 'instructor profile updated successfully'));
 });
 
-export const verifyInstructor = asyncHandler(async (req, res) => {
+export const reqInstructorRole = asyncHandler(async (req, res) => {
   const userId = req.user.id;
   if (!userId || !mongoose.Types.ObjectId.isValid(userId.toString())) {
     throw new ApiError(401, 'User not authorized');
   }
 
-  const user = await User.findById(userId).populate('instructorProfile');
+  const user = await User.findById(userId)
+    .populate('instructorProfile')
+    .select('username email role instructorProfile');
   if (!user) {
-    throw new ApiError(404, 'user not found');
+    throw new ApiError(400, 'User not found');
   }
+
+  if (!user.instructorProfile) {
+    throw new ApiError(
+      409,
+      'Instructor profile not found. Please create one before requesting instructor role',
+    );
+  }
+
   if (user.instructorProfile.isVerifiedInstructor === 'pending') {
-    throw new ApiError(400, 'user instructor profile verificaiton  is in already in pending');
+    throw new ApiError(409, 'request already pending');
   }
 
-  const updatedInstructorProfile = await instructorProfile.findByIdAndUpdate(
-    user.instructorProfile,
-    {
-      $set: {
-        isVerifiedInstructor: 'pending',
-      },
-    },
-    {
-      new: true,
-    },
-  );
-  if (!updatedInstructorProfile) {
-    throw new ApiError(404, 'instructor profile verified instructor status could not be updated');
+  if (user.instructorProfile.isVerifiedInstructor === 'verified') {
+    throw new ApiError(409, 'Already verified');
   }
 
-  const instructorDetails = await instructorProfile.aggregate([
-    {
-      $match: { _id: new mongoose.Types.ObjectId(user.instructorProfile) },
-    },
-    {
-      $lookup: {
-        from: 'users',
-        foreignField: 'instructorProfile',
-        localField: '_id',
-        as: 'instructorDetails',
-      },
-    },
-    {
-      $unwind: '$instructorDetails',
-    },
-    {
-      $project: {
-        username: '$instructorDetails.username',
-        email: '$instructorDetails.email',
-        isEmailVerified: '$instructorDetails.isEmailVerified',
-        isVerifiedInstructor: 1,
-      },
-    },
-  ]);
+  if (user.instructorProfile.isVerifiedInstructor === 'rejected') {
+    user.instructorProfile.isVerifiedInstructor = 'pending';
+    await user.instructorProfile.save();
+    return res
+      .status(200)
+      .json(new ApiResponse(200, 'Re-submitted instructor request successfully', user));
+  }
+
+  user.instructorProfile.isVerifiedInstructor = 'pending';
+  await user.instructorProfile.save();
 
   return res
     .status(200)
-    .json(new ApiResponse(200, 'intructor verified successfully', instructorDetails));
+    .json(new ApiResponse(200, 'instructor request submitted successfully', user));
 });

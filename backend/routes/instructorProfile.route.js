@@ -4,8 +4,8 @@ import { isLogged } from '../middlewares/isLoggedd.middleware.js';
 import { validateInstructorProfile } from '../validators/instructorProfile.validator.js';
 import {
   createInstructorProfile,
+  reqInstructorRole,
   updateInstructoProfile,
-  verifyInstructor,
 } from '../controllers/instructorProfile.controller.js';
 import { instructorRole } from '../middlewares/instructor.middleware.js';
 
@@ -16,7 +16,6 @@ instructor.post(
   validateInstructorProfile(),
   validatorError,
   isLogged,
-  instructorRole,
   createInstructorProfile,
 );
 
@@ -25,16 +24,8 @@ instructor.patch(
   validateInstructorProfile(),
   validatorError,
   isLogged,
-  instructorRole,
   updateInstructoProfile,
 );
 
-instructor.get(
-  '/verify-instructor-profile',
-  validateInstructorProfile(),
-  validatorError,
-  isLogged,
-  instructorRole,
-  verifyInstructor,
-);
+instructor.get('/req-instructor-role', isLogged, reqInstructorRole);
 export default instructor;

@@ -14,6 +14,7 @@ export const createCourse = asyncHandler(async (req, res) => {
   }
 
   const user = await User.findById(userId).populate('instructorProfile');
+
   if (!user || !user.instructorProfile) {
     throw new ApiError(400, 'Instructor profile not found');
   }
@@ -122,10 +123,8 @@ export const getCourseById = asyncHandler(async (req, res) => {
   }
 
   const instructor = await User.findOne({
-    role : 'instructor'
-  })
-
-
+    role: 'instructor',
+  });
 
   return res.status(200).json(new ApiResponse(200, 'Course fetched successfully', course));
 });

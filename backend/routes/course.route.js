@@ -11,6 +11,7 @@ import {
   isPublish,
 } from '../controllers/course.controller.js';
 import { upload } from '../middlewares/multer.middleware.js';
+import { instructorRole } from '../middlewares/instructor.middleware.js';
 
 const course = Router();
 
@@ -20,11 +21,11 @@ course.post(
   validateCreateCourse(),
   validatorError,
   isLogged,
-
+  instructorRole,
   createCourse,
 );
 
-course.get('/get-all-course', isLogged, getAllCourses);
+course.get('/get-all-course', isLogged, instructorRole, getAllCourses);
 course.get('/isPublish/:courseId', validateCourseId, isLogged, isPublish);
 course.get('/get-course-by-id/:courseId', validateCourseId, isLogged, getCourseById);
 course.get('/delete-course/:courseId', validateCourseId, isLogged, deleteCourse);
