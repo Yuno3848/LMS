@@ -23,5 +23,5 @@ app.use('/api/v1/auth', auth);
 app.use('/api/v1/studentProfile', studentProfile);
 app.use('/api/v1/instructorProfile', instructor);
 app.use('/api/v1/course', course);
-app.use('/api/v1/admin',admin)
+app.use('/api/v1/admin', admin);
 export default app;

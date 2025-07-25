@@ -14,6 +14,9 @@ export const createCourse = asyncHandler(async (req, res) => {
   }
 
   const user = await User.findById(userId).populate('instructorProfile');
+  if (user.role.toLowerCase() !== 'instructor') {
+    throw new ApiError(403, 'Access denied | Instructor only!');
+  }
 
   if (!user || !user.instructorProfile) {
     throw new ApiError(400, 'Instructor profile not found');
@@ -56,7 +59,7 @@ export const createCourse = asyncHandler(async (req, res) => {
 
   return res
     .status(201)
-    .json(new ApiResponse(201, 'course created and added to the instructor profile'));
+    .json(new ApiResponse(201, 'course created and added to the instructor profile', newCourse));
 });
 
 export const getAllCourses = asyncHandler(async (req, res) => {
@@ -67,7 +70,9 @@ export const getAllCourses = asyncHandler(async (req, res) => {
   }
 
   const user = await User.findById(userId).populate('instructorProfile');
-
+  if (user.role.toLowerCase() !== 'instructor') {
+    throw new ApiError(403, 'Access denied | Instructor only!');
+  }
   if (!user || !user.instructorProfile) {
     throw new ApiError(400, 'Instructor Profile not found');
   }
@@ -116,8 +121,12 @@ export const getCourseById = asyncHandler(async (req, res) => {
   if (!userId || !mongoose.Types.ObjectId.isValid(userId.toString())) {
     throw new ApiError(401, 'User not authorized');
   }
+  const user = await User.findById(userId);
+  if (user.role.toLowerCase() !== 'instructor') {
+    throw new ApiError(403, 'Access denied | Instructor only!');
+  }
 
-  const course = await Course.findById(courseId);
+  const course = await Course.findById(courseId).populate();
   if (!course) {
     throw new ApiError(404, 'Course not found');
   }
@@ -126,23 +135,25 @@ export const getCourseById = asyncHandler(async (req, res) => {
     role: 'instructor',
   });
 
+  if (!instructor) {
+    throw new ApiError(404, 'instructor not found');
+  }
+
   return res.status(200).json(new ApiResponse(200, 'Course fetched successfully', course));
 });
 
 export const isPublish = asyncHandler(async (req, res) => {
   const userId = req.user.id;
-  console.log(userId);
+
   const { courseId } = req.params;
-  console.log(courseId);
+  if (!courseId) {
+    throw new ApiError(404, 'Invalid course id');
+  }
   if (!userId || !mongoose.Types.ObjectId.isValid(userId.toString())) {
     throw new ApiError(401, 'User not authorized');
   }
 
-  const user = await User.findById(userId).populate('instructorProfile');
-
-  if (!courseId) {
-    throw new ApiError(404, 'Invalid course id');
-  }
+  const user = await User.findById(userId);
 
   if (!user || !user.instructorProfile) {
     throw new ApiError(400, 'Instructor profile not found');
@@ -165,6 +176,7 @@ export const isPublish = asyncHandler(async (req, res) => {
     },
     { new: true },
   ).select('-_id -courseSection -tags -price -thumbnail');
+  // fetch username
 
   if (!updatedCourse) {
     throw new ApiError(404, 'Course not found');
@@ -182,7 +194,9 @@ export const deleteCourse = asyncHandler(async (req, res) => {
   }
 
   const user = await User.findById(userId).populate('instructorProfile');
-
+  if (user.role.toLowerCase() !== 'instructor') {
+    throw new ApiError(403, 'Access denied | Instructor only!');
+  }
   if (!user || !user.instructorProfile) {
     throw new ApiError(400, 'Instructor profile not found');
   }

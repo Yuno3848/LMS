@@ -21,26 +21,17 @@ course.post(
   validateCreateCourse(),
   validatorError,
   isLogged,
-  instructorRole,
   createCourse,
 );
 
-course.get('/get-all-course', isLogged, instructorRole, getAllCourses);
-course.get(
-  '/isPublish/:courseId',
-  validateCourseId(),
-  validatorError,
-  isLogged,
-  instructorRole,
-  isPublish,
-);
+course.get('/get-all-course', isLogged, getAllCourses);
+course.get('/isPublish/:courseId', validateCourseId(), validatorError, isLogged, isPublish);
 course.get(
   '/get-course-by-id/:courseId',
   validateCourseId(),
   validatorError,
   isLogged,
-  instructorRole,
   getCourseById,
 );
-course.get('/delete-course/:courseId', validateCourseId, isLogged, instructorRole, deleteCourse);
+course.get('/delete-course/:courseId', validateCourseId(), validatorError, isLogged, deleteCourse);
 export default course;
