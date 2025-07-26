@@ -83,7 +83,7 @@ export const validateCouponToCourse = () => {
       .isString()
       .withMessage('course id must be string'),
 
-    body(couponCode)
+    body('couponCode')
       .optional()
       .isString()
       .withMessage('coupon code must be a string')
