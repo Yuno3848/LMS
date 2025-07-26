@@ -76,6 +76,11 @@ const courseSchema = new Schema({
     required: true,
     trim: true,
   },
+
+  coupon: {
+    type: Schema.Types.ObjectId,
+    ref: 'Coupon',
+  },
 });
 
 export const Course = mongoose.model('Course', courseSchema);
