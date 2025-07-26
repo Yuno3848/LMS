@@ -2,8 +2,13 @@ import { Router } from 'express';
 import { validatorError } from '../middlewares/validatorError.js';
 import { isLogged } from '../middlewares/isLoggedd.middleware.js';
 
-import { validateCourseId, validateCreateCourse } from '../validators/course.validator.js';
 import {
+  validateCouponToCourse,
+  validateCourseId,
+  validateCreateCourse,
+} from '../validators/course.validator.js';
+import {
+  applyCouponToCourse,
   createCourse,
   deleteCourse,
   getAllCourses,
@@ -34,5 +39,12 @@ course.get(
   getCourseById,
 );
 course.get('/delete-course/:courseId', validateCourseId(), validatorError, isLogged, deleteCourse);
+
+course.post(
+  '.apply-coupon-to-course',
+  validateCouponToCourse(),
+  validatorError,
+  applyCouponToCourse,
+);
 
 export default course;
