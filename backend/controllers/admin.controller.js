@@ -15,6 +15,7 @@ export const showPendingInstructorRole = asyncHandler(async (req, res) => {
       match: { isVerifiedInstructor: 'pending' },
     })
     .select('username role email instructorProfile');
+
   //match can be fail and the mongoose will still return the User and set the user.instructorProfile = null ->{isVerifiedInstructor : verified } so we will filtered out which are null
 
   const filteredInstructor = users.filter((user) => user.instructorProfile !== null);

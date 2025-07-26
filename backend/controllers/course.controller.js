@@ -14,11 +14,11 @@ export const createCourse = asyncHandler(async (req, res) => {
   }
 
   const user = await User.findById(userId).populate('instructorProfile');
-  if (user.role.toLowerCase() !== 'instructor') {
+  if (!user || user.role.toLowerCase() !== 'instructor') {
     throw new ApiError(403, 'Access denied | Instructor only!');
   }
 
-  if (!user || !user.instructorProfile) {
+  if (!user.instructorProfile) {
     throw new ApiError(400, 'Instructor profile not found');
   }
   const { title, description, base, final, currency, courseExpiry, difficulty, tags, category } =
@@ -70,10 +70,10 @@ export const getAllCourses = asyncHandler(async (req, res) => {
   }
 
   const user = await User.findById(userId).populate('instructorProfile');
-  if (user.role.toLowerCase() !== 'instructor') {
+  if (!user || user.role.toLowerCase() !== 'instructor') {
     throw new ApiError(403, 'Access denied | Instructor only!');
   }
-  if (!user || !user.instructorProfile) {
+  if (!user.instructorProfile) {
     throw new ApiError(400, 'Instructor Profile not found');
   }
 
@@ -122,11 +122,11 @@ export const getCourseById = asyncHandler(async (req, res) => {
     throw new ApiError(401, 'User not authorized');
   }
   const user = await User.findById(userId);
-  if (user.role.toLowerCase() !== 'instructor') {
+  if (!user || user.role.toLowerCase() !== 'instructor') {
     throw new ApiError(403, 'Access denied | Instructor only!');
   }
 
-  const course = await Course.findById(courseId).populate();
+  const course = await Course.findById(courseId);
   if (!course) {
     throw new ApiError(404, 'Course not found');
   }
@@ -146,6 +146,7 @@ export const isPublish = asyncHandler(async (req, res) => {
   const userId = req.user.id;
 
   const { courseId } = req.params;
+
   if (!courseId) {
     throw new ApiError(404, 'Invalid course id');
   }
@@ -153,17 +154,29 @@ export const isPublish = asyncHandler(async (req, res) => {
     throw new ApiError(401, 'User not authorized');
   }
 
-  const user = await User.findById(userId);
+  const user = await User.findById(userId).select('role instructorProfile');
+  if (!user || user.role.toLowerCase() !== 'instructor') {
+    throw new ApiError(403, 'Access Denied | Instructor Only');
+  }
 
-  if (!user || !user.instructorProfile) {
+  if (!user.instructorProfile) {
     throw new ApiError(400, 'Instructor profile not found');
   }
+
+  await user.populate({
+    path: 'instructorProfile',
+    populate: {
+      path: 'courses',
+      model: 'Course',
+    },
+  });
+
   const course = await Course.findById(courseId);
   if (!course) {
     throw new ApiError(404, 'Course not found');
   }
 
-  const ownsCourse = user.instructorProfile.courses.some((id) => id.toString() === courseId);
+  const ownsCourse = user.instructorProfile.courses.some((id) => id._id.toString() === courseId);
 
   if (!ownsCourse) {
     throw new ApiError(403, 'You do not have permission to publish this course');
@@ -194,10 +207,10 @@ export const deleteCourse = asyncHandler(async (req, res) => {
   }
 
   const user = await User.findById(userId).populate('instructorProfile');
-  if (user.role.toLowerCase() !== 'instructor') {
+  if (!user || user.role.toLowerCase() !== 'instructor') {
     throw new ApiError(403, 'Access denied | Instructor only!');
   }
-  if (!user || !user.instructorProfile) {
+  if (!user.instructorProfile) {
     throw new ApiError(400, 'Instructor profile not found');
   }
 
@@ -213,4 +226,10 @@ export const deleteCourse = asyncHandler(async (req, res) => {
   );
   await user.instructorProfile.save();
   return res.status(200).json(new ApiResponse(200, 'deleted successfully'));
+});
+
+//coupon discount ->course
+
+export const applyCouponToCourse = asyncHandler(async (req, res) => {
+  const { courseId } = req.params;
 });

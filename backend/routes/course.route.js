@@ -34,4 +34,5 @@ course.get(
   getCourseById,
 );
 course.get('/delete-course/:courseId', validateCourseId(), validatorError, isLogged, deleteCourse);
+
 export default course;
