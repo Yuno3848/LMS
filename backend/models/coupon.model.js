@@ -2,7 +2,7 @@ import mongoose, { Schema } from 'mongoose';
 
 const couponSchema = new Schema(
   {
-    code: {
+    couponCode: {
       type: String,
       required: true,
       unique: true,

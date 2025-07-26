@@ -36,12 +36,6 @@ export const validateCreateCourse = () => {
       .isFloat({ min: 0 })
       .withMessage('Base price must be a number ≥ 0'),
 
-    body('final')
-      .notEmpty()
-      .withMessage('Final price is required')
-      .isFloat({ min: 0 })
-      .withMessage('Final price must be a number ≥ 0'),
-
     body('currency').optional().isIn(['INR', 'USD']).withMessage('Currency must be INR or USD'),
 
     body('courseExpiry')
@@ -79,5 +73,21 @@ export const validateCourseId = () => {
       .withMessage('cousreId is required ')
       .isString()
       .withMessage('course id must be string'),
+  ];
+};
+export const validateCouponToCourse = () => {
+  return [
+    param('courseId')
+      .notEmpty()
+      .withMessage('cousreId is required ')
+      .isString()
+      .withMessage('course id must be string'),
+
+    body(couponCode)
+      .optional()
+      .isString()
+      .withMessage('coupon code must be a string')
+      .trim()
+      .toUpperCase(),
   ];
 };

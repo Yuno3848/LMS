@@ -6,6 +6,8 @@ import User from '../models/auth.models.js';
 import { Course } from '../models/course.model.js';
 import ApiResponse from '../utils/ApiResponse.js';
 import { instructorProfile } from '../models/instructorProfile.model.js';
+import { Coupon } from '../models/coupon.model.js';
+import { calculateDiscountPrice } from '../utils/calculateCouponDiscount.js';
 
 export const createCourse = asyncHandler(async (req, res) => {
   const userId = req.user.id;
@@ -21,8 +23,7 @@ export const createCourse = asyncHandler(async (req, res) => {
   if (!user.instructorProfile) {
     throw new ApiError(400, 'Instructor profile not found');
   }
-  const { title, description, base, final, currency, courseExpiry, difficulty, tags, category } =
-    req.body;
+  const { title, description, base, currency, courseExpiry, difficulty, tags, category } = req.body;
 
   const thumbnailAvatarPath = req.file?.path || null;
 
@@ -41,7 +42,7 @@ export const createCourse = asyncHandler(async (req, res) => {
     description,
     price: {
       base: base,
-      final: final,
+      final: base,
       currency: currency,
     },
     courseExpiry,
@@ -232,4 +233,33 @@ export const deleteCourse = asyncHandler(async (req, res) => {
 
 export const applyCouponToCourse = asyncHandler(async (req, res) => {
   const { courseId } = req.params;
+  const { couponCode } = req.body;
+
+  const course = await Course.findById(courseId);
+  if (!course) {
+    throw new ApiError(404, 'Course not found.');
+  }
+
+  const coupon = await Coupon.findOne({ couponCode });
+
+  if (!coupon || !coupon.isActive) {
+    throw new ApiError(404, 'Invalid or Inactive coupon.');
+  }
+
+  if (coupon.maxUses <= coupon.usedCount || coupon.maxUses === null) {
+    throw new ApiError(400, 'Coupon usage limited reached ! ');
+  }
+
+  const finalPrice = calculateDiscountPrice(price.base, coupon);
+
+  return res.status(200).json(
+    new ApiResponse(200, 'Coupon applied successfully', {
+      courseId: course._id,
+      title: course.title,
+      basePrice: course.price.base,
+      finalPrice,
+      currency: course.price.currency,
+      couponApplied: coupon.code,
+    }),
+  );
 });
