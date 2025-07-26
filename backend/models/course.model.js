@@ -56,7 +56,7 @@ const courseSchema = new Schema({
   courseSection: [
     {
       type: Schema.Types.ObjectId,
-      red: 'courseSection',
+      ref: 'courseSection',
     },
   ],
 
