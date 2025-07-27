@@ -16,7 +16,6 @@ import {
   isPublish,
 } from '../controllers/course.controller.js';
 import { upload } from '../middlewares/multer.middleware.js';
-import { instructorRole } from '../middlewares/instructor.middleware.js';
 
 const course = Router();
 

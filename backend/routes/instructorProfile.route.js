@@ -7,7 +7,7 @@ import {
   reqInstructorRole,
   updateInstructoProfile,
 } from '../controllers/instructorProfile.controller.js';
-import { instructorRole } from '../middlewares/instructor.middleware.js';
+
 
 const instructor = Router();
 

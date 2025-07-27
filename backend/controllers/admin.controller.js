@@ -3,12 +3,20 @@ import ApiError from '../utils/ApiError.js';
 import ApiResponse from '../utils/ApiResponse.js';
 import mongoose from 'mongoose';
 import { asyncHandler } from '../utils/asyncHandler.js';
+import { instructorProfile } from '../models/instructorProfile.model.js';
 
 export const showPendingInstructorRole = asyncHandler(async (req, res) => {
   const userId = req.user.id;
   if (!userId || !mongoose.Types.ObjectId.isValid(userId.toString())) {
     throw new ApiError(401, 'User not authorized');
   }
+
+  const user = await User.findById(userId);
+
+  if (!user || user.role.toLowerCase() !== 'admin') {
+    throw new ApiError(403, 'Access denied | Admin only!');
+  }
+
   const users = await User.find({ instructorProfile: { $exists: true, $ne: null } })
     .populate({
       path: 'instructorProfile',
@@ -20,7 +28,7 @@ export const showPendingInstructorRole = asyncHandler(async (req, res) => {
 
   const filteredInstructor = users.filter((user) => user.instructorProfile !== null);
 
-  if (!filteredInstructor.length === 0) {
+  if (filteredInstructor.length === 0) {
     throw new ApiError(404, 'No pending request found!');
   }
 
@@ -38,8 +46,8 @@ export const verifyInstructorById = asyncHandler(async (req, res) => {
 
   const user = await User.findById(userId);
 
-  if (!user || user.role.toLowerCase() !== 'instructor') {
-    throw new ApiError(403, 'Access denied | Instructor only!');
+  if (!user || user.role.toLowerCase() !== 'admin') {
+    throw new ApiError(403, 'Access denied | Admin only!');
   }
 
   const instructor = await User.findById(instructorId).populate('instructorProfile');
@@ -54,10 +62,40 @@ export const verifyInstructorById = asyncHandler(async (req, res) => {
     throw new ApiError(400, 'User is already a verified instructor');
   }
 
-  ((instructor.role = 'instructor'),
-    (instructor.instructorProfile.isVerifiedInstructor = 'verified'));
+  instructor.role = 'instructor';
+  instructor.instructorProfile.isVerifiedInstructor = 'verified';
 
   await instructor.save();
+  await instructor.instructorProfile.save();
 
   return res.status(200).json(new ApiResponse(200, 'instructor verified successfully', instructor));
 });
+
+export const deleteInstructorProfile = asyncHandler(async (req, res) => {
+  const userId = req.user.id;
+  const { instructorId } = req.params;
+
+  if (!userId || !mongoose.Types.ObjectId.isValid(userId.toString())) {
+    throw new ApiError(401, 'User not authorized');
+  }
+  const user = await User.findById(userId);
+
+  if (!user || user.role.toLowerCase() !== 'admin') {
+    throw new ApiError(403, 'Access denied | Admin only!');
+  }
+
+  const instructor = await User.findById(instructorId);
+  if (!instructor) {
+    throw new ApiError(404, 'Instructor not found');
+  }
+
+  const profile = await instructorProfile.findByIdAndDelete(instructor.instructorProfile);
+  if (!profile) {
+    throw new ApiError(404, 'Instructor profile not found or already deleted');
+  }
+  instructor.instructorProfile = undefined;
+  await instructor.save();
+
+  return res.status(200).json(new ApiResponse(200, 'Instructor profile deleted successfully'));
+});
+
