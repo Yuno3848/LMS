@@ -1,6 +1,6 @@
 import mongoose, { Schema } from 'mongoose';
 
-export const studentProfileSchema = new Schema(
+const studentProfileSchema = new Schema(
   {
     bio: {
       type: String,

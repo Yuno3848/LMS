@@ -4,10 +4,11 @@ import { isLogged } from '../middlewares/isLoggedd.middleware.js';
 
 import {
   deleteInstructorProfile,
+  deleteUser,
   showPendingInstructorRole,
   verifyInstructorById,
 } from '../controllers/admin.controller.js';
-import { validateInstructorId } from '../validators/admin.validator.js';
+import { validateDeleteUserId, validateInstructorId } from '../validators/admin.validator.js';
 
 const admin = Router();
 admin.get('/show-pending-instructor-request', isLogged, showPendingInstructorRole);
@@ -26,5 +27,13 @@ admin.delete(
   validatorError,
   isLogged,
   deleteInstructorProfile,
+);
+
+admin.delete(
+  '/delete-user/:userIdDelete',
+  validateDeleteUserId(),
+  validatorError,
+  isLogged,
+  deleteUser,
 );
 export default admin;

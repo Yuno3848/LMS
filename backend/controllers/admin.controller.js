@@ -4,6 +4,7 @@ import ApiResponse from '../utils/ApiResponse.js';
 import mongoose from 'mongoose';
 import { asyncHandler } from '../utils/asyncHandler.js';
 import { instructorProfile } from '../models/instructorProfile.model.js';
+import { studentProfile } from '../models/studentProfile.model.js';
 
 export const showPendingInstructorRole = asyncHandler(async (req, res) => {
   const userId = req.user.id;
@@ -78,6 +79,7 @@ export const deleteInstructorProfile = asyncHandler(async (req, res) => {
   if (!userId || !mongoose.Types.ObjectId.isValid(userId.toString())) {
     throw new ApiError(401, 'User not authorized');
   }
+
   const user = await User.findById(userId);
 
   if (!user || user.role.toLowerCase() !== 'admin') {
@@ -99,3 +101,36 @@ export const deleteInstructorProfile = asyncHandler(async (req, res) => {
   return res.status(200).json(new ApiResponse(200, 'Instructor profile deleted successfully'));
 });
 
+export const deleteUser = asyncHandler(async (req, res) => {
+  const userId = req.user.id;
+  const { userIdDelete } = req.params;
+
+  if (!userId || !mongoose.Types.ObjectId.isValid(userId.toString())) {
+    throw new ApiError(401, 'User not authorized');
+  }
+
+  if (!mongoose.Types.ObjectId.isValid(userIdDelete.toString())) {
+    throw new ApiError(404, 'user id is valid');
+  }
+
+  const user = await User.findById(userId);
+
+  if (!user || user.role.toLowerCase() !== 'admin') {
+    throw new ApiError(403, 'Access denied | Admin only!');
+  }
+
+  const deletedUser = await User.findById(userIdDelete);
+  if (!deletedUser) {
+    throw new ApiError(404, 'User not found');
+  }
+
+  if (deletedUser.studentProfile) {
+    await studentProfile.findByIdAndDelete(deletedUser.studentProfile);
+  }
+
+  if (deletedUser.instructorProfile) {
+    await instructorProfile.findByIdAndDelete(deletedUser.instructorProfile);
+  }
+  await User.findByIdAndDelete(userIdDelete);
+  return res.status(200).json(new ApiResponse(200, 'User deleted successfully'));
+});
