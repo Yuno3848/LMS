@@ -53,6 +53,7 @@ export const createCourse = asyncHandler(async (req, res) => {
       url: avatar.url,
       localPath: thumbnailAvatarPath,
     },
+    instructor: userId,
   });
   console.log('new course', newCourse);
   user.instructorProfile.courses.push(newCourse._id);

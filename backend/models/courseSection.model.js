@@ -2,8 +2,9 @@ import mongoose, { Schema } from 'mongoose';
 
 const courseSectionSchema = new Schema({
   title: {
-    type: Schema.Types.ObjectId,
-    ref: 'Course',
+    type: String,
+    required: true,
+    trim: true,
   },
   description: {
     type: String,
