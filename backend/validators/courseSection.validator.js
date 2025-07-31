@@ -52,7 +52,7 @@ export const validateUpdateCourseSection = () => {
   ];
 };
 
-export const validateDeleteCourseSection = () => {
+export const validateCourseSectionAndId = () => {
   return [
     param('courseId')
       .notEmpty()

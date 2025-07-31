@@ -146,6 +146,101 @@ export const deleteCourseSection = asyncHandler(async (req, res) => {
   if (!course.courseSection.includes(courseSectionId)) {
     throw new ApiError(404, 'Invalid course section id for this course');
   }
+
+  course.courseSection = course.courseSection.filter(
+    (sectionId) => sectionId.toString() !== courseSectionId,
+  );
+  await course.save();
   await courseSection.findByIdAndDelete(courseSectionId);
   return res.status(200).json(new ApiResponse(200, 'course section deleted successfully'));
+});
+
+export const getAllCourseSection = asyncHandler(async (req, res) => {
+  const userId = req.user.id;
+  if (!userId || !mongoose.Types.ObjectId.isValid(userId.toString())) {
+    throw new ApiError(401, 'User not Authorized');
+  }
+  const instructor = await User.findById(userId);
+  if (!instructor || instructor.role !== 'instructor') {
+    throw new ApiError(403, 'Access denied || Instructor Only!');
+  }
+
+  const course = await Course.aggregate([
+    {
+      $match: {
+        instructor: new mongoose.Types.ObjectId(userId),
+      },
+    },
+    {
+      $lookup: {
+        from: 'coursesections',
+        foreignField: '_id',
+        localField: 'courseSection',
+        as: 'sectionDetails',
+      },
+    },
+    {
+      $unwind: '$sectionDetails',
+    },
+    {
+      $group: {
+        _id: '$_id',
+        title: { $first: '$title' },
+        sections: {
+          $push: {
+            sectionId: '$sectionDetails._id',
+            description: '$sectionDetails.description',
+            requirements: '$sectionDetails.requirements',
+            thumbnail: '$sectionDetails.thumbnail',
+          },
+        },
+      },
+    },
+    {
+      $project: {
+        _id: 1,
+        title: 1,
+        sections: 1,
+      },
+    },
+  ]);
+
+  if (!course.length) {
+    throw new ApiError(404, 'No course sections found', []);
+  }
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, 'All course sections fetched successfully', course));
+});
+
+export const getCourseSectionById = asyncHandler(async (req, res) => {
+  const userId = req.user.id;
+  if (!userId || !mongoose.Types.ObjectId.isValid(userId.toString())) {
+    throw new ApiError(401, 'User not Authorized');
+  }
+  const instructor = await User.findById(userId);
+  if (!instructor || instructor.role !== 'instructor') {
+    throw new ApiError(403, 'Access denied || Instructor Only!');
+  }
+
+  const { courseId, courseSectionId } = req.params;
+  const course = await Course.findById(courseId);
+  if (!course) {
+    throw new ApiError(404, 'course not found');
+  }
+
+  if (course.instructor.toString() !== userId) {
+    throw new ApiError(403, 'Access Denied - you can only fetch your own course section ');
+  }
+
+  const CourseSection = await courseSection.findById(courseSectionId).lean();
+
+  if (!CourseSection) {
+    throw new ApiError(404, 'Course section not found');
+  }
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, 'course section fetched successfully', CourseSection));
 });

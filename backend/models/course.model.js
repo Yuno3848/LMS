@@ -86,7 +86,7 @@ const courseSchema = new Schema(
     instructor: {
       type: Schema.Types.ObjectId,
       ref: 'User',
-      reuired: true,
+      required: true,
     },
   },
   { timestamps: true },

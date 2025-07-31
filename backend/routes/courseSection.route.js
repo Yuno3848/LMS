@@ -4,12 +4,14 @@ import { isLogged } from '../middlewares/isLoggedd.middleware.js';
 import { upload } from '../middlewares/multer.middleware.js';
 import {
   validateCourseSection,
-  validateDeleteCourseSection,
+  validateCourseSectionAndId,
   validateUpdateCourseSection,
 } from '../validators/courseSection.validator.js';
 import {
   createCourseSection,
   deleteCourseSection,
+  getAllCourseSection,
+  getCourseSectionById,
   updateCourseSection,
 } from '../controllers/courseSection.controller.js';
 
@@ -34,10 +36,20 @@ courseSection.patch(
 
 courseSection.delete(
   '/delete-course-section/:courseId/:courseSectionId',
-  validateDeleteCourseSection(),
+  validateCourseSectionAndId(),
   validatorError,
   isLogged,
   deleteCourseSection,
+);
+
+courseSection.get('/get-all-course-section', isLogged, getAllCourseSection);
+
+courseSection.get(
+  '/get-course-section-by-id/:courseId/:courseSectionId',
+  validateCourseSectionAndId(),
+  validatorError,
+  isLogged,
+  getCourseSectionById,
 );
 
 export default courseSection;
