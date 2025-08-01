@@ -244,3 +244,5 @@ export const getCourseSectionById = asyncHandler(async (req, res) => {
     .status(200)
     .json(new ApiResponse(200, 'course section fetched successfully', CourseSection));
 });
+
+
