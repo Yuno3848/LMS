@@ -32,25 +32,9 @@ export const createCourseSection = asyncHandler(async (req, res) => {
 
   const { description, requirements } = req.body;
 
-  const thumbnailAvatarPath = req.file?.path || null;
-
-  if (!thumbnailAvatarPath) {
-    throw new ApiError(400, 'thumbnail avatar required');
-  }
-
-  const thumbnailAvatar = await uploadOnCloudinary(thumbnailAvatarPath);
-
-  if (!thumbnailAvatar) {
-    throw new ApiError(500, 'Failed to upload avatar');
-  }
-
   const newCourseSection = await courseSection.create({
     title: course.title,
     description,
-    thumbnail: {
-      url: thumbnailAvatar.url,
-      localPath: thumbnailAvatarPath,
-    },
     requirements,
   });
 
@@ -244,5 +228,3 @@ export const getCourseSectionById = asyncHandler(async (req, res) => {
     .status(200)
     .json(new ApiResponse(200, 'course section fetched successfully', CourseSection));
 });
-
-

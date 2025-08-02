@@ -8,6 +8,7 @@ import instructor from './routes/instructorProfile.route.js';
 import course from './routes/course.route.js';
 import admin from './routes/admin.route.js';
 import courseSection from './routes/courseSection.route.js';
+import itemSection from './routes/itemSection.route.js';
 
 const app = express();
 app.use(morgan('dev'));
@@ -26,4 +27,5 @@ app.use('/api/v1/instructorProfile', instructor);
 app.use('/api/v1/course', course);
 app.use('/api/v1/admin', admin);
 app.use('/api/v1/courseSection', courseSection);
+app.use('/api/v1/itemSection', itemSection);
 export default app;

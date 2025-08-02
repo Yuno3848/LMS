@@ -18,7 +18,6 @@ import {
 const courseSection = Router();
 courseSection.post(
   '/create-course-section/:courseId',
-  upload.single('thumbnail'),
   validateCourseSection(),
   validatorError,
   isLogged,
