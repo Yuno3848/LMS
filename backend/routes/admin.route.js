@@ -5,6 +5,8 @@ import { isLogged } from '../middlewares/isLoggedd.middleware.js';
 import {
   deleteInstructorProfile,
   deleteUser,
+  getAllInstructor,
+  getInstructorById,
   showPendingInstructorRole,
   verifyInstructorById,
 } from '../controllers/admin.controller.js';
@@ -36,4 +38,14 @@ admin.delete(
   isLogged,
   deleteUser,
 );
+
+admin.get(
+  '/get-instructor-by-id/:instructorId',
+  validateInstructorId(),
+  validatorError,
+  isLogged,
+  getInstructorById,
+);
+
+admin.get('/get-all-instructor', isLogged, getAllInstructor);
 export default admin;

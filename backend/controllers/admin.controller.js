@@ -134,3 +134,46 @@ export const deleteUser = asyncHandler(async (req, res) => {
   await User.findByIdAndDelete(userIdDelete);
   return res.status(200).json(new ApiResponse(200, 'User deleted successfully'));
 });
+
+export const getAllInstructor = asyncHandler(async (req, res) => {
+  const userId = req.user.id;
+
+  if (!userId || !mongoose.Types.ObjectId.isValid(userId.toString())) {
+    throw new ApiError(401, 'User not authorized');
+  }
+
+  const user = await User.findById(userId);
+
+  if (!user || user.role.toLowerCase() !== 'admin') {
+    throw new ApiError(403, 'Access denied | Admin only!');
+  }
+
+  const instructor = await User.find({ role: 'instructor' }).populate('instructorProfile');
+
+  return res.status(200).json(new ApiResponse(200, 'fetched all instructor', instructor));
+});
+
+export const getInstructorById = asyncHandler(async (req, res) => {
+  const userId = req.user.id;
+  const { instructorId } = req.params;
+  if (!userId || !mongoose.Types.ObjectId.isValid(userId.toString())) {
+    throw new ApiError(401, 'User not authorized');
+  }
+
+  if (!mongoose.Types.ObjectId.isValid(instructorId.toString())) {
+    throw new ApiError(404, 'user id is valid');
+  }
+
+  const user = await User.findById(userId);
+
+  if (!user || user.role.toLowerCase() !== 'admin') {
+    throw new ApiError(403, 'Access denied | Admin only!');
+  }
+
+  const instructor = await User.findById(instructorId).populate('instructorProfile');
+  if (!instructor) {
+    throw new ApiError(404, 'invalid instructor id');
+  }
+
+  res.status(200).json(new ApiResponse(200, 'instructor fetched successfully', instructor));
+});

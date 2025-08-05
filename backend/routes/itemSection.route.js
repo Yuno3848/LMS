@@ -49,7 +49,7 @@ itemSection.get(
 );
 
 itemSection.get(
-  '/get-all-item-section-by-id/:courseSectionId',
+  '/get-all-item-section/:courseSectionId',
   validateGetAllItemSection(),
   validatorError,
   isLogged,
