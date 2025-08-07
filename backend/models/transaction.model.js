@@ -2,6 +2,11 @@ import mongoose, { Schema } from 'mongoose';
 
 const transactionSchema = new Schema(
   {
+    receipt: {
+      type: String,
+      required: true,
+      trim: true,
+    },
     userId: {
       type: Schema.Types.ObjectId,
       ref: 'User',
@@ -28,7 +33,7 @@ const transactionSchema = new Schema(
       enum: ['PENDING', 'COMPLETED', 'FAILED'],
       default: 'PENDING',
     },
-    paypalOrderId: {
+    razorpayId: {
       type: String,
       required: true,
       index: true,
