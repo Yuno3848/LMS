@@ -9,6 +9,7 @@ import course from './routes/course.route.js';
 import admin from './routes/admin.route.js';
 import courseSection from './routes/courseSection.route.js';
 import itemSection from './routes/itemSection.route.js';
+import transaction from './routes/transaction.route.js';
 
 const app = express();
 app.use(morgan('dev'));
@@ -17,7 +18,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(
   cors({
-    origin: 'http://localhost:5173',
+    origin: ['http://localhost:5500', 'http://127.0.0.1:5500'],
     credentials: true,
   }),
 );
@@ -28,4 +29,5 @@ app.use('/api/v1/course', course);
 app.use('/api/v1/admin', admin);
 app.use('/api/v1/courseSection', courseSection);
 app.use('/api/v1/itemSection', itemSection);
+app.use('/api/v1/transaction', transaction);
 export default app;

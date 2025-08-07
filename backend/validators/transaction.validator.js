@@ -17,8 +17,6 @@ export const validateCreateOrder = () => {
   ];
 };
 
-import { body } from 'express-validator';
-
 export const validateVerifyPayment = () => [
   body('razorpay_order_id')
     .exists({ checkFalsy: true })
