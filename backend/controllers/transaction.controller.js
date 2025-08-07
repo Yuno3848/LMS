@@ -4,7 +4,7 @@ import ApiError from '../utils/ApiError.js';
 import ApiResponse from '../utils/ApiResponse.js';
 import { asyncHandler } from '../utils/asyncHandler.js';
 import mongoose from 'mongoose';
-
+import crypto from 'crypto';
 export const createOrder = asyncHandler(async (req, res) => {
   const userId = req.user.id;
 
@@ -52,10 +52,11 @@ export const verifyPayment = asyncHandler(async (req, res) => {
 
   const body = `${razorpay_order_id}|${razorpay_payment_id}`;
   const expectedSignature = crypto
-    .createHmac('sha256', process.env.RAZORPAY_KEY_SECRET)
+    .createHash('sha256', process.env.RAZORPAY_KEY_SECRET)
     .update(body)
     .digest('hex');
 
+  console.log(expectedSignature);
   const isValid = expectedSignature === razorpay_signature;
 
   if (!isValid) {
@@ -78,9 +79,9 @@ export const verifyPayment = asyncHandler(async (req, res) => {
 
 export const cancelTransaction = asyncHandler(async (req, res) => {
   const userId = req.user.id;
-  const { transactionId } = req.body;
+  const { transactionId } = req.params;
 
-  const Transaction = await Transaction.findByIdAndUpdate(
+  const transaction = await Transaction.findByIdAndUpdate(
     { _id: transactionId, userId },
     {
       STATUS: 'FAILED',
@@ -90,11 +91,41 @@ export const cancelTransaction = asyncHandler(async (req, res) => {
     },
   );
 
-  if (!Transaction) {
+  if (!transaction) {
     throw new ApiError(404, 'Transaction not found');
   }
 
   return res.status(200).json(200, 'Transaction cancelled successfully', Transaction);
 });
 
-export const getTransactionById = asyncHandler(async (req, res) => {});
+export const getTransactionById = asyncHandler(async (req, res) => {
+  const userId = req.user.id;
+  const { transactionId } = req.params;
+
+  const transaction = await Transaction.findById({
+    _id: transactionId,
+    userId,
+  });
+
+  if (!transaction) {
+    throw new ApiError(404, 'transaction not found');
+  }
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, 'Transaction fetched successfully', transaction));
+});
+
+export const getAllTransaction = asyncHandler(async (req, res) => {
+  const userId = req.user.id;
+
+  const transaction = await Transaction.find();
+
+  if (!transaction) {
+    throw new ApiError(404, 'transaction not found');
+  }
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, 'Transaction fetched successfully', transaction));
+});

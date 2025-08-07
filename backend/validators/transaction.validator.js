@@ -1,4 +1,4 @@
-import { body } from 'express-validator';
+import { body, param } from 'express-validator';
 
 export const validateCreateOrder = () => {
   return [
@@ -43,9 +43,9 @@ export const validateVerifyPayment = () => [
     .withMessage('transactionId must be a valid MongoDB ObjectId'),
 ];
 
-export const validateCancelTransaction = () => {
+export const validateTransaction = () => {
   return [
-    body('transactionId')
+    param('transactionId')
       .exists({ checkFalsy: true })
       .withMessage('transactionId is required')
       .isString()
