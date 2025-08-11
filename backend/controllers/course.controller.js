@@ -230,37 +230,5 @@ export const deleteCourse = asyncHandler(async (req, res) => {
   return res.status(200).json(new ApiResponse(200, 'deleted successfully'));
 });
 
-//coupon discount ->course
 
-export const applyCouponToCourse = asyncHandler(async (req, res) => {
-  const { courseId } = req.params;
-  const { couponCode } = req.body;
 
-  const course = await Course.findById(courseId);
-  if (!course) {
-    throw new ApiError(404, 'Course not found.');
-  }
-
-  const coupon = await Coupon.findOne({ couponCode });
-
-  if (!coupon || !coupon.isActive) {
-    throw new ApiError(404, 'Invalid or Inactive coupon.');
-  }
-
-  if (coupon.maxUses <= coupon.usedCount || coupon.maxUses === null) {
-    throw new ApiError(400, 'Coupon usage limited reached ! ');
-  }
-
-  const finalPrice = calculateDiscountPrice(price.base, coupon);
-
-  return res.status(200).json(
-    new ApiResponse(200, 'Coupon applied successfully', {
-      courseId: course._id,
-      title: course.title,
-      basePrice: course.price.base,
-      finalPrice,
-      currency: course.price.currency,
-      couponApplied: coupon.code,
-    }),
-  );
-});

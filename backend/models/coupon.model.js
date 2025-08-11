@@ -7,6 +7,7 @@ const couponSchema = new Schema(
       required: true,
       unique: true,
       trim: true,
+      uppercase: true,
     },
 
     discountType: {
@@ -24,7 +25,6 @@ const couponSchema = new Schema(
     maxUses: {
       type: Number,
       default: null,
-      min: 1,
     },
 
     usedCount: {
@@ -36,6 +36,15 @@ const couponSchema = new Schema(
     isActive: {
       type: Boolean,
       default: true,
+    },
+    appliesTo: {
+      type: String,
+      enum: ['all', 'specific'],
+      default: 'all',
+    },
+    courses: {
+      type: Schema.Types.ObjectId,
+      ref: 'Course',
     },
   },
   { timestamps: true },
