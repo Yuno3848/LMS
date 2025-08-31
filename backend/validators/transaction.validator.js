@@ -2,13 +2,7 @@ import { body, param } from 'express-validator';
 
 export const validateCreateOrder = () => {
   return [
-    body('amount')
-      .exists({ checkFalsy: true })
-      .withMessage('amount field is required')
-      .bail()
-      .isInt()
-      .withMessage('amount must be an integer'),
-
+    body('couponCode').optional().isString().withMessage('course section id must be a string'),
     param('courseId')
       .notEmpty()
       .withMessage('course section id is required')

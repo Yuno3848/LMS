@@ -47,4 +47,5 @@ transaction.get(
   getTransactionById,
 );
 transaction.get('/get-all-transaction', isLogged, getAllTransaction);
+
 export default transaction;

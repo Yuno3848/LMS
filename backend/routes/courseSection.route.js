@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { validatorError } from '../middlewares/validatorError.js';
 import { isLogged } from '../middlewares/isLoggedd.middleware.js';
-import { upload } from '../middlewares/multer.middleware.js';
+import multerPath from '../middlewares/multer.middleware.js';
 import {
   validateCourseSection,
   validateCourseSectionAndId,
@@ -26,7 +26,6 @@ courseSection.post(
 
 courseSection.patch(
   '/update-course-section/:courseId/:courseSectionId',
-  upload.single('thumbnail'),
   validateUpdateCourseSection(),
   validatorError,
   isLogged,

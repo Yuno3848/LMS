@@ -8,7 +8,6 @@ import {
   updateInstructoProfile,
 } from '../controllers/instructorProfile.controller.js';
 
-
 const instructor = Router();
 
 instructor.post(

@@ -8,20 +8,19 @@ import {
   validateCreateCourse,
 } from '../validators/course.validator.js';
 import {
-  applyCouponToCourse,
   createCourse,
   deleteCourse,
   getAllCourses,
   getCourseById,
   isPublish,
 } from '../controllers/course.controller.js';
-import { upload } from '../middlewares/multer.middleware.js';
+import multerPath from '../middlewares/multer.middleware.js';
 
 const course = Router();
 
 course.post(
   '/create-course',
-  upload.single('thumbnail'),
+  multerPath('./public/thumbnail').single('thumbnail'),
   validateCreateCourse(),
   validatorError,
   isLogged,
@@ -38,12 +37,5 @@ course.get(
   getCourseById,
 );
 course.get('/delete-course/:courseId', validateCourseId(), validatorError, isLogged, deleteCourse);
-
-course.post(
-  '.apply-coupon-to-course',
-  validateCouponToCourse(),
-  validatorError,
-  applyCouponToCourse,
-);
 
 export default course;

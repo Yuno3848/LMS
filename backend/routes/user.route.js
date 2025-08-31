@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { upload } from '../middlewares/multer.middleware.js';
+
 import {
   validateChangePassword,
   validateForgotPassword,
@@ -24,11 +24,12 @@ import {
   verifyMail,
 } from '../controllers/auth.controller.js';
 import { isLogged } from '../middlewares/isLoggedd.middleware.js';
-
+import multerPath from '../middlewares/multer.middleware.js';
 const auth = Router();
+
 auth.post(
   '/register',
-  upload.single('avatar'),
+  multerPath('./public/avatar').single('avatar'),
   validateRegistration(),
   validatorError,
   registeredUser,
@@ -43,8 +44,14 @@ auth.get('/forgot-password', validateForgotPassword(), validatorError, forgotPas
 auth.patch('/reset-password/:token', validateResetPassword(), validatorError, resetPassword);
 
 auth.get('/profile', isLogged, profile);
-export default auth;
+
 auth.get('/refresh-token', isLogged, refreshAccessToken);
 auth.patch('/update-profile', validateProfile(), validatorError, isLogged, updateProfile);
 auth.patch('/change-password', validateChangePassword(), validatorError, isLogged, changePassword);
-auth.patch('/update-avatar', upload.single('avatar'), isLogged, updateProfileAvatar);
+auth.patch(
+  '/update-avatar',
+  multerPath('../public/avatar').single('avatar'),
+  isLogged,
+  updateProfileAvatar,
+);
+export default auth;

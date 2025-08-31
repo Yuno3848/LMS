@@ -26,7 +26,7 @@ export const createOrder = asyncHandler(async (req, res) => {
   if (!course) {
     throw new ApiError(404, 'Course not found!!!');
   }
-  let finalAmount = course.price;
+  let finalAmount = course.price.final;
 
   if (couponCode) {
     const coupon = await Coupon.findOne({ couponCode: couponCode.toUpperCase(), isActive: true });
@@ -96,7 +96,6 @@ export const verifyPayment = asyncHandler(async (req, res) => {
     .update(body.toString())
     .digest('hex');
 
-  console.log(expectedSignature);
   const isValid = expectedSignature === razorpay_signature;
 
   if (!isValid) {
@@ -154,7 +153,7 @@ export const cancelTransaction = asyncHandler(async (req, res) => {
   const transaction = await Transaction.findByIdAndUpdate(
     { _id: transactionId, userId },
     {
-      STATUS: 'FAILED',
+      status: 'FAILED',
     },
     {
       new: true,
@@ -172,7 +171,7 @@ export const getTransactionById = asyncHandler(async (req, res) => {
   const userId = req.user.id;
   const { transactionId } = req.params;
 
-  const transaction = await Transaction.findById({
+  const transaction = await Transaction.findOne({
     _id: transactionId,
     userId,
   })('Course');

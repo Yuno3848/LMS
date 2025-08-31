@@ -229,6 +229,3 @@ export const deleteCourse = asyncHandler(async (req, res) => {
   await user.instructorProfile.save();
   return res.status(200).json(new ApiResponse(200, 'deleted successfully'));
 });
-
-
-

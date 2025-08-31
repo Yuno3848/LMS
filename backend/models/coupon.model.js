@@ -4,7 +4,6 @@ const couponSchema = new Schema(
   {
     couponCode: {
       type: String,
-      required: true,
       unique: true,
       trim: true,
       uppercase: true,
