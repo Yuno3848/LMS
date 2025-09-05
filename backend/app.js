@@ -18,10 +18,13 @@ app.use(morgan('dev'));
 app.use(cookie());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+const allowedOrigin = ['http://localhost:5173', 'http://127.0.0.1:5500'];
 app.use(
   cors({
-    origin: ['http://localhost:5500', 'http://127.0.0.1:5500'],
+    origin: allowedOrigin,
     credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
   }),
 );
 app.use('/api/v1/auth', auth);

@@ -48,7 +48,6 @@ export const createSubItemSection = asyncHandler(async (req, res) => {
     title,
     content,
     duration,
-
     orderIndex,
     question,
     options,

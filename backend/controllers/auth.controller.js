@@ -12,25 +12,27 @@ export const registeredUser = asyncHandler(async (req, res) => {
   //validate required fields in validator.js
 
   //check whether user exists in the database
-  const isUserExist = await User.findOne({
+  const user = await User.findOne({
     $or: [{ username }, { email }],
   });
   // if user exists, throw an error
-  if (isUserExist) {
+  if (user) {
     throw new ApiError(400, 'Username or Email already exists');
   }
 
   //fetch the path of the uploaded avatar file
   const avatarLocalPath = req?.file?.path || null;
   // if avatar is not provided, throw an error
-  if (!avatarLocalPath) {
-    throw new ApiError(400, 'Avatar is required');
-  }
-  // upload avatar to cloudinary
-  const avatar = await uploadOnCloudinary(avatarLocalPath);
-  // if upload fails, throw an error
-  if (!avatar) {
-    throw new ApiError(500, 'Failed to upload avatar');
+  const avatarData = {};
+  if (avatarLocalPath) {
+    const avatar = await uploadOnCloudinary(avatarLocalPath);
+    if (!avatar) {
+      throw new ApiError(500, 'Failed to upload avatar');
+    }
+    avatarData = {
+      url: avatar.url,
+      localPath: avatarLocalPath,
+    };
   }
 
   // create a new user instance
@@ -40,10 +42,7 @@ export const registeredUser = asyncHandler(async (req, res) => {
     email,
     password,
 
-    avatar: {
-      url: avatar.url,
-      localPath: avatarLocalPath,
-    },
+    avatar: avatarData,
   });
   // if user creation fails, throw an error
   if (!newUser) {

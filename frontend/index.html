@@ -1,77 +1,15 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <title>Payment Page</title>
-    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link href="/src/style.css" rel="stylesheet" />
+
+    <title>Vite + React</title>
   </head>
   <body>
-    <button id="pay-button">Pay</button>
-
-    <script>
-      document.getElementById("pay-button").onclick = async function (e) {
-        e.preventDefault();
-
-        const res = await fetch(
-          "  http://localhost:8080/api/v1/transaction/create-order/688d230d1413669ab4e01193 ",
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              amount: 49900,
-            }),
-            credentials: "include",
-          }
-        );
-
-        if (!res.ok) {
-          const error = await res.json();
-          alert("Error: " + error.message);
-          return;
-        }
-
-        const data = await res.json();
-        const transaction = data.data;
-
-        const options = {
-          key: "rzp_test_fiIwmRET6CApc2",
-          amount: transaction.amount,
-          currency: transaction.currency,
-          name: "Dummy Academy",
-          description: "Pay & Checkout this Course",
-
-          order_id: transaction.razorpayId,
-          handler: function (response) {
-            console.log(response);
-            alert("This step of Payment Succeeded");
-            // call /verify-payment here if needed
-          },
-          prefill: {
-            contact: "9876543210",
-            name: "Twinkle Sharma",
-            email: "smtwinkle@gmail.com",
-          },
-          notes: {
-            description: "Best Course for SDE placements",
-            language:
-              "Available in 4 major Languages JAVA, C/C++, Python, Javascript",
-            access: "This course has Lifetime Access",
-          },
-          theme: {
-            color: "#2300a3",
-          },
-        };
-
-        const rzp = new Razorpay(options);
-        rzp.on("payment.failed", function (response) {
-          console.log(response);
-          alert("This step of Payment Failed");
-        });
-
-        rzp.open();
-      };
-    </script>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>
