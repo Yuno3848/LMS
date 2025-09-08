@@ -15,6 +15,7 @@ import {
   forgotPassword,
   loginUser,
   logoutUser,
+  me,
   profile,
   refreshAccessToken,
   registeredUser,
@@ -54,4 +55,6 @@ auth.patch(
   isLogged,
   updateProfileAvatar,
 );
+
+auth.get('/me', isLogged, me);
 export default auth;

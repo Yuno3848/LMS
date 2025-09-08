@@ -5,6 +5,7 @@ import { asyncHandler } from '../utils/asyncHandler.js';
 import { uploadOnCloudinary } from '../utils/cloudinary.js';
 import { forgotPasswordMail, generateMail, sendMail } from '../utils/mail.js';
 import ApiError from '../utils/ApiError.js';
+import mongoose from 'mongoose';
 
 export const registeredUser = asyncHandler(async (req, res) => {
   // user details from request body
@@ -451,4 +452,14 @@ export const updateProfileAvatar = asyncHandler(async (req, res) => {
   user.save();
   // send the response with the updated user data
   return res.status(200).json(new ApiResponse(200, 'avatar updated successfully', user));
+});
+
+export const me = asyncHandler(async (req, res) => {
+  const user = req.user.id;
+
+  if (!user || !mongoose.Types.ObjectId.isValid(user.toString())) {
+    throw new ApiError(401, 'User not authorized');
+  }
+
+  return res.status(200).json(new ApiResponse(200, 'user logged in'));
 });

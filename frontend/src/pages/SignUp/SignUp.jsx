@@ -1,6 +1,7 @@
 import React, { useState } from "react";
-import toast, { Toaster } from "react-hot-toast";
-import { styles } from "./app.css";
+import toast from "react-hot-toast";
+import { Link } from "react-router";
+
 const SignUp = () => {
   const [formData, setFormData] = useState({
     username: "",
@@ -10,7 +11,6 @@ const SignUp = () => {
     confirmpassword: "",
   });
 
-  const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e) => {
@@ -34,23 +34,18 @@ const SignUp = () => {
       } else {
         console.log("Registration successful:", data);
         toast.success("Signed up successfully");
-        <Toaster />;
       }
     } catch (error) {
-      setError(error.message);
+      toast.error(error);
     } finally {
       setLoading(false);
     }
-
-    toast.error(error);
   };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#f5e6ca] via-[#fefaf5] to-[#e7d3b5]">
       <div className="w-full max-w-md p-8 rounded-2xl shadow-xl bg-[#fffaf2] border border-[#e0c9a6]">
-        <h2
-          className={`${styles.mainTitle} text-3xl font-extrabold text-center text-[#6b4226] mb-2`}
-        >
+        <h2 className="text-3xl font-extrabold text-center text-[#6b4226] mb-2">
           ☕ Create Your Study Account
         </h2>
 
@@ -130,12 +125,12 @@ const SignUp = () => {
 
         <p className="mt-6 text-center text-sm text-[#6b4226]">
           Already have an account?{" "}
-          <a
-            href="/login"
+          <Link
+            to="/login"
             className="text-[#8c5e3c] font-medium hover:underline hover:text-[#6b4226]"
           >
             Log in
-          </a>
+          </Link>
         </p>
       </div>
     </div>
