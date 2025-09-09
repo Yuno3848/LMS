@@ -1,4 +1,4 @@
-import { Coffee, Banana } from "lucide-react";
+import { Coffee } from "lucide-react";
 import { Link } from "react-router";
 import React, { useContext } from "react";
 import { AuthContext } from "../Context/AuthContext";
@@ -6,47 +6,84 @@ import { AuthContext } from "../Context/AuthContext";
 const Header = () => {
   const { user } = useContext(AuthContext);
   console.log(user);
+
   return (
-    <header className="sticky top-0 z-20 w-full py-5 px-8 flex justify-between items-center bg-[#fffaf2]/80 backdrop-blur-md border-b border-[#e0c9a6]/50 shadow-sm">
-      <div className="flex items-center space-x-2">
-        <div className="w-10 h-10 bg-gradient-to-br from-[#b08968] to-[#8c5e3c] rounded-lg flex items-center justify-center shadow-md">
-          <Coffee className="text-white w-6 h-6" />
+    <header className="sticky top-0 z-20 w-full py-4 px-6 md:px-8 flex justify-between items-center bg-[#fffaf2]/95 backdrop-blur-xl border-b border-[#e0c9a6]/30 shadow-lg shadow-[#e0c9a6]/20">
+      <div className="flex items-center space-x-3 group">
+        <div className="relative">
+          <div className="w-11 h-11 bg-gradient-to-br from-[#b08968] via-[#8c5e3c] to-[#6b4226] rounded-xl flex items-center justify-center shadow-lg shadow-[#8c5e3c]/30 group-hover:shadow-xl group-hover:shadow-[#8c5e3c]/40 transition-all duration-300">
+            <Coffee className="text-white w-6 h-6 group-hover:rotate-12 transition-transform duration-300" />
+          </div>
+
+          <div className="absolute -top-1 -right-1 w-3 h-3 bg-gradient-to-r from-[#d4b996] to-[#b08968] rounded-full opacity-80 group-hover:scale-110 transition-transform duration-300" />
         </div>
-        <h1 className="text-2xl font-extrabold text-[#6b4226] tracking-tight">
+        <h1 className="text-2xl font-black text-[#6b4226] tracking-tight group-hover:text-[#8c5e3c] transition-colors duration-300">
           StudyBrew
+          <span className="text-[#b08968] opacity-60">.</span>
         </h1>
       </div>
-      <nav className="hidden md:flex space-x-8 font-semibold text-[#6b4226]">
-        {["Home", "Features", "About"].map((link) => (
+
+      <nav className="hidden md:flex space-x-8 font-semibold text-[#6b4226] mr-5">
+        {["Home", "Features", "About"].map((link, index) => (
           <a
             key={link}
             href={`/${link.toLowerCase()}`}
-            className="relative hover:text-[#8c5e3c] after:absolute after:bottom-[-4px] after:left-0 after:h-0.5 after:w-0 hover:after:w-full after:bg-[#8c5e3c] after:transition-all after:duration-300"
+            className="relative group py-2 hover:text-[#8c5e3c] transition-colors duration-300"
           >
             {link}
+
+            <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-[#8c5e3c] to-[#b08968] group-hover:w-full transition-all duration-300 ease-out" />
+
+            <span className="absolute inset-0 bg-[#e0c9a6]/10 rounded-lg scale-0 group-hover:scale-100 transition-transform duration-200 -z-10" />
           </a>
         ))}
       </nav>
-      <div className="flex space-x-3">
+
+      <div className="flex items-center space-x-3">
         {user ? (
-          user.data.fullname
+          <div className="flex items-center space-x-3">
+            <div className="w-10 h-10 bg-gradient-to-br from-[#b08968] to-[#8c5e3c] rounded-full flex items-center justify-center shadow-md">
+              <span className="text-white font-semibold text-sm">
+                {user.data.fullname.charAt(0).toUpperCase()}
+              </span>
+            </div>
+
+            <div className="hidden sm:block">
+              <p className="text-[#6b4226] font-semibold text-sm">
+                Welcome back,
+              </p>
+              <p className="text-[#8c5e3c] font-bold text-sm -mt-0.5">
+                {user.data.fullname.split(" ")[0]}
+              </p>
+            </div>
+          </div>
         ) : (
-          <div>
-            {" "}
+          <div className="flex items-center space-x-2">
             <Link
               to="/login"
-              className="px-4 py-2 text-[#6b4226] font-semibold hover:text-[#8c5e3c] transition"
+              className="px-5 py-2.5 text-[#6b4226] font-semibold hover:text-[#8c5e3c] hover:bg-[#e0c9a6]/20 rounded-lg transition-all duration-300 relative group"
             >
               Login
+              <span className="absolute inset-0 bg-gradient-to-r from-[#e0c9a6]/0 via-[#e0c9a6]/10 to-[#e0c9a6]/0 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
             </Link>
             <Link
               to="/signup"
-              className="px-6 py-2 rounded-full bg-gradient-to-r from-[#b08968] to-[#8c5e3c] text-white font-semibold shadow-md hover:shadow-xl hover:from-[#8c5e3c] hover:to-[#6b4226] transform hover:scale-105 transition-all"
+              className="relative px-6 py-2.5 rounded-xl bg-gradient-to-r from-[#b08968] via-[#8c5e3c] to-[#6b4226] text-white font-bold shadow-lg shadow-[#8c5e3c]/30 hover:shadow-xl hover:shadow-[#8c5e3c]/40 transform hover:scale-105 transition-all duration-300 overflow-hidden group"
             >
-              Sign Up
+              <span className="relative z-10">Sign Up</span>
+
+              <span className="absolute inset-0 bg-gradient-to-r from-[#8c5e3c] via-[#6b4226] to-[#5a3219] opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+
+              <span className="absolute top-0 left-[-100%] w-full h-full bg-gradient-to-r from-transparent via-white/20 to-transparent group-hover:left-full transition-all duration-700" />
             </Link>
           </div>
         )}
+      </div>
+
+      <div className="md:hidden flex flex-col space-y-1 cursor-pointer group">
+        <div className="w-5 h-0.5 bg-[#6b4226] group-hover:bg-[#8c5e3c] transition-colors duration-300" />
+        <div className="w-4 h-0.5 bg-[#6b4226] group-hover:bg-[#8c5e3c] transition-colors duration-300" />
+        <div className="w-3 h-0.5 bg-[#6b4226] group-hover:bg-[#8c5e3c] transition-colors duration-300" />
       </div>
     </header>
   );

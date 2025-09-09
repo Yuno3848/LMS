@@ -461,5 +461,13 @@ export const me = asyncHandler(async (req, res) => {
     throw new ApiError(401, 'User not authorized');
   }
 
-  return res.status(200).json(new ApiResponse(200, 'user logged in'));
+  const userDetails = await User.findById(user).select(
+    '-password -emailVerficationToken -emailVerficationTokenExpiry -forgotPasswordExpiry -forgotPasswordToken -refreshTokenn',
+  );
+
+  if (!userDetails) {
+    throw new ApiError(404, 'User not found');
+  }
+
+  return res.status(200).json(new ApiResponse(200, 'user logged in', userDetails));
 });
