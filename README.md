@@ -129,7 +129,7 @@ Create a `.env` file in the backend directory:
 
 # Database
 
-MONGODB_URI=mongodb://localhost:27017/lms
+MONGODB_URI=mongodb://yourlocalhost/lms
 
 # or for MongoDB Atlas:
 
