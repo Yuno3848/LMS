@@ -1,11 +1,29 @@
-import { Coffee } from "lucide-react";
+import { Coffee, LogOut } from "lucide-react";
 import { Link } from "react-router";
 import React, { useContext } from "react";
 import { AuthContext } from "../Context/AuthContext";
 
 const Header = () => {
-  const { user } = useContext(AuthContext);
+  const { user, logout } = useContext(AuthContext);
   console.log(user);
+
+  const handleLogOut = async () => {
+    try {
+      const res = await fetch("http://localhost:8080/api/v1/auth/logout", {
+        method: "GET",
+        credentials: "include",
+      });
+      const data = await res.json();
+      console.log("clicked");
+      if (res.ok) {
+        logout();
+      } else {
+        console.log("log out failed", res.status);
+      }
+    } catch (error) {
+      console.error("Error logging out:", error);
+    }
+  };
 
   return (
     <header className="sticky top-0 z-20 w-full py-4 px-6 md:px-8 flex justify-between items-center bg-[#fffaf2]/95 backdrop-blur-xl border-b border-[#e0c9a6]/30 shadow-lg shadow-[#e0c9a6]/20">
@@ -23,7 +41,7 @@ const Header = () => {
         </h1>
       </div>
 
-      <nav className="hidden md:flex space-x-8 font-semibold text-[#6b4226] mr-5">
+      <nav className="hidden md:flex space-x-8 font-semibold text-[#6b4226] ml-26">
         {["Home", "Features", "About"].map((link, index) => (
           <a
             key={link}
@@ -56,6 +74,16 @@ const Header = () => {
                 {user.data.fullname.split(" ")[0]}
               </p>
             </div>
+
+            {/* Logout Button */}
+            <button
+              onClick={handleLogOut}
+              className="flex items-center space-x-2 px-4 py-2 text-[#6b4226] font-semibold hover:text-[#8c5e3c] hover:bg-[#e0c9a6]/20 rounded-lg transition-all duration-300 relative group"
+            >
+              <LogOut className="w-4 h-4" />
+              <span className="hidden sm:block">Logout</span>
+              <span className="absolute inset-0 bg-gradient-to-r from-[#e0c9a6]/0 via-[#e0c9a6]/10 to-[#e0c9a6]/0 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+            </button>
           </div>
         ) : (
           <div className="flex items-center space-x-2">
