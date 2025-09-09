@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import toast from "react-hot-toast";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 
 const SignUp = () => {
   const [formData, setFormData] = useState({
@@ -12,7 +12,7 @@ const SignUp = () => {
   });
 
   const [loading, setLoading] = useState(false);
-
+  const navigate = useNavigate();
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -34,6 +34,7 @@ const SignUp = () => {
       } else {
         console.log("Registration successful:", data);
         toast.success("Signed up successfully");
+        navigate("/login");
       }
     } catch (error) {
       toast.error(error);
