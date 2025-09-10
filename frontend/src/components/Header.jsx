@@ -5,6 +5,11 @@ import { AuthContext } from "../Context/AuthContext";
 
 const Header = () => {
   const { user, logout } = useContext(AuthContext);
+  const navLink = [
+    { name: "Home", path: "/" },
+    { name: "Features", path: "/feature" },
+    { name: "About", path: "/about" },
+  ];
   console.log(user);
 
   const handleLogOut = async () => {
@@ -41,40 +46,58 @@ const Header = () => {
         </h1>
       </div>
 
-      <nav className="hidden md:flex space-x-8 font-semibold text-[#6b4226] ml-26">
-        {["Home", "Features", "About"].map((link, index) => (
-          <a
-            key={link}
-            href={`/${link.toLowerCase()}`}
+      <nav className="hidden md:flex space-x-8 font-semibold text-[#6b4226] mr-4  ">
+        {navLink.map((link, index) => (
+          <Link
+            key={link.name}
+            to={`/${link.path}`}
             className="relative group py-2 hover:text-[#8c5e3c] transition-colors duration-300"
           >
-            {link}
+            {link.name}
 
             <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-[#8c5e3c] to-[#b08968] group-hover:w-full transition-all duration-300 ease-out" />
 
             <span className="absolute inset-0 bg-[#e0c9a6]/10 rounded-lg scale-0 group-hover:scale-100 transition-transform duration-200 -z-10" />
-          </a>
+          </Link>
         ))}
       </nav>
 
       <div className="flex items-center space-x-3">
         {user ? (
           <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 bg-gradient-to-br from-[#b08968] to-[#8c5e3c] rounded-full flex items-center justify-center shadow-md">
-              <span className="text-white font-semibold text-sm">
-                {user.data.fullname.charAt(0).toUpperCase()}
-              </span>
+            <div className="relative group">
+              <div className="w-10 h-10 bg-gradient-to-br from-[#b08968] to-[#8c5e3c] rounded-full flex items-center justify-center shadow-md">
+                <span className="text-white font-semibold text-sm">
+                  {user.data.fullname.charAt(0).toUpperCase()}
+                </span>
+              </div>
+              <div className="absolute right-0 mt-2 w-48 bg-[#fffaf2] border border-[#e0c9a6] rounded-lg shadow-lg opacity-0 group-hover:opacity-100 invisible group-hover:visible transition-all duration-200 z-20">
+                <Link
+                  to="/myprofile"
+                  className="block px-4 py-2 text-[#6b4226] hover:bg-[#e0c9a6] rounded-t-lg"
+                >
+                  My Profile
+                </Link>
+                <Link
+                  to="/mycourses"
+                  className="block px-4 py-2 text-[#6b4226] hover:bg-[#e0c9a6]"
+                >
+                  My Courses
+                </Link>
+                <Link
+                  to="/editprofile"
+                  className="block px-4 py-2 text-[#6b4226] hover:bg-[#e0c9a6] rounded-b-lg"
+                >
+                  Edit Profile
+                </Link>
+                <Link
+                  to="/editprofile"
+                  className="block px-4 py-2 text-[#6b4226] hover:bg-[#e0c9a6] rounded-b-lg"
+                >
+                  Help And Support
+                </Link>
+              </div>
             </div>
-
-            <div className="hidden sm:block">
-              <p className="text-[#6b4226] font-semibold text-sm">
-                Welcome back,
-              </p>
-              <p className="text-[#8c5e3c] font-bold text-sm -mt-0.5">
-                {user.data.fullname.split(" ")[0]}
-              </p>
-            </div>
-
             {/* Logout Button */}
             <button
               onClick={handleLogOut}

@@ -9,6 +9,8 @@ import StudyToolsSection from "./Sections/StudyToolsSection";
 import CTASection from "./Sections/CTASection";
 import BackgroundEffects from "./Sections/BackgroundEffect";
 import Header from "../../components/Header";
+import AboutSection from "./Sections/AboutSection";
+import FeaturesSection from "./Sections/FeatureSection";
 
 const Home = () => {
   const [isVisible, setIsVisible] = useState(false);
@@ -28,6 +30,8 @@ const Home = () => {
         <CoreFeaturesSection />
         <WhyChooseUsSection />
         <TestimonialsSection />
+        <AboutSection />
+        <FeaturesSection />
         <StatsSection />
         <StudyToolsSection />
         <CTASection />
