@@ -1,4 +1,4 @@
-const baseAuthURL = "http://localhost:8080/api/v1/auth";
+const baseAuthURL = "/api/v1/auth";
 export const authApi = {
   signup: async (credential) => {
     try {
