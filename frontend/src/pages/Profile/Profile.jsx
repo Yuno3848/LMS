@@ -33,28 +33,20 @@ const Profile = () => {
           Loading your profile...
         </div>
       ) : (
-        <div className="w-full max-w-md p-8 rounded-2xl shadow-xl bg-[#fffaf2] border border-[#e0c9a6]">
+        <div className="w-full max-w-md p-8 rounded-2xl shadow-xl bg-[#fffaf2] border border-[#e0c9a6]  ">
           <h2 className="text-3xl font-extrabold text-center text-[#6b4226] mb-2">
             👤 Your Profile
           </h2>
 
-          <form className="space-y-5">
-            <div>
-              <label className="block text-sm font-medium text-[#5c4636] mb-1">
-                Profile Picture
-              </label>
-              <input
-                type="file"
-                accept="image/*"
-                className="block w-full text-sm text-gray-700
-               border border-[#d4b996] rounded-lg bg-[#fdf8f3] cursor-pointer
-               focus:outline-none focus:ring-2 focus:ring-[#b08968] focus:border-[#b08968]
-               file:mr-4 file:py-2.5 file:px-4
-               file:rounded-lg file:border-0
-               file:text-sm file:font-semibold
-               file:bg-[#b08968] file:text-white
-               hover:file:bg-[#8c5e3c]"
-              />
+          <form className="space-y-5 relative ">
+            <div className="flex justify-center mt-5">
+              {user?.avatar?.url && (
+                <img
+                  src={user.avatar.url}
+                  alt="Profile Avatar"
+                  className="w-30 h-30 object-cover rounded-full border border-[#d4b996] mb-3 shadow-md "
+                />
+              )}
             </div>
 
             <input

@@ -4,11 +4,9 @@ export const authApi = {
     try {
       const res = await fetch(`${baseAuthURL}/register`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+
         credentials: "include",
-        body: JSON.stringify(credential),
+        body: credential,
       });
       const data = await res.json();
       if (!res.ok) {

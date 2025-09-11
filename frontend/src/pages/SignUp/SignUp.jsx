@@ -10,6 +10,7 @@ const SignUp = () => {
     email: "",
     password: "",
     confirmpassword: "",
+    avatar: "",
   });
 
   const [loading, setLoading] = useState(false);
@@ -19,11 +20,22 @@ const SignUp = () => {
     setLoading(true);
 
     try {
-      const result = await authApi.signup(formData);
+      const submitData = new FormData();
+      submitData.append("username", formData.username);
+      submitData.append("fullname", formData.fullname);
+      submitData.append("email", formData.email);
+      submitData.append("password", formData.password);
+      submitData.append("confirmpassword", formData.confirmpassword);
+
+      if (formData.avatar) {
+        submitData.append("avatar", formData.avatar);
+      }
+      const result = await authApi.signup(submitData);
       if (result.success) {
         console.log("Registration successful:", result.data);
         toast.success("Signed up successfully");
         navigate("/login");
+        console.log(result);
       } else {
         console.log("Sign up failed:", result.error);
         toast.error(result.error);
@@ -50,6 +62,9 @@ const SignUp = () => {
             <input
               type="file"
               accept="image/*"
+              onChange={(e) => {
+                setFormData({ ...formData, avatar: e.target.files[0] });
+              }}
               className="block w-full text-sm text-gray-700
                border border-[#d4b996] rounded-lg bg-[#fdf8f3] cursor-pointer
                focus:outline-none focus:ring-2 focus:ring-[#b08968] focus:border-[#b08968]

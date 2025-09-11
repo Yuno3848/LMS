@@ -24,7 +24,10 @@ export const registeredUser = asyncHandler(async (req, res) => {
   //fetch the path of the uploaded avatar file
   const avatarLocalPath = req?.file?.path || null;
   // if avatar is not provided, throw an error
-  const avatarData = {};
+  let avatarData = {
+    url: '',
+    localPath: '',
+  };
   if (avatarLocalPath) {
     const avatar = await uploadOnCloudinary(avatarLocalPath);
     if (!avatar) {
