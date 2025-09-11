@@ -82,12 +82,7 @@ const Header = () => {
                 >
                   My Courses
                 </Link>
-                <Link
-                  to="/editprofile"
-                  className="block px-4 py-2 text-[#6b4226] hover:bg-[#e0c9a6] rounded-b-lg"
-                >
-                  Edit Profile
-                </Link>
+
                 <Link
                   to="/editprofile"
                   className="block px-4 py-2 text-[#6b4226] hover:bg-[#e0c9a6] rounded-b-lg"

@@ -72,4 +72,23 @@ export const authApi = {
       return { success: false, error: error.message };
     }
   },
+
+  updateProfile: async (credential) => {
+    try {
+      const res = await fetch(`${baseAuthURL}/update-profile`, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify(credential),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(`Update Profile failed ${res.status}`);
+      }
+      return { success: true, data };
+    } catch (error) {
+      return { success: false, error: error.message };
+    }
+  },
 };

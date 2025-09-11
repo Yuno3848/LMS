@@ -7,6 +7,7 @@ import { createBrowserRouter, RouterProvider, Navigate } from "react-router";
 import { AuthContext } from "./Context/AuthContext";
 import Profile from "./pages/Profile/Profile";
 import Course from "./pages/MainCourse/Course/Course";
+import EditProfile from "./pages/Profile/EditProfile";
 
 function App() {
   const { user, loading } = useContext(AuthContext);
@@ -38,6 +39,10 @@ function App() {
     {
       path: "/course",
       element: <Course />,
+    },
+    {
+      path: "/editprofile",
+      element: <EditProfile />,
     },
   ]);
 
