@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import toast from "react-hot-toast";
 import { Link, useNavigate } from "react-router";
+import { authApi } from "../../ApiFetch";
 
 const SignUp = () => {
   const [formData, setFormData] = useState({
@@ -18,26 +19,17 @@ const SignUp = () => {
     setLoading(true);
 
     try {
-      const res = await fetch("http://localhost:8080/api/v1/auth/register", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        credentials: "include",
-        body: JSON.stringify(formData),
-      });
-
-      const data = await res.json();
-
-      if (!res.ok) {
-        console.log("something went wrong!!!" || data.message);
-      } else {
-        console.log("Registration successful:", data);
+      const result = await authApi.signup(formData);
+      if (result.success) {
+        console.log("Registration successful:", result.data);
         toast.success("Signed up successfully");
         navigate("/login");
+      } else {
+        console.log("Sign up failed:", result.error);
+        toast.error(result.error);
       }
     } catch (error) {
-      toast.error(error);
+      toast.error(error.message || "Something went wrong");
     } finally {
       setLoading(false);
     }

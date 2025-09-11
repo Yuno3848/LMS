@@ -2,6 +2,7 @@ import { Coffee, LogOut } from "lucide-react";
 import { Link } from "react-router";
 import React, { useContext } from "react";
 import { AuthContext } from "../Context/AuthContext";
+import { authApi } from "../ApiFetch";
 
 const Header = () => {
   const { user, logout } = useContext(AuthContext);
@@ -14,19 +15,15 @@ const Header = () => {
 
   const handleLogOut = async () => {
     try {
-      const res = await fetch("http://localhost:8080/api/v1/auth/logout", {
-        method: "GET",
-        credentials: "include",
-      });
-      const data = await res.json();
-      console.log("clicked");
-      if (res.ok) {
+      const result = await authApi.logout();
+      if (result.success) {
         logout();
+        console.log("Logout successful");
       } else {
-        console.log("log out failed", res.status);
+        console.log("Logout failed:", result.error);
       }
     } catch (error) {
-      console.error("Error logging out:", error);
+      console.error("Unexpected error during logout:", error);
     }
   };
 
@@ -73,7 +70,7 @@ const Header = () => {
               </div>
               <div className="absolute right-0 mt-2 w-48 bg-[#fffaf2] border border-[#e0c9a6] rounded-lg shadow-lg opacity-0 group-hover:opacity-100 invisible group-hover:visible transition-all duration-200 z-20">
                 <Link
-                  to="/myprofile"
+                  to="/profile"
                   className="block px-4 py-2 text-[#6b4226] hover:bg-[#e0c9a6] rounded-t-lg"
                 >
                   My Profile

@@ -3,6 +3,7 @@ import toast from "react-hot-toast";
 import { Link, useNavigate } from "react-router";
 
 import { AuthContext } from "../../Context/AuthContext";
+import { authApi } from "../../ApiFetch";
 
 const Login = () => {
   const [formData, setFormData] = useState({
@@ -18,25 +19,17 @@ const Login = () => {
     e.preventDefault();
     setLoading(true);
     try {
-      const res = await fetch("http://localhost:8080/api/v1/auth/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        credentials: "include",
-        body: JSON.stringify(formData),
-      });
-      const data = await res.json();
-
-      toast.success("login successfully");
-      if (!res.ok) {
-        console.log("Something went wrong" || data.message);
-        return;
+      const result = await authApi.login(formData);
+      if (result.success) {
+        console.log("Registration successful:", result.data);
+        toast.success("login successfully");
+        login(result.data);
+      } else {
+        console.log("login failed", result.error);
+        toast.error(result.error);
       }
-
-      login(data);
     } catch (error) {
-      toast.error(error);
+      toast.error(error.message || "Something went wrong");
     } finally {
       setLoading(false);
     }

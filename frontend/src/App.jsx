@@ -6,6 +6,7 @@ import Home from "./pages/Home/Home";
 import { createBrowserRouter, RouterProvider, Navigate } from "react-router";
 import { AuthContext } from "./Context/AuthContext";
 import Profile from "./pages/Profile/Profile";
+import Course from "./pages/MainCourse/Course/Course";
 
 function App() {
   const { user, loading } = useContext(AuthContext);
@@ -33,6 +34,10 @@ function App() {
     {
       path: "/profile",
       element: <Profile />,
+    },
+    {
+      path: "/course",
+      element: <Course />,
     },
   ]);
 
