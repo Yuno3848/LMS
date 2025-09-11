@@ -3,13 +3,13 @@ import { Link } from "react-router";
 import React, { useContext } from "react";
 import { AuthContext } from "../Context/AuthContext";
 import { authApi } from "../ApiFetch";
-
+import { HashLink } from "react-router-hash-link";
 const Header = () => {
   const { user, logout } = useContext(AuthContext);
   const navLink = [
-    { name: "Home", path: "/" },
-    { name: "Features", path: "/feature" },
-    { name: "About", path: "/about" },
+    { name: "Home", path: "/#hero" },
+    { name: "Features", path: "/#features" },
+    { name: "About", path: "/#about" },
   ];
   console.log(user);
 
@@ -45,9 +45,10 @@ const Header = () => {
 
       <nav className="hidden md:flex space-x-8 font-semibold text-[#6b4226] mr-4  ">
         {navLink.map((link, index) => (
-          <Link
+          <HashLink
             key={link.name}
-            to={`/${link.path}`}
+            to={link.path}
+            smooth
             className="relative group py-2 hover:text-[#8c5e3c] transition-colors duration-300"
           >
             {link.name}
@@ -55,7 +56,7 @@ const Header = () => {
             <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-[#8c5e3c] to-[#b08968] group-hover:w-full transition-all duration-300 ease-out" />
 
             <span className="absolute inset-0 bg-[#e0c9a6]/10 rounded-lg scale-0 group-hover:scale-100 transition-transform duration-200 -z-10" />
-          </Link>
+          </HashLink>
         ))}
       </nav>
 

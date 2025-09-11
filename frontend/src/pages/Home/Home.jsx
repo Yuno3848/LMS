@@ -26,12 +26,16 @@ const Home = () => {
       <Header />
 
       <main className="flex-1">
-        <HeroSection isVisible={isVisible} />
+        <HeroSection isVisible={isVisible} id="hero" />
         <CoreFeaturesSection />
         <WhyChooseUsSection />
         <TestimonialsSection />
+        <div id="about"></div>
         <AboutSection />
-        <FeaturesSection />
+        <div id="features">
+          <FeaturesSection />
+        </div>
+
         <StatsSection />
         <StudyToolsSection />
         <CTASection />
