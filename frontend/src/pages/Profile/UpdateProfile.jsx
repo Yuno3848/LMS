@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { authApi } from "../../ApiFetch";
 import toast from "react-hot-toast";
 
@@ -8,25 +8,30 @@ const UpdateProfile = () => {
     username: "",
   });
 
-  const [loading, setLoading] = useState(true);
-  useEffect(() => {
-    const handleUpdateProfile = async () => {
-      try {
-        const result = await authApi.updateProfile(formData);
-        if (result.success) {
-          setFormData(result.formData);
-          console.log("updateProfile", result.formData);
-          toast.success("profile updated");
-        } else {
-          console.log | ("update profile failed", error.message);
-        }
-      } catch (error) {
-        toast.error("update profile failed");
-      } finally {
-        setLoading(false);
+  const [loading, setLoading] = useState(false);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    try {
+      const result = await authApi.updateProfile(formData);
+
+      if (result.success) {
+        setFormData({
+          fullname: result.data.data.fullname,
+          username: result.data.data.username,
+        });
+
+        toast.success("profile updated");
+      } else {
+        console.log("update profile failed", result.message);
       }
-    };
-  }, []);
+    } catch (error) {
+      toast.error("update profile failed");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#f5e6ca] via-[#fefaf5] to-[#e7d3b5]">
@@ -40,16 +45,24 @@ const UpdateProfile = () => {
             ✏️ Edit Profile
           </h2>
 
-          <form className="space-y-5">
+          <form className="space-y-5" onSubmit={handleSubmit}>
             <input
               type="text"
               placeholder="Full Name"
+              value={formData.fullname}
+              onChange={(e) => {
+                setFormData({ ...formData, fullname: e.target.value });
+              }}
               className="w-full px-4 py-3 border rounded-lg border-[#d4b996] bg-[#fdfaf7] focus:ring-2 focus:ring-[#c19a6b] focus:outline-none transition"
             />
 
             <input
               type="text"
               placeholder="Username"
+              value={formData.username}
+              onChange={(e) => {
+                setFormData({ ...formData, username: e.target.value });
+              }}
               className="w-full px-4 py-3 border rounded-lg border-[#d4b996] bg-[#fdfaf7] focus:ring-2 focus:ring-[#c19a6b] focus:outline-none transition"
             />
 
