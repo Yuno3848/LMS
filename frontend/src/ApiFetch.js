@@ -57,4 +57,21 @@ export const authApi = {
       return { success: false, error: error.message };
     }
   },
+
+  profile: async () => {
+    try {
+      const res = await fetch(`${baseAuthURL}/profile`, {
+        method: "GET",
+        credentials: "include",
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(`Profile failed ${res.status}`);
+      }
+
+      return { success: true, data };
+    } catch (error) {
+      return { success: false, error: error.message };
+    }
+  },
 };
