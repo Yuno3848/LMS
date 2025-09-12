@@ -1,16 +1,11 @@
-import { useContext, useState } from "react";
-import SignUp from "./pages/SignUp/SignUp";
+import { useContext } from "react";
 import { Toaster } from "react-hot-toast";
-import Login from "./pages/Login/Login";
-import Home from "./pages/Home/Home";
-import { createBrowserRouter, RouterProvider, Navigate } from "react-router";
+import { RouterProvider } from "react-router";
 import { AuthContext } from "./Context/AuthContext";
-import Profile from "./pages/Profile/Profile";
-import Course from "./pages/MainCourse/Course/Course";
-import UpdateProfile from "./pages/Profile/UpdateProfile";
+import routes from "../routes";
 
 function App() {
-  const { user, loading } = useContext(AuthContext);
+  const { loading } = useContext(AuthContext);
 
   if (loading) {
     return (
@@ -19,36 +14,10 @@ function App() {
       </div>
     );
   }
-  const router = createBrowserRouter([
-    {
-      path: "/",
-      element: user ? <Home /> : <Navigate to="/login" />,
-    },
-    {
-      path: "/login",
-      element: !user ? <Login /> : <Navigate to="/" />,
-    },
-    {
-      path: "/signup",
-      element: <SignUp />,
-    },
-    {
-      path: "/profile",
-      element: <Profile />,
-    },
-    {
-      path: "/course",
-      element: <Course />,
-    },
-    {
-      path: "/updateprofile",
-      element: <UpdateProfile />,
-    },
-  ]);
 
   return (
     <>
-      <RouterProvider router={router} />
+      <RouterProvider router={routes} />
       <Toaster
         position="top-center"
         reverseOrder={false}
