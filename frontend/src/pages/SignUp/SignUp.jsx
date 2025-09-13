@@ -2,7 +2,8 @@ import React, { useState } from "react";
 import toast from "react-hot-toast";
 import { Link, useNavigate } from "react-router";
 import { authApi } from "../../ApiFetch";
-
+import { useDispatch, useSelector } from "react-redux";
+import { setLoading } from "../../redux/authSlicer";
 const SignUp = () => {
   const [formData, setFormData] = useState({
     username: "",
@@ -12,13 +13,12 @@ const SignUp = () => {
     confirmpassword: "",
     avatar: "",
   });
-
-  const [loading, setLoading] = useState(false);
+  const loading = useSelector((state) => state.auth.loading);
+  const dispatch = useDispatch();
   const navigate = useNavigate();
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
-
+    dispatch(setLoading(true));
     try {
       const submitData = new FormData();
       submitData.append("username", formData.username);
@@ -32,10 +32,8 @@ const SignUp = () => {
       }
       const result = await authApi.signup(submitData);
       if (result.success) {
-        console.log("Registration successful:", result.data);
         toast.success("Signed up successfully");
         navigate("/login");
-        console.log(result);
       } else {
         console.log("Sign up failed:", result.error);
         toast.error(result.error);
@@ -43,7 +41,7 @@ const SignUp = () => {
     } catch (error) {
       toast.error(error.message || "Something went wrong");
     } finally {
-      setLoading(false);
+      dispatch(setLoading(false));
     }
   };
 

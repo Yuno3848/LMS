@@ -1,11 +1,14 @@
 import { Coffee, LogOut } from "lucide-react";
 import { Link } from "react-router";
-import React, { useContext } from "react";
-import { AuthContext } from "../Context/AuthContext";
+import React from "react";
+
 import { authApi } from "../ApiFetch";
 import { HashLink } from "react-router-hash-link";
+import { useDispatch, useSelector } from "react-redux";
 const Header = () => {
-  const { user, logout } = useContext(AuthContext);
+  const user = useSelector((state) => state.auth.user);
+  const loading = useSelector((state) => state.auth.loading);
+  const dispatch = useDispatch();
   const navLink = [
     { name: "Home", path: "/#hero" },
     { name: "Features", path: "/#features" },
@@ -17,7 +20,6 @@ const Header = () => {
     try {
       const result = await authApi.logout();
       if (result.success) {
-        logout();
         console.log("Logout successful");
       } else {
         console.log("Logout failed:", result.error);

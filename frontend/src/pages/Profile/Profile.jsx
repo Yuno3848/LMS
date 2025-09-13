@@ -2,10 +2,14 @@ import React, { useEffect, useState } from "react";
 import { authApi } from "../../ApiFetch";
 import toast from "react-hot-toast";
 import { Link } from "react-router";
+import { useDispatch, useSelector } from "react-redux";
+import { setLoading } from "../../redux/authSlicer";
 
 const Profile = () => {
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const user = useSelector((state) => state.auth.user);
+  console.log("data coming from redux", user);
+  const loading = useSelector((state) => state.auth.loading);
+  const dispatch = useDispatch();
 
   useEffect(() => {
     const handleProfile = async () => {
@@ -21,7 +25,7 @@ const Profile = () => {
         toast.error("profile fetched failed");
         console.log("unexpected error while fetching profile", error.message);
       } finally {
-        setLoading(false);
+        dispatch(setLoading(false));
       }
     };
     handleProfile();

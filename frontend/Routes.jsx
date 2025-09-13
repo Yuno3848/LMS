@@ -1,5 +1,5 @@
 import React, { useContext } from "react";
-import { AuthContext } from "./src/Context/AuthContext";
+
 import { createBrowserRouter, Navigate } from "react-router";
 import Home from "./src/pages/Home/Home";
 import Login from "./src/pages/Login/Login";
@@ -7,9 +7,9 @@ import SignUp from "./src/pages/SignUp/SignUp";
 import Profile from "./src/pages/Profile/Profile";
 import UpdateProfile from "./src/pages/Profile/UpdateProfile";
 import Course from "./src/pages/MainCourse/Course/Course";
-
+import { useSelector } from "react-redux";
 const ProtectedRoute = ({ children }) => {
-  const { user } = useContext(AuthContext);
+  const user = useSelector((state) => state.auth.user);
   return user ? children : <Navigate to="/login" />;
 };
 export const routes = createBrowserRouter([

@@ -1,29 +1,33 @@
 import React, { useContext, useState } from "react";
 import toast from "react-hot-toast";
 import { Link, useNavigate } from "react-router";
-
-import { AuthContext } from "../../Context/AuthContext";
 import { authApi } from "../../ApiFetch";
+import { useDispatch, useSelector } from "react-redux";
+import { loginSuccess, setLoading } from "../../redux/authSlicer";
 
 const Login = () => {
   const [formData, setFormData] = useState({
     email: "",
     password: "",
   });
-
-  const [loading, setLoading] = useState(false);
-
-  const { login } = useContext(AuthContext);
-
+  const user = useSelector((state) => state.auth.user);
+  const loading = useSelector((state) => state.auth.loading);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
+
+    dispatch(setLoading(true));
+
     try {
       const result = await authApi.login(formData);
       if (result.success) {
         console.log("Registration successful:", result.data);
         toast.success("login successfully");
-        login(result.data);
+
+        dispatch(loginSuccess(result.data));
+
+        navigate("/");
       } else {
         console.log("login failed", result.error);
         toast.error(result.error);
@@ -31,7 +35,7 @@ const Login = () => {
     } catch (error) {
       toast.error(error.message || "Something went wrong");
     } finally {
-      setLoading(false);
+      dispatch(setLoading(false));
     }
   };
 

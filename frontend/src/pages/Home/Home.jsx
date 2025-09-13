@@ -30,8 +30,10 @@ const Home = () => {
         <CoreFeaturesSection />
         <WhyChooseUsSection />
         <TestimonialsSection />
-        <div id="about"></div>
-        <AboutSection />
+        <div id="about">
+          <AboutSection />
+        </div>
+
         <div id="features">
           <FeaturesSection />
         </div>

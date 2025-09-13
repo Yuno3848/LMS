@@ -1,25 +1,21 @@
-import { useContext } from "react";
 import { Toaster } from "react-hot-toast";
 import { RouterProvider } from "react-router";
-import { AuthContext } from "./Context/AuthContext";
+
 import routes from "../routes";
+import { useSelector } from "react-redux";
+import Loading from "./components/Loading";
 
 function App() {
-  const { loading } = useContext(AuthContext);
+  const loading = useSelector((state) => state.auth.loading);
 
   if (loading) {
-    return (
-      <div className="flex items-center justify-center h-screen">
-        Loading...
-      </div>
-    );
+    return <Loading />;
   }
 
   return (
     <>
       <RouterProvider router={routes} />
       <Toaster
-        position="top-center"
         reverseOrder={false}
         toastOptions={{
           style: {
