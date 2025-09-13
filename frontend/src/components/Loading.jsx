@@ -3,7 +3,6 @@ import React from "react";
 const Loading = ({ text = "Brewing your account..." }) => {
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-gradient-to-br from-amber-50 to-orange-50 z-50">
-      {/* Floating background elements */}
       <div className="absolute inset-0 overflow-hidden">
         {[...Array(8)].map((_, i) => (
           <div
@@ -20,11 +19,8 @@ const Loading = ({ text = "Brewing your account..." }) => {
       </div>
 
       <div className="relative flex flex-col items-center space-y-8 p-12 bg-white/80 backdrop-blur-md rounded-3xl shadow-2xl border border-amber-200/50">
-        {/* Main cup animation */}
         <div className="relative">
-          {/* Cup body */}
           <div className="w-24 h-32 bg-gradient-to-b from-amber-100 to-amber-200 rounded-b-3xl rounded-t-lg border-4 border-amber-800 relative overflow-hidden shadow-lg">
-            {/* Liquid fill animation */}
             <div
               className="absolute bottom-0 left-0 w-full bg-gradient-to-t from-amber-700 via-amber-600 to-amber-500 rounded-b-3xl"
               style={{
@@ -32,7 +28,6 @@ const Loading = ({ text = "Brewing your account..." }) => {
               }}
             />
 
-            {/* Liquid surface ripples */}
             <div
               className="absolute bottom-0 left-0 w-full h-2 bg-gradient-to-r from-transparent via-amber-400 to-transparent opacity-60"
               style={{
@@ -40,14 +35,12 @@ const Loading = ({ text = "Brewing your account..." }) => {
               }}
             />
 
-            {/* Foam layer */}
             <div
               className="absolute top-4 left-2 right-2 h-3 bg-gradient-to-b from-orange-100 to-transparent rounded-full opacity-80"
               style={{ animation: "foam 2s ease-in-out infinite" }}
             />
           </div>
 
-          {/* Cup handle */}
           <div
             className="absolute right-[-16px] top-8 w-8 h-12 border-4 border-amber-800 rounded-full bg-transparent"
             style={{
@@ -55,7 +48,6 @@ const Loading = ({ text = "Brewing your account..." }) => {
             }}
           />
 
-          {/* Steam animation */}
           <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 flex space-x-2">
             {[...Array(3)].map((_, i) => (
               <div
@@ -69,7 +61,6 @@ const Loading = ({ text = "Brewing your account..." }) => {
             ))}
           </div>
 
-          {/* Magical sparkles */}
           {[...Array(5)].map((_, i) => (
             <div
               key={i}
@@ -84,7 +75,6 @@ const Loading = ({ text = "Brewing your account..." }) => {
           ))}
         </div>
 
-        {/* Loading text with typewriter effect */}
         <div className="text-center">
           <h2
             className="text-2xl font-bold text-amber-800 mb-4"
@@ -93,7 +83,6 @@ const Loading = ({ text = "Brewing your account..." }) => {
             {text}
           </h2>
 
-          {/* Bouncing dots */}
           <div className="flex justify-center space-x-2">
             {[...Array(3)].map((_, i) => (
               <div
@@ -108,7 +97,6 @@ const Loading = ({ text = "Brewing your account..." }) => {
           </div>
         </div>
 
-        {/* Progress indicator */}
         <div className="w-64 h-2 bg-amber-200 rounded-full overflow-hidden shadow-inner">
           <div
             className="h-full bg-gradient-to-r from-amber-500 to-orange-500 rounded-full shadow-sm"
@@ -117,7 +105,6 @@ const Loading = ({ text = "Brewing your account..." }) => {
         </div>
       </div>
 
-      {/* CSS Animations */}
       <style jsx>{`
         @keyframes liquidFill {
           0%,

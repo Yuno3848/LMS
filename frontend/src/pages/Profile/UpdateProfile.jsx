@@ -1,33 +1,43 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { authApi } from "../../ApiFetch";
 import toast from "react-hot-toast";
 import { useDispatch, useSelector } from "react-redux";
-import { setLoading } from "../../redux/authSlicer";
-import Loading from "../../components/Loading";
+import { setLoading, updateUser } from "../../redux/authSlicer";
 
 const UpdateProfile = () => {
+  const dispatch = useDispatch();
+  const loading = useSelector((state) => state.auth.loading);
+  const user = useSelector((state) => state.auth.user);
+
   const [formData, setFormData] = useState({
     fullname: "",
     username: "",
   });
 
-  const loading = useSelector((state) => state.auth.loading);
-  const dispatch = useDispatch();
+  useEffect(() => {
+    if (user) {
+      setForm({
+        fullname: user?.fullname || "",
+        username: user?.username || "",
+      });
+    }
+  }, [user]);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     dispatch(setLoading(true));
     try {
       const result = await authApi.updateProfile(formData);
-
-      if (result.success) {
+      console.log("result", result);
+      if (result?.data?.success) {
         setFormData({
-          fullname: result.data.data.fullname,
-          username: result.data.data.username,
+          fullname: result?.data?.data?.fullname || "",
+          username: result?.data?.data?.username || "",
         });
-
+        dispatch(updateUser(result?.data?.data));
         toast.success("profile updated");
       } else {
-        console.log("update profile failed", result.message);
+        console.log("update profile failed", result?.message);
       }
     } catch (error) {
       toast.error("update profile failed");
@@ -38,44 +48,40 @@ const UpdateProfile = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#f5e6ca] via-[#fefaf5] to-[#e7d3b5]">
-      {loading ? (
-        <Loading text="Brewing your profile" />
-      ) : (
-        <div className="w-full max-w-md p-8 rounded-2xl shadow-xl bg-[#fffaf2] border border-[#e0c9a6]">
-          <h2 className="text-3xl font-extrabold text-center text-[#6b4226] mb-4">
-            ✏️ Edit Profile
-          </h2>
+      <div className="w-full max-w-md p-8 rounded-2xl shadow-xl bg-[#fffaf2] border border-[#e0c9a6]">
+        <h2 className="text-3xl font-extrabold text-center text-[#6b4226] mb-4">
+          ✏️ Edit Profile
+        </h2>
 
-          <form className="space-y-5" onSubmit={handleSubmit}>
-            <input
-              type="text"
-              placeholder="Full Name"
-              value={formData.fullname}
-              onChange={(e) => {
-                setFormData({ ...formData, fullname: e.target.value });
-              }}
-              className="w-full px-4 py-3 border rounded-lg border-[#d4b996] bg-[#fdfaf7] focus:ring-2 focus:ring-[#c19a6b] focus:outline-none transition"
-            />
+        <form className="space-y-5" onSubmit={handleSubmit}>
+          <input
+            type="text"
+            placeholder="Full Name"
+            value={formData.fullname}
+            onChange={(e) => {
+              setFormData({ ...formData, fullname: e.target.value });
+            }}
+            className="w-full px-4 py-3 border rounded-lg border-[#d4b996] bg-[#fdfaf7] focus:ring-2 focus:ring-[#c19a6b] focus:outline-none transition"
+          />
 
-            <input
-              type="text"
-              placeholder="Username"
-              value={formData.username}
-              onChange={(e) => {
-                setFormData({ ...formData, username: e.target.value });
-              }}
-              className="w-full px-4 py-3 border rounded-lg border-[#d4b996] bg-[#fdfaf7] focus:ring-2 focus:ring-[#c19a6b] focus:outline-none transition"
-            />
+          <input
+            type="text"
+            placeholder="Username"
+            value={formData.username}
+            onChange={(e) => {
+              setFormData({ ...formData, username: e.target.value });
+            }}
+            className="w-full px-4 py-3 border rounded-lg border-[#d4b996] bg-[#fdfaf7] focus:ring-2 focus:ring-[#c19a6b] focus:outline-none transition"
+          />
 
-            <button
-              type="submit"
-              className="w-full bg-gradient-to-r from-[#b08968] to-[#8c5e3c] text-white py-3 rounded-lg font-semibold shadow-md hover:shadow-lg hover:from-[#8c5e3c] hover:to-[#6b4226] transition transform hover:-translate-y-0.5"
-            >
-              Save Changes
-            </button>
-          </form>
-        </div>
-      )}
+          <button
+            type="submit"
+            className="w-full bg-gradient-to-r from-[#b08968] to-[#8c5e3c] text-white py-3 rounded-lg font-semibold shadow-md hover:shadow-lg hover:from-[#8c5e3c] hover:to-[#6b4226] transition transform hover:-translate-y-0.5"
+          >
+            Save Changes
+          </button>
+        </form>
+      </div>
     </div>
   );
 };
