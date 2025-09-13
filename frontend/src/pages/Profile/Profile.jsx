@@ -9,27 +9,6 @@ const Profile = () => {
   const user = useSelector((state) => state.auth.user);
   console.log("data coming from redux", user);
   const loading = useSelector((state) => state.auth.loading);
-  const dispatch = useDispatch();
-
-  useEffect(() => {
-    const handleProfile = async () => {
-      try {
-        const result = await authApi.profile();
-        if (result.success) {
-          setUser(result.data.data);
-          console.log(result.data.data);
-        } else {
-          console.log("profile fetch failed", result.error);
-        }
-      } catch (error) {
-        toast.error("profile fetched failed");
-        console.log("unexpected error while fetching profile", error.message);
-      } finally {
-        dispatch(setLoading(false));
-      }
-    };
-    handleProfile();
-  }, []);
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#f5e6ca] via-[#fefaf5] to-[#e7d3b5]">
@@ -45,9 +24,9 @@ const Profile = () => {
 
           <form className="space-y-5 relative ">
             <div className="flex justify-center mt-5">
-              {user?.avatar?.url && (
+              {user?.data?.avatar?.url && (
                 <img
-                  src={user.avatar.url}
+                  src={user?.data?.avatar?.url}
                   alt="Profile Avatar"
                   className="w-30 h-30 object-cover rounded-full border border-[#d4b996] mb-3 shadow-md "
                 />
@@ -59,21 +38,21 @@ const Profile = () => {
               placeholder="Username"
               className="w-full px-4 py-3 border rounded-lg border-[#d4b996] bg-[#fdfaf7] focus:ring-2 focus:ring-[#c19a6b] focus:outline-none transition"
               readOnly
-              value={user?.username ?? ""}
+              value={user?.data?.username ?? ""}
             />
             <input
               type="text"
               placeholder="Full Name"
               className="w-full px-4 py-3 border rounded-lg border-[#d4b996] bg-[#fdfaf7] focus:ring-2 focus:ring-[#c19a6b] focus:outline-none transition"
               readOnly
-              value={user?.fullname ?? ""}
+              value={user?.data?.fullname ?? ""}
             />
             <input
               type="email"
               placeholder="Email"
               className="w-full px-4 py-3 border rounded-lg border-[#d4b996] bg-[#fdfaf7] focus:ring-2 focus:ring-[#c19a6b] focus:outline-none transition"
               readOnly
-              value={user?.email ?? ""}
+              value={user?.data?.email ?? ""}
             />
 
             <Link

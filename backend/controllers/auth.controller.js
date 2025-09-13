@@ -142,7 +142,7 @@ export const loginUser = asyncHandler(async (req, res) => {
 
   // Find user by email
   const user = await User.findOne({ email }).select(
-    '-emailVerifiedToken -emailVerificationTokenExpiry -forgotPasswordExpiry -isEmailVerified',
+    '-emailVerifiedToken -emailVerificationTokenExpiry -forgotPasswordExpiry -isEmailVerified -refreshToken -createdAt -updatedAt',
   );
   // If user not found, throw an error
   if (!user) {
@@ -181,6 +181,11 @@ export const loginUser = asyncHandler(async (req, res) => {
       emailVerificationTokenExpiry: 0,
       forgotPasswordExpiry: 0,
       isEmailVerified: 0,
+      refreshToken: 0,
+      createdAt: 0,
+      updatedAt: 0,
+      "avatar.localPath" : 0,
+      "avatar._id" : 0
     },
     { lean: true },
   );

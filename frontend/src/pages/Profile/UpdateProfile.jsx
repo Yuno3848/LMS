@@ -1,6 +1,9 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { authApi } from "../../ApiFetch";
 import toast from "react-hot-toast";
+import { useDispatch, useSelector } from "react-redux";
+import { setLoading } from "../../redux/authSlicer";
+import Loading from "../../components/Loading";
 
 const UpdateProfile = () => {
   const [formData, setFormData] = useState({
@@ -8,11 +11,11 @@ const UpdateProfile = () => {
     username: "",
   });
 
-  const [loading, setLoading] = useState(false);
-
+  const loading = useSelector((state) => state.auth.loading);
+  const dispatch = useDispatch();
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
+    dispatch(setLoading(true));
     try {
       const result = await authApi.updateProfile(formData);
 
@@ -29,16 +32,14 @@ const UpdateProfile = () => {
     } catch (error) {
       toast.error("update profile failed");
     } finally {
-      setLoading(false);
+      dispatch(setLoading(false));
     }
   };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#f5e6ca] via-[#fefaf5] to-[#e7d3b5]">
       {loading ? (
-        <div className="text-lg font-semibold text-[#6b4226] animate-pulse">
-          Loading your profile...
-        </div>
+        <Loading text="Brewing your profile" />
       ) : (
         <div className="w-full max-w-md p-8 rounded-2xl shadow-xl bg-[#fffaf2] border border-[#e0c9a6]">
           <h2 className="text-3xl font-extrabold text-center text-[#6b4226] mb-4">
