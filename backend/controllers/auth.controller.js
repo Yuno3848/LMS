@@ -184,8 +184,8 @@ export const loginUser = asyncHandler(async (req, res) => {
       refreshToken: 0,
       createdAt: 0,
       updatedAt: 0,
-      "avatar.localPath" : 0,
-      "avatar._id" : 0
+      'avatar.localPath': 0,
+      'avatar._id': 0,
     },
     { lean: true },
   );

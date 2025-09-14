@@ -87,10 +87,28 @@ export const authApi = {
       if (!res.ok) {
         throw new Error(`Update Profile failed ${res.status}`);
       }
-      
+
       return { success: true, data };
     } catch (error) {
       return { success: false, error: error.message };
+    }
+  },
+
+  updateAvatar: async (credential) => {
+    try {
+      const res = await fetch(`${baseAuthURL}/update-avatar`, {
+        method: "PATCH",
+        credentials: "include",
+        body: credential,
+      });
+
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(`update avatar failed ${res.status}`);
+      }
+      return { success: true, data };
+    } catch (error) {
+      return { success: true, error: error.message };
     }
   },
 };

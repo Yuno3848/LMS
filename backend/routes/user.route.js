@@ -51,7 +51,7 @@ auth.patch('/update-profile', validateProfile(), validatorError, isLogged, updat
 auth.patch('/change-password', validateChangePassword(), validatorError, isLogged, changePassword);
 auth.patch(
   '/update-avatar',
-  multerPath('../public/avatar').single('avatar'),
+  multerPath('./public/avatar').single('avatar'),
   isLogged,
   updateProfileAvatar,
 );
