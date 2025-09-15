@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { authApi } from "../../ApiFetch";
 import toast from "react-hot-toast";
 import { useDispatch, useSelector } from "react-redux";
-import { setLoading, updateAvatar, updateUser } from "../../redux/authSlicer";
+import { setLoading, updateUser } from "../../redux/authSlicer";
 import { Camera, User, Edit3 } from "lucide-react";
 
 const UpdateProfile = () => {
@@ -16,40 +16,70 @@ const UpdateProfile = () => {
   });
 
   const [avatarPreview, setAvatarPreview] = useState("");
-  const avatar = useSelector((state) => state.auth.avatar);
+
   useEffect(() => {
     return () => {
-      URL.revokeObjectURL(avatarPreview);
+      if (avatarPreview && avatarPreview.startsWith("blob:")) {
+        URL.revokeObjectURL(avatarPreview);
+      }
     };
   }, [avatarPreview]);
 
   useEffect(() => {
     if (user) {
+
+      const userData = user.data || user;
       setFormData({
-        fullname: user?.fullname || "",
-        username: user?.username || "",
+        fullname: userData?.fullname || "",
+        username: userData?.username || "",
       });
-      setAvatarPreview(user?.avatar || "");
+      setAvatarPreview(userData?.avatar?.url || "");
     }
   }, [user]);
 
   const handleAvatarChange = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
+
     setAvatarPreview(URL.createObjectURL(file));
+
     try {
       const form = new FormData();
       form.append("avatar", file);
 
       const result = await authApi.updateAvatar(form);
       if (result?.success) {
-        toast.success("avatar changed successfully");
-        dispatch(updateAvatar(result?.data?.data?.avatar));
+        toast.success("Avatar changed successfully");
+        const newAvatarData = result?.data?.data?.avatar;
+ 
+
+        const currentUserData = user?.data || user;
+
+
+        const updatedUserData = {
+          ...currentUserData,
+          avatar: newAvatarData,
+        };
+
+        if (user?.data) {
+          dispatch(updateUser({ ...user, data: updatedUserData }));
+        } else {
+          dispatch(updateUser(updatedUserData));
+        }
+
+      
+        setAvatarPreview(newAvatarData?.url || "");
       } else {
         toast.error(result.error || "Failed to change the avatar");
+      
+        const userData = user?.data || user;
+        setAvatarPreview(userData?.avatar?.url || "");
       }
     } catch (error) {
-      toast.error(error.message || "something went wrong");
+      toast.error(error.message || "Something went wrong");
+     
+      const userData = user?.data || user;
+      setAvatarPreview(userData?.avatar?.url || "");
     }
   };
 
@@ -59,11 +89,25 @@ const UpdateProfile = () => {
     try {
       const result = await authApi.updateProfile(formData);
       if (result?.data?.success) {
+        const currentUserData = user?.data || user;
+        const updatedProfileData = {
+          ...currentUserData,
+          ...result.data.data,
+     
+          avatar: result.data.data.avatar || currentUserData?.avatar,
+        };
+
         setFormData({
-          fullname: result?.data?.data?.fullname || "",
-          username: result?.data?.data?.username || "",
+          fullname: updatedProfileData.fullname || "",
+          username: updatedProfileData.username || "",
         });
-        dispatch(updateUser(result?.data?.data));
+        
+        if (user?.data) {
+          dispatch(updateUser({ ...user, data: updatedProfileData }));
+        } else {
+          dispatch(updateUser(updatedProfileData));
+        }
+
         toast.success("Profile updated successfully!");
       } else {
         toast.error("Failed to update profile");
@@ -75,9 +119,15 @@ const UpdateProfile = () => {
     }
   };
 
+  const getCurrentAvatarUrl = () => {
+    if (avatarPreview) return avatarPreview;
+    const userData = user?.data || user;
+    return userData?.avatar?.url || "";
+  };
+
   return (
     <div>
-      {/* Inline CSS styles */}
+   
       <style>{`
         @keyframes steam {
           0% { transform: translateY(0) rotate(0deg); opacity: 0.7; }
@@ -211,9 +261,9 @@ const UpdateProfile = () => {
                     borderColor: "rgba(212, 185, 150, 0.5)",
                   }}
                 >
-                  {avatarPreview ? (
+                  {getCurrentAvatarUrl() ? (
                     <img
-                      src={avatarPreview}
+                      src={getCurrentAvatarUrl()}
                       alt="Avatar preview"
                       className="w-full h-full object-cover"
                     />

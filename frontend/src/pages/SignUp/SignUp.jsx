@@ -32,10 +32,9 @@ const SignUp = () => {
       }
       const result = await authApi.signup(submitData);
       if (result.success) {
-        toast.success("Signed up successfully");
+        toast.success(result?.data?.message || "Signed up successfully");
         navigate("/login");
       } else {
-        console.log("Sign up failed:", result.error);
         toast.error(result.error);
       }
     } catch (error) {

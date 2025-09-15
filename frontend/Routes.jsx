@@ -4,54 +4,89 @@ import { createBrowserRouter, Navigate } from "react-router";
 import Home from "./src/pages/Home/Home";
 import Login from "./src/pages/Login/Login";
 import SignUp from "./src/pages/SignUp/SignUp";
-import Profile from "./src/pages/Profile/Profile";
+import Profile from "./src/pages/Profile/Profile/Profile";
 import UpdateProfile from "./src/pages/Profile/UpdateProfile";
 import Course from "./src/pages/MainCourse/Course/Course";
 import { useSelector } from "react-redux";
+import LayoutWithFooter from "./Layouts/LayoutWithFooter";
+import LayoutWithoutFooter from "./Layouts/LayoutWithoutFooter";
+import LayoutwithFooter_Header from "./Layouts/LayoutwithFooter_Header";
+import HelpAndSupport from "./src/pages/HelpAndSupport/HelpAndSupport";
+import EmailVerificationPage from "./src/pages/Profile/Profile/ProfilePages/EmailVerificationPage";
+
 const ProtectedRoute = ({ children }) => {
   const user = useSelector((state) => state.auth.user);
   return user ? children : <Navigate to="/login" />;
 };
 export const routes = createBrowserRouter([
   {
-    path: "/",
-    element: (
-      <ProtectedRoute>
-        <Home />
-      </ProtectedRoute>
-    ),
+    element: <LayoutWithFooter />,
+    children: [
+      {
+        path: "/",
+        element: <Home />,
+      },
+
+      {
+        path: "/course",
+        element: (
+          <ProtectedRoute>
+            <Course />
+          </ProtectedRoute>
+        ),
+      },
+    ],
   },
   {
-    path: "/login",
-    element: <Login />,
+    element: <LayoutwithFooter_Header />,
+    children: [
+      {
+        path: "/profile",
+        element: (
+          <ProtectedRoute>
+            <Profile />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "/updateprofile",
+        element: (
+          <ProtectedRoute>
+            <UpdateProfile />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "/help",
+        element: (
+          <ProtectedRoute>
+            <HelpAndSupport />
+          </ProtectedRoute>
+        ),
+      },
+    ],
   },
   {
-    path: "signup",
-    element: <SignUp />,
+    path: "/verify-email/:token",
+    element: <EmailVerificationPage />,
   },
   {
-    path: "/profile",
-    element: (
-      <ProtectedRoute>
-        <Profile />
-      </ProtectedRoute>
-    ),
+    element: <LayoutWithoutFooter />,
+    children: [
+      {
+        path: "signup",
+        element: <SignUp />,
+      },
+      {
+        path: "/login",
+        element: <Login />,
+      },
+    ],
   },
+
   {
-    path: "/updateprofile",
-    element: (
-      <ProtectedRoute>
-        <UpdateProfile />
-      </ProtectedRoute>
-    ),
-  },
-  {
-    path: "/course",
-    element: (
-      <ProtectedRoute>
-        <Course />
-      </ProtectedRoute>
-    ),
+    path: "*",
+    element: <Navigate to="/" replace />,
   },
 ]);
 export default routes;

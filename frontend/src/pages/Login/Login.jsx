@@ -22,14 +22,14 @@ const Login = () => {
     try {
       const result = await authApi.login(formData);
       if (result.success) {
-        console.log("Registration successful:", result.data);
+       
         toast.success("login successfully");
 
         dispatch(loginSuccess(result.data));
-
+        
         navigate("/");
       } else {
-        console.log("login failed", result.error);
+       
         toast.error(result.error);
       }
     } catch (error) {

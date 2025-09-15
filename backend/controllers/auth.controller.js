@@ -60,13 +60,17 @@ export const registeredUser = asyncHandler(async (req, res) => {
   //save the new user to the database
   await newUser.save();
   //send email verification link to the user
+
+  const verificationUrl = `${process.env.FRONTEND_URL}/verify-email/${unhashedToken}`;
+
+  console.log('🔗 Generated verification URL:', verificationUrl);
   await sendMail({
     username: newUser.username,
     email: newUser.email,
     subject: 'Email Verification',
     mailGenContent: generateMail(
       newUser.username,
-      `${process.env.BASE_URL}/api/v1/auth/verify-email/${unhashedToken}`,
+      `${process.env.FRONTEND_URL}/verify-email/${unhashedToken}`,
     ),
   });
   // exclude sensitive fields from the response
@@ -142,7 +146,7 @@ export const loginUser = asyncHandler(async (req, res) => {
 
   // Find user by email
   const user = await User.findOne({ email }).select(
-    '-emailVerifiedToken -emailVerificationTokenExpiry -forgotPasswordExpiry -isEmailVerified -refreshToken -createdAt -updatedAt',
+    '-emailVerifiedToken -emailVerificationTokenExpiry -forgotPasswordExpiry  -refreshToken -createdAt -updatedAt',
   );
   // If user not found, throw an error
   if (!user) {
@@ -180,7 +184,6 @@ export const loginUser = asyncHandler(async (req, res) => {
       emailVerifiedToken: 0,
       emailVerificationTokenExpiry: 0,
       forgotPasswordExpiry: 0,
-      isEmailVerified: 0,
       refreshToken: 0,
       createdAt: 0,
       updatedAt: 0,
@@ -415,7 +418,7 @@ export const updateProfile = asyncHandler(async (req, res) => {
       new: true,
     },
   ).select(
-    '-password -emailVerifiedToken -emailVerificationTokenExpiry -forgotPasswordExpiry -forgotPasswordToken -refreshToken',
+    '-password -emailVerifiedToken -emailVerificationTokenExpiry -forgotPasswordExpiry -forgotPasswordToken -refreshToken -avatar.localPath -createdAt -updatedAt ',
   );
   // If user not found, throw an error
   if (!user) {
@@ -434,7 +437,7 @@ export const updateProfileAvatar = asyncHandler(async (req, res) => {
   }
   // find user by id
   const user = await User.findById(userId).select(
-    '-password -emailVerifiedToken -emailVerificationTokenExpiry -forgotPasswordExpiry -forgotPasswordToken -refreshToken',
+    '-password -emailVerifiedToken -emailVerificationTokenExpiry -forgotPasswordExpiry -forgotPasswordToken -refreshToken -createdAt -updatedAt',
   );
   //if user not found, throw an error
   if (!user) {
@@ -457,7 +460,7 @@ export const updateProfileAvatar = asyncHandler(async (req, res) => {
   // update user avatar local path
   user.avatar.localPath = avatarLocalPath;
   // save the user document
-  user.save();
+  await user.save();
   // send the response with the updated user data
   return res.status(200).json(new ApiResponse(200, 'avatar updated successfully', user));
 });
@@ -470,7 +473,7 @@ export const me = asyncHandler(async (req, res) => {
   }
 
   const userDetails = await User.findById(user).select(
-    '-password -emailVerficationToken -emailVerficationTokenExpiry -forgotPasswordExpiry -forgotPasswordToken -refreshTokenn',
+    '-password -emailVerificationToken -emailVerificationTokenExpiry -forgotPasswordExpiry -forgotPasswordToken -refreshToken -createdAt -updatedAt',
   );
 
   if (!userDetails) {

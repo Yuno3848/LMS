@@ -108,7 +108,42 @@ export const authApi = {
       }
       return { success: true, data };
     } catch (error) {
-      return { success: true, error: error.message };
+      return { success: false, error: error.message };
+    }
+  },
+
+  verifyMail: async (token) => {
+    try {
+      const res = await fetch(`${baseAuthURL}/verify-email/${token}`, {
+        method: "GET",
+        credentials: "include",
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(`Email verification failed ${res.status}`);
+      }
+      return { success: true, data };
+    } catch (error) {
+      return { success: false, error: error.message };
+    }
+  },
+
+  me: async () => {
+    try {
+      const res = await fetch(`${baseAuthURL}/me`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(`Email verification failed ${res.status}`);
+      }
+      return { success: true, data };
+    } catch (error) {
+       return { success: false, error: error.message };
     }
   },
 };

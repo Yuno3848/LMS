@@ -13,6 +13,7 @@ const instructorProfileSchema = new Schema(
         trim: true,
       },
     ],
+
     socialLinks: {
       linkedin: String,
       twitter: String,

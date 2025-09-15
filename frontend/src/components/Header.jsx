@@ -5,6 +5,8 @@ import React from "react";
 import { authApi } from "../ApiFetch";
 import { HashLink } from "react-router-hash-link";
 import { useDispatch, useSelector } from "react-redux";
+import toast from "react-hot-toast";
+import { logout } from "../redux/authSlicer";
 const Header = () => {
   const user = useSelector((state) => state.auth.user);
   const loading = useSelector((state) => state.auth.loading);
@@ -14,18 +16,18 @@ const Header = () => {
     { name: "Features", path: "/#features" },
     { name: "About", path: "/#about" },
   ];
-  console.log(user);
 
   const handleLogOut = async () => {
     try {
       const result = await authApi.logout();
       if (result.success) {
-        console.log("Logout successful");
+        dispatch(logout());
+        toast.success(result?.data?.message || "Logout successful");
       } else {
-        console.log("Logout failed:", result.error);
+        toast.error(result.error);
       }
     } catch (error) {
-      console.error("Unexpected error during logout:", error);
+      toast.error(error.message);
     }
   };
 
@@ -86,14 +88,20 @@ const Header = () => {
                 </Link>
 
                 <Link
-                  to="/editprofile"
+                  to="/help"
                   className="block px-4 py-2 text-[#6b4226] hover:bg-[#e0c9a6] rounded-b-lg"
                 >
                   Help And Support
                 </Link>
+                <Link
+                  to="/help"
+                  className="block px-4 py-2 text-[#6b4226] hover:bg-[#e0c9a6] rounded-b-lg"
+                >
+                  Reset Password
+                </Link>
               </div>
             </div>
-            {/* Logout Button */}
+
             <button
               onClick={handleLogOut}
               className="flex items-center space-x-2 px-4 py-2 text-[#6b4226] font-semibold hover:text-[#8c5e3c] hover:bg-[#e0c9a6]/20 rounded-lg transition-all duration-300 relative group"
