@@ -1,3 +1,5 @@
+import { createNextState } from "@reduxjs/toolkit";
+
 const baseAuthURL = "/api/v1/auth";
 export const authApi = {
   signup: async (credential) => {
@@ -119,8 +121,11 @@ export const authApi = {
         credentials: "include",
       });
       const data = await res.json();
+     
       if (!res.ok) {
+        console.log(res);
         throw new Error(`Email verification failed ${res.status}`);
+        
       }
       return { success: true, data };
     } catch (error) {
@@ -143,7 +148,49 @@ export const authApi = {
       }
       return { success: true, data };
     } catch (error) {
-       return { success: false, error: error.message };
+      return { success: false, error: error.message };
+    }
+  },
+
+  forgotPassword: async (email) => {
+    try {
+      const res = await fetch(`${baseAuthURL}/forgot-password`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify({ email }),
+      });
+
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(`Forgot Password failed ${res.status}`);
+      }
+      return { success: true, data };
+    } catch (error) {
+      return { success: false, error: error.message };
+    }
+  },
+
+  resetPassword: async ({ newPassword, confirmPassword, token }) => {
+    try {
+      const res = await fetch(`${baseAuthURL}/reset-password/${token}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify({ newPassword, confirmPassword }),
+      });
+
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(`Reset password failed ${res.status}`);
+      }
+      return { success: true, data };
+    } catch (error) {
+      return { success: false, error: error.message };
     }
   },
 };

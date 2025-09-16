@@ -94,10 +94,10 @@ const Header = () => {
                   Help And Support
                 </Link>
                 <Link
-                  to="/help"
+                  to="/forgot-password"
                   className="block px-4 py-2 text-[#6b4226] hover:bg-[#e0c9a6] rounded-b-lg"
                 >
-                  Reset Password
+                  Forgot Password?
                 </Link>
               </div>
             </div>

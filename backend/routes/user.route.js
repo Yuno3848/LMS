@@ -40,7 +40,7 @@ auth.get('/verify-email/:token', validateVerifyEmail(), validatorError, verifyMa
 
 auth.post('/login', validateloginUser(), validatorError, loginUser);
 auth.get('/logout', isLogged, logoutUser);
-auth.get('/forgot-password', validateForgotPassword(), validatorError, forgotPassword);
+auth.post('/forgot-password', validateForgotPassword(), validatorError, forgotPassword);
 
 auth.patch('/reset-password/:token', validateResetPassword(), validatorError, resetPassword);
 

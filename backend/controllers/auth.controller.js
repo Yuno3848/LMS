@@ -92,20 +92,31 @@ export const registeredUser = asyncHandler(async (req, res) => {
 export const verifyMail = asyncHandler(async (req, res) => {
   // Extract token from query parameters
   const { token } = req.params;
-  //create a hash of the token to match with the stored token
-  const emailVerifiedToken = crypto.createHash('sha256').update(token).digest('hex');
 
+  //create a hash of the token to match with the stored token
+  const emailVerifiedToken =  crypto.createHash('sha256').update(token).digest('hex');
+  console.log('🔍 Hashed token for DB lookup:', emailVerifiedToken);
   // Find user by email verification token
   const user = await User.findOne({
     emailVerifiedToken,
     emailVerificationTokenExpiry: { $gt: Date.now() },
-  }).select(
-    '-password -emailVerifiedToken -emailVerificationTokenExpiry -forgotPasswordExpiry -isEmailVerified',
-  );
-
+  }).select('-password -forgotPasswordExpiry  -createdAt -updatedAt');
+  console.log('🔍 User found:', user);
+  
   // If user not found, throw an error
   if (!user) {
-    throw new ApiError(404, 'User not found or token is invalid');
+    throw new ApiError(400, 'User not found or token is invalid');
+  }
+
+  if (user.isEmailVerified) {
+    return res.status(200).json(
+      new ApiResponse(200, 'Email is already verified', {
+        _id: user._id,
+        username: user.username,
+        email: user.email,
+        isEmailVerified: true,
+      }),
+    );
   }
 
   // Update user's email verification status
@@ -226,13 +237,6 @@ export const forgotPassword = asyncHandler(async (req, res) => {
     throw new ApiError(400, `User not found`);
   }
 
-  // Generate access and refresh tokens
-  const { accessToken, refreshToken } = await user._id;
-  // If tokens are not generated, throw an error
-  if (!accessToken || !refreshToken) {
-    throw new ApiError(500, 'Failed to generate tokens');
-  }
-  // generate email verification token
   const { unhashedToken, hashedToken, tokenExpiry } = user.generateTemporaryToken();
   user.forgotPasswordToken = hashedToken;
   user.forgotPasswordExpiry = tokenExpiry;
@@ -246,7 +250,7 @@ export const forgotPassword = asyncHandler(async (req, res) => {
     subject: 'Email Verification',
     mailGenContent: forgotPasswordMail(
       user.username,
-      `${process.env.BASE_URL}/api/v1/auth/reset-password/${unhashedToken}`,
+      `${process.env.FRONTEND_URL}/reset-password/${unhashedToken}`,
     ),
   });
 
@@ -258,8 +262,6 @@ export const forgotPassword = asyncHandler(async (req, res) => {
       password: user.password,
       username: user.username,
       isEmailVerified: user.isEmailVerified,
-      createdAt: user.createdAt,
-      updatedAt: user.updatedAt,
     }),
   );
 });

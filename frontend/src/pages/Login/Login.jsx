@@ -30,7 +30,7 @@ const Login = () => {
         navigate("/");
       } else {
        
-        toast.error(result.error);
+        toast.error("Invalid password" || result?.error);
       }
     } catch (error) {
       toast.error(error.message || "Something went wrong");

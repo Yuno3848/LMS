@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { authApi } from "../../../../ApiFetch";
 import { useNavigate, useParams } from "react-router";
 import toast from "react-hot-toast";
-import { updateUser } from "../../../../redux/authSlicer";
+import { logout, updateUser } from "../../../../redux/authSlicer";
 
 const EmailVerificationPage = () => {
   const user = useSelector((state) => state.auth.user);
@@ -18,6 +18,8 @@ const EmailVerificationPage = () => {
     const verifyEmail = async () => {
       try {
         const response = await authApi.verifyMail(token); // send token
+        console.log("email verification token :", token);
+        console.log("emal verification result :", response);
         if (response.success) {
           toast.success(
             response?.data?.message || "Email verified successfully"
@@ -28,9 +30,8 @@ const EmailVerificationPage = () => {
               "Email verification successful! You can now access all features."
           );
           dispatch(updateUser(response.data));
-          
         } else {
-          toast.error(response.error);
+          toast.error("Email verification failed" || response.error);
           setStatus("error");
           setMessage(response.error);
         }

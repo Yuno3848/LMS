@@ -43,7 +43,7 @@ const Home = () => {
         <StudyToolsSection />
         <CTASection />
       </main>
-      <Footer/>
+      
     </div>
   );
 };

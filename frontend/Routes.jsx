@@ -13,6 +13,9 @@ import LayoutWithoutFooter from "./Layouts/LayoutWithoutFooter";
 import LayoutwithFooter_Header from "./Layouts/LayoutwithFooter_Header";
 import HelpAndSupport from "./src/pages/HelpAndSupport/HelpAndSupport";
 import EmailVerificationPage from "./src/pages/Profile/Profile/ProfilePages/EmailVerificationPage";
+import StudentProfile from "./src/pages/Profile/Profile/StudentProfile/StudentProfile";
+import ForgotPassword from "./src/pages/Password/ForgotPassword";
+import ResetPassword from "./src/pages/Password/ResetPassword";
 
 const ProtectedRoute = ({ children }) => {
   const user = useSelector((state) => state.auth.user);
@@ -64,7 +67,19 @@ export const routes = createBrowserRouter([
           </ProtectedRoute>
         ),
       },
+      {
+        path: "/forgot-password",
+        element: (
+          <ProtectedRoute>
+            <ForgotPassword />
+          </ProtectedRoute>
+        ),
+      },
     ],
+  },
+  {
+    path: "/reset-password/:token",
+    element: <ResetPassword />,
   },
   {
     path: "/verify-email/:token",
@@ -74,7 +89,7 @@ export const routes = createBrowserRouter([
     element: <LayoutWithoutFooter />,
     children: [
       {
-        path: "signup",
+        path: "/signup",
         element: <SignUp />,
       },
       {
