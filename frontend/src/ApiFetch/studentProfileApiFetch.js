@@ -9,15 +9,31 @@ export const studentProfileApiFetch = {
       });
 
       const data = await res.json();
-      if(!res.ok){
-        throw new Error("Failed to create student profile")
+      if (!res.ok) {
+        throw new Error("Failed to create student profile");
       }
-      return {success:true,data }
+      return { success: true, data };
     } catch (error) {
-        return {success:false, message: error.message}
+      return { success: false, message: error.message };
     }
   },
+  updateStudentProfile: async (credentials) => {
+    try {
+      const res = await fetch(`${baseUrl}/update-student-profile`, {
+        method: "PATCH",
+        credentials: "include",
+        body: JSON.stringify(credentials),
+      });
 
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error("Failed to update student profile");
+      }
+      return { success: true, data };
+    } catch (error) {
+      return { success: false, message: error.message };
+    }
+  },
   verifyStudent: async () => {
     try {
       const res = await fetch(`${baseUrl}/verify-student-profile`, {
