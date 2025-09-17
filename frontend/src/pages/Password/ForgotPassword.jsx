@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Mail, ArrowLeft, Send, CheckCircle, AlertCircle } from "lucide-react";
-import { authApi } from "../../ApiFetch";
+import { authApi } from "../../ApiFetch/authApiFetch";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
@@ -25,9 +25,8 @@ const ForgotPassword = () => {
       if (result.success) {
         setIsSubmitted(true);
         toast.success(result?.data?.message || "Forgot password successfully");
-      }
-      else{
-        toast.error("Invalid credential" || result?.error)
+      } else {
+        toast.error(result?.error || "Invalid credential");
       }
     } catch (error) {
       toast.error(error.message || "something went wrong!");
@@ -68,7 +67,8 @@ const ForgotPassword = () => {
               </p>
             </div>
 
-            <div className="space-y-6">
+            {/* ✅ Wrapped inside form */}
+            <form onSubmit={handleSubmit} className="space-y-6">
               <div>
                 <label className="flex items-center gap-2 text-[#6b4226] font-bold mb-2 text-sm">
                   <Mail className="w-4 h-4" />
@@ -85,7 +85,7 @@ const ForgotPassword = () => {
               </div>
 
               <button
-                onClick={handleSubmit}
+                type="submit"
                 disabled={isLoading || !email}
                 className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-[#b08968] to-[#8c5e3c] text-white font-bold rounded-lg shadow-md hover:shadow-lg hover:from-[#8c5e3c] hover:to-[#6b4226] transition transform hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
               >
@@ -101,11 +101,12 @@ const ForgotPassword = () => {
                   </>
                 )}
               </button>
-            </div>
+            </form>
 
             <div className="mt-8 text-center">
               <button
                 onClick={handleBackToLogin}
+                type="button"
                 className="flex items-center gap-2 text-[#8c5e3c] hover:text-[#6b4226] font-medium transition mx-auto"
               >
                 <ArrowLeft className="w-4 h-4" />
@@ -129,7 +130,7 @@ const ForgotPassword = () => {
                 <div className="text-sm text-green-800">
                   <p className="font-medium mb-1">Check your email!</p>
                   <p className="text-green-700">
-                    We've sent a password reset link to
+                    We've sent a password reset link to{" "}
                     <span className="font-medium">{email}</span>
                   </p>
                 </div>
@@ -151,6 +152,7 @@ const ForgotPassword = () => {
             <div className="space-y-3">
               <button
                 onClick={handleBackToLogin}
+                type="button"
                 className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-[#b08968] to-[#8c5e3c] text-white font-bold rounded-lg shadow-md hover:shadow-lg hover:from-[#8c5e3c] hover:to-[#6b4226] transition transform hover:-translate-y-0.5"
               >
                 <ArrowLeft className="w-4 h-4" />
@@ -162,6 +164,7 @@ const ForgotPassword = () => {
                   setIsSubmitted(false);
                   setEmail("");
                 }}
+                type="button"
                 className="w-full px-6 py-2 text-[#8c5e3c] hover:text-[#6b4226] font-medium transition border border-[#d4b996] rounded-lg hover:bg-[#fdfaf7]"
               >
                 Send Another Email

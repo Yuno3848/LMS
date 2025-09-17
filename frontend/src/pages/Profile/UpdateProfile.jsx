@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { authApi } from "../../ApiFetch";
+import { authApi } from "../../ApiFetch/authApiFetch";
 import toast from "react-hot-toast";
 import { useDispatch, useSelector } from "react-redux";
 import { setLoading, updateUser } from "../../redux/authSlicer";
@@ -27,7 +27,6 @@ const UpdateProfile = () => {
 
   useEffect(() => {
     if (user) {
-
       const userData = user.data || user;
       setFormData({
         fullname: userData?.fullname || "",
@@ -51,10 +50,8 @@ const UpdateProfile = () => {
       if (result?.success) {
         toast.success("Avatar changed successfully");
         const newAvatarData = result?.data?.data?.avatar;
- 
 
         const currentUserData = user?.data || user;
-
 
         const updatedUserData = {
           ...currentUserData,
@@ -67,17 +64,16 @@ const UpdateProfile = () => {
           dispatch(updateUser(updatedUserData));
         }
 
-      
         setAvatarPreview(newAvatarData?.url || "");
       } else {
         toast.error(result.error || "Failed to change the avatar");
-      
+
         const userData = user?.data || user;
         setAvatarPreview(userData?.avatar?.url || "");
       }
     } catch (error) {
       toast.error(error.message || "Something went wrong");
-     
+
       const userData = user?.data || user;
       setAvatarPreview(userData?.avatar?.url || "");
     }
@@ -93,7 +89,7 @@ const UpdateProfile = () => {
         const updatedProfileData = {
           ...currentUserData,
           ...result.data.data,
-     
+
           avatar: result.data.data.avatar || currentUserData?.avatar,
         };
 
@@ -101,7 +97,7 @@ const UpdateProfile = () => {
           fullname: updatedProfileData.fullname || "",
           username: updatedProfileData.username || "",
         });
-        
+
         if (user?.data) {
           dispatch(updateUser({ ...user, data: updatedProfileData }));
         } else {
@@ -110,7 +106,7 @@ const UpdateProfile = () => {
 
         toast.success("Profile updated successfully!");
       } else {
-        toast.error("Failed to update profile");
+        toast.error(result?.error);
       }
     } catch (error) {
       toast.error("Update profile failed");
@@ -127,7 +123,6 @@ const UpdateProfile = () => {
 
   return (
     <div>
-   
       <style>{`
         @keyframes steam {
           0% { transform: translateY(0) rotate(0deg); opacity: 0.7; }

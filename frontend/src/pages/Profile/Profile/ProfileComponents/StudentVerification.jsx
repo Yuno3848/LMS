@@ -2,7 +2,11 @@ import React from "react";
 import { useSelector } from "react-redux";
 
 const StudentVerification = () => {
-    const user = useSelector((state)=>state.auth.user)
+  const user = useSelector((state) => state.auth.user);
+   const  handleSubmitStudentVerify = async()=>{
+     const result = authApi
+   }
+
   return (
     <div className="border-t border-[#e0c9a6] pt-4">
       <div className="flex items-center justify-between mb-3">
@@ -19,6 +23,7 @@ const StudentVerification = () => {
             discounts!
           </p>
           <button
+            onChange={handleSubmitStudentVerify}
             type="button"
             className="w-full bg-gradient-to-r from-[#9c6644] to-[#7a4d30] text-white py-2 px-4 rounded-lg font-medium text-sm shadow-sm hover:shadow-md hover:from-[#7a4d30] hover:to-[#5d3623] transition transform hover:-translate-y-0.5"
           >

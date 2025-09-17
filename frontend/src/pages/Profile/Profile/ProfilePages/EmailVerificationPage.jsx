@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { authApi } from "../../../../ApiFetch";
+import { authApi } from "../../../../ApiFetch/authApiFetch";
 import { useNavigate, useParams } from "react-router";
 import toast from "react-hot-toast";
 import { logout, updateUser } from "../../../../redux/authSlicer";
@@ -30,7 +30,7 @@ const EmailVerificationPage = () => {
           );
           dispatch(updateUser(response.data));
         } else {
-          toast.error("Email verification failed" || response.error);
+          toast.error(response.error || "Email verification failed");
           setStatus("error");
           setMessage(response.error);
         }

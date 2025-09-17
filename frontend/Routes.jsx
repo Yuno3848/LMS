@@ -52,7 +52,7 @@ export const routes = createBrowserRouter([
         ),
       },
       {
-        path: "/updateprofile",
+        path: "/update-profile",
         element: (
           <ProtectedRoute>
             <UpdateProfile />

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { authApi } from "../../../ApiFetch";
+import { authApi } from "../../../ApiFetch/authApiFetch";
 
 import { Link } from "react-router";
 import { useDispatch, useSelector } from "react-redux";
@@ -60,7 +60,7 @@ const Profile = () => {
           <StudentVerification />
 
           <Link
-            to="/updateprofile"
+            to="/update-profile"
             className="block w-full text-center bg-gradient-to-r from-[#b08968] to-[#8c5e3c] text-white py-3 rounded-lg font-semibold shadow-md hover:shadow-lg hover:from-[#8c5e3c] hover:to-[#6b4226] transition transform hover:-translate-y-0.5"
           >
             Update Profile

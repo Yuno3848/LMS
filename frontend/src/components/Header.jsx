@@ -2,7 +2,7 @@ import { Coffee, LogOut } from "lucide-react";
 import { Link } from "react-router";
 import React from "react";
 
-import { authApi } from "../ApiFetch";
+import { authApi } from "../ApiFetch/authApiFetch";
 import { HashLink } from "react-router-hash-link";
 import { useDispatch, useSelector } from "react-redux";
 import toast from "react-hot-toast";
@@ -24,7 +24,7 @@ const Header = () => {
         dispatch(logout());
         toast.success(result?.data?.message || "Logout successful");
       } else {
-        toast.error(result.error);
+        toast.error(result.error || "Logout failed");
       }
     } catch (error) {
       toast.error(error.message);

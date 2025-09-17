@@ -12,7 +12,7 @@ export const authApi = {
       });
       const data = await res.json();
       if (!res.ok) {
-        throw new Error(`Signed Up failed ${res.status}`);
+        throw new Error(`Signed Up failed`);
       }
       return { success: true, data };
     } catch (error) {
@@ -32,7 +32,7 @@ export const authApi = {
       });
       const data = await res.json();
       if (!res.ok) {
-        throw new Error(`login Up failed ${res.status}`);
+        throw new Error(`login Up failed`);
       }
       return { success: true, data };
     } catch (error) {
@@ -49,7 +49,7 @@ export const authApi = {
       const data = await res.json();
       console.log("clicked");
       if (!res.ok) {
-        throw new Error(`Logout failed ${res.status}`);
+        throw new Error(`Logout failed`);
       }
 
       return { success: true, data };
@@ -66,7 +66,7 @@ export const authApi = {
       });
       const data = await res.json();
       if (!res.ok) {
-        throw new Error(`Profile failed ${res.status}`);
+        throw new Error(`Profile failed`);
       }
 
       return { success: true, data };
@@ -87,7 +87,7 @@ export const authApi = {
       });
       const data = await res.json();
       if (!res.ok) {
-        throw new Error(`Update Profile failed ${res.status}`);
+        throw new Error(`Update Profile failed`);
       }
 
       return { success: true, data };
@@ -106,7 +106,7 @@ export const authApi = {
 
       const data = await res.json();
       if (!res.ok) {
-        throw new Error(`update avatar failed ${res.status}`);
+        throw new Error(`update avatar failed`);
       }
       return { success: true, data };
     } catch (error) {
@@ -121,11 +121,10 @@ export const authApi = {
         credentials: "include",
       });
       const data = await res.json();
-     
+
       if (!res.ok) {
         console.log(res);
-        throw new Error(`Email verification failed ${res.status}`);
-        
+        throw new Error(`Email verification failed`);
       }
       return { success: true, data };
     } catch (error) {
@@ -144,7 +143,7 @@ export const authApi = {
       });
       const data = await res.json();
       if (!res.ok) {
-        throw new Error(`Email verification failed ${res.status}`);
+        throw new Error(`Email verification failed`);
       }
       return { success: true, data };
     } catch (error) {
@@ -165,7 +164,7 @@ export const authApi = {
 
       const data = await res.json();
       if (!res.ok) {
-        throw new Error(`Forgot Password failed ${res.status}`);
+        throw new Error(`Forgot Password failed`);
       }
       return { success: true, data };
     } catch (error) {
@@ -186,7 +185,7 @@ export const authApi = {
 
       const data = await res.json();
       if (!res.ok) {
-        throw new Error(`Reset password failed ${res.status}`);
+        throw new Error(`Reset password failed`);
       }
       return { success: true, data };
     } catch (error) {

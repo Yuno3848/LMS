@@ -1,6 +1,6 @@
 import { Router } from 'express';
 
-import { isLogged } from '../middlewares/isLoggedd.middleware.js';
+import { isLogged } from '../middlewares/isLogged.middleware.js';
 import { getUserEnrollments } from '../controllers/enrollment.controller.js';
 
 const enrollment = Router();

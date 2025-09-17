@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import toast from "react-hot-toast";
 import { Link, useNavigate } from "react-router";
-import { authApi } from "../../ApiFetch";
+import { authApi } from "../../ApiFetch/authApiFetch";
 import { useDispatch, useSelector } from "react-redux";
 import { setLoading } from "../../redux/authSlicer";
 const SignUp = () => {
@@ -38,7 +38,7 @@ const SignUp = () => {
         toast.error(result.error);
       }
     } catch (error) {
-      toast.error(error.message || "Something went wrong");
+      toast.error(error.message);
     } finally {
       dispatch(setLoading(false));
     }

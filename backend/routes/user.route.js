@@ -24,8 +24,9 @@ import {
   updateProfileAvatar,
   verifyMail,
 } from '../controllers/auth.controller.js';
-import { isLogged } from '../middlewares/isLoggedd.middleware.js';
+
 import multerPath from '../middlewares/multer.middleware.js';
+import { isLogged } from '../middlewares/isLogged.middleware.js';
 const auth = Router();
 
 auth.post(

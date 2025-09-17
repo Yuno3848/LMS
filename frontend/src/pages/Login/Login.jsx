@@ -1,7 +1,7 @@
 import React, { useContext, useState } from "react";
 import toast from "react-hot-toast";
 import { Link, useNavigate } from "react-router";
-import { authApi } from "../../ApiFetch";
+import { authApi } from "../../ApiFetch/authApiFetch";
 import { useDispatch, useSelector } from "react-redux";
 import { loginSuccess, setLoading } from "../../redux/authSlicer";
 
@@ -22,15 +22,13 @@ const Login = () => {
     try {
       const result = await authApi.login(formData);
       if (result.success) {
-       
         toast.success("login successfully");
 
         dispatch(loginSuccess(result.data));
-        
+
         navigate("/");
       } else {
-       
-        toast.error("Invalid password" || result?.error);
+        toast.error(result?.error || "Invalid password");
       }
     } catch (error) {
       toast.error(error.message || "Something went wrong");

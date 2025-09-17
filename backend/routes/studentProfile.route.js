@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { validatorError } from '../middlewares/validatorError.js';
-import { isLogged } from '../middlewares/isLoggedd.middleware.js';
+import { isLogged } from '../middlewares/isLogged.middleware.js';
 import { validateStudentProfile } from '../validators/studentProfile.validator.js';
 import {
   createStudentProfile,

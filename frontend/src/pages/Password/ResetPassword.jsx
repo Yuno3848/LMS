@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Lock, ArrowLeft, CheckCircle } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { authApi } from "../../ApiFetch";
+import { authApi } from "../../ApiFetch/authApiFetch";
 import { useParams } from "react-router";
 import toast from "react-hot-toast";
 import { useDispatch } from "react-redux";

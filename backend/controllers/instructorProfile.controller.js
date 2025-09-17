@@ -41,7 +41,7 @@ export const createInstructorProfile = asyncHandler(async (req, res) => {
     .json(new ApiResponse(201, 'instructor profile created successfully', instructor));
 });
 
-export const updateInstructoProfile = asyncHandler(async (req, res) => {
+export const updateInstructorProfile = asyncHandler(async (req, res) => {
   const userId = req.user.id;
   if (!userId || !mongoose.Types.ObjectId.isValid(userId.toString())) {
     throw new ApiError(401, 'User not authorized');

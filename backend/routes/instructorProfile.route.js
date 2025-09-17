@@ -1,11 +1,11 @@
 import { Router } from 'express';
 import { validatorError } from '../middlewares/validatorError.js';
-import { isLogged } from '../middlewares/isLoggedd.middleware.js';
+import { isLogged } from '../middlewares/isLogged.middleware.js';
 import { validateInstructorProfile } from '../validators/instructorProfile.validator.js';
 import {
   createInstructorProfile,
   reqInstructorRole,
-  updateInstructoProfile,
+  updateInstructorProfile,
 } from '../controllers/instructorProfile.controller.js';
 
 const instructor = Router();
@@ -23,7 +23,7 @@ instructor.patch(
   validateInstructorProfile(),
   validatorError,
   isLogged,
-  updateInstructoProfile,
+  updateInstructorProfile,
 );
 
 instructor.get('/req-instructor-role', isLogged, reqInstructorRole);

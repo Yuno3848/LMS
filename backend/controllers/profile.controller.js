@@ -87,7 +87,7 @@ export const verifyStudentProfile = asyncHandler(async (req, res) => {
     throw new ApiError(404, 'user not found');
   }
   if (user.studentProfile.verificationStatus === 'pending') {
-    throw new ApiError(400, 'user student profile verificaiton is in already in pending');
+    throw new ApiError(400, 'user student profile verification is in already in pending');
   }
 
   const updatedStudentProfile = await studentProfile.findByIdAndUpdate(
