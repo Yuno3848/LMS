@@ -2,20 +2,20 @@ import React, { useEffect, useState } from "react";
 import { authApi } from "../../ApiFetch/authApiFetch";
 import toast from "react-hot-toast";
 import { useDispatch, useSelector } from "react-redux";
-import { setLoading, updateUser } from "../../redux/authSlicer";
+import { updateUser } from "../../redux/slicers/authSlicer";
 import { Camera, User, Edit3 } from "lucide-react";
 
 const UpdateProfile = () => {
-  const dispatch = useDispatch();
-  const loading = useSelector((state) => state.auth.loading);
-  const user = useSelector((state) => state.auth.user);
-
   const [formData, setFormData] = useState({
     fullname: "",
     username: "",
   });
 
   const [avatarPreview, setAvatarPreview] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const dispatch = useDispatch();
+  const user = useSelector((state) => state.auth.user);
 
   useEffect(() => {
     return () => {
@@ -81,7 +81,7 @@ const UpdateProfile = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    dispatch(setLoading(true));
+    setLoading(true);
     try {
       const result = await authApi.updateProfile(formData);
       if (result?.data?.success) {
@@ -111,7 +111,7 @@ const UpdateProfile = () => {
     } catch (error) {
       toast.error("Update profile failed");
     } finally {
-      dispatch(setLoading(false));
+      setLoading(false);
     }
   };
 
@@ -246,130 +246,131 @@ const UpdateProfile = () => {
           </div>
 
           {/* Avatar Upload */}
-          <div className="space-y-6">
-            <div className="flex flex-col items-center space-y-4">
-              <div className="relative group">
-                <div
-                  className="w-32 h-32 rounded-full overflow-hidden border-4 shadow-lg transition-transform duration-300 group-hover:scale-105"
-                  style={{
-                    background: `linear-gradient(145deg, rgba(212, 185, 150, 0.3), rgba(212, 185, 150, 0.1))`,
-                    borderColor: "rgba(212, 185, 150, 0.5)",
-                  }}
-                >
-                  {getCurrentAvatarUrl() ? (
-                    <img
-                      src={getCurrentAvatarUrl()}
-                      alt="Avatar preview"
-                      className="w-full h-full object-cover"
-                    />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center">
-                      <User
-                        className="w-16 h-16"
-                        style={{ color: "#d4b996" }}
-                      />
-                    </div>
-                  )}
-                </div>
 
-                <div className="absolute inset-0 rounded-full bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 cursor-pointer">
-                  <Camera className="w-8 h-8 text-white" />
-                </div>
-
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={handleAvatarChange}
-                  className="absolute inset-0 w-full h-full opacity-0 cursor-pointer rounded-full"
-                />
-              </div>
-
-              <div className="text-center">
-                <p className="text-sm mb-1" style={{ color: "#6b4226" }}>
-                  Click to change avatar
-                </p>
-              </div>
-            </div>
-
-            {/* Form Fields */}
-            <div className="space-y-5">
-              <div>
-                <label
-                  className="block text-sm font-semibold mb-2"
-                  style={{ color: "#6b4226" }}
-                >
-                  Full Name
-                </label>
-                <input
-                  type="text"
-                  placeholder="Enter your full name"
-                  value={formData.fullname}
-                  onChange={(e) =>
-                    setFormData({ ...formData, fullname: e.target.value })
-                  }
-                  className="w-full px-4 py-3 border-2 rounded-xl transition-all duration-300 shadow-sm focus:outline-none focus:ring-2 focus:scale-[1.02]"
-                  style={{
-                    backgroundColor: "rgba(212, 185, 150, 0.1)",
-                    borderColor: "rgba(212, 185, 150, 0.5)",
-                    color: "#6b4226",
-                  }}
-                />
-              </div>
-
-              <div>
-                <label
-                  className="block text-sm font-semibold mb-2"
-                  style={{ color: "#6b4226" }}
-                >
-                  Username
-                </label>
-                <input
-                  type="text"
-                  placeholder="Choose a unique username"
-                  value={formData.username}
-                  onChange={(e) =>
-                    setFormData({ ...formData, username: e.target.value })
-                  }
-                  className="w-full px-4 py-3 border-2 rounded-xl transition-all duration-300 shadow-sm focus:outline-none focus:ring-2 focus:scale-[1.02]"
-                  style={{
-                    backgroundColor: "rgba(212, 185, 150, 0.1)",
-                    borderColor: "rgba(212, 185, 150, 0.5)",
-                    color: "#6b4226",
-                  }}
-                />
-              </div>
-            </div>
-
-            {/* Submit Button */}
-            <button
-              type="submit"
-              disabled={loading}
-              onClick={handleSubmit}
-              className="w-full font-semibold py-4 px-6 rounded-xl shadow-lg hover:shadow-xl transform hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 hover:-translate-y-1 active:translate-y-0 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
-              style={{
-                background: loading
-                  ? "#6b4226"
-                  : `linear-gradient(135deg, #6b4226 0%, #8c5e3c 100%)`,
-                color: "white",
-              }}
-            >
-              {loading ? (
-                <div className="flex items-center justify-center space-x-2">
+          <form className="space-y-6" onSubmit={handleSubmit}>
+            <div className="space-y-6">
+              <div className="flex flex-col items-center space-y-4">
+                <div className="relative group">
                   <div
-                    className="w-5 h-5 border-2 border-t-transparent rounded-full animate-spin"
+                    className="w-32 h-32 rounded-full overflow-hidden border-4 shadow-lg transition-transform duration-300 group-hover:scale-105"
                     style={{
-                      borderColor: "rgba(212, 185, 150, 0.3)",
-                      borderTopColor: "transparent",
+                      background: `linear-gradient(145deg, rgba(212, 185, 150, 0.3), rgba(212, 185, 150, 0.1))`,
+                      borderColor: "rgba(212, 185, 150, 0.5)",
+                    }}
+                  >
+                    {getCurrentAvatarUrl() ? (
+                      <img
+                        src={getCurrentAvatarUrl()}
+                        alt="Avatar preview"
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center">
+                        <User
+                          className="w-16 h-16"
+                          style={{ color: "#d4b996" }}
+                        />
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="absolute inset-0 rounded-full bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 cursor-pointer">
+                    <Camera className="w-8 h-8 text-white" />
+                  </div>
+
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleAvatarChange}
+                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer rounded-full"
+                  />
+                </div>
+
+                <div className="text-center">
+                  <p className="text-sm mb-1" style={{ color: "#6b4226" }}>
+                    Click to change avatar
+                  </p>
+                </div>
+              </div>
+
+              {/* Form Fields */}
+              <div className="space-y-5">
+                <div>
+                  <label
+                    className="block text-sm font-semibold mb-2"
+                    style={{ color: "#6b4226" }}
+                  >
+                    Full Name
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="Enter your full name"
+                    value={formData.fullname}
+                    onChange={(e) =>
+                      setFormData({ ...formData, fullname: e.target.value })
+                    }
+                    className="w-full px-4 py-3 border-2 rounded-xl transition-all duration-300 shadow-sm focus:outline-none focus:ring-2 focus:scale-[1.02]"
+                    style={{
+                      backgroundColor: "rgba(212, 185, 150, 0.1)",
+                      borderColor: "rgba(212, 185, 150, 0.5)",
+                      color: "#6b4226",
                     }}
                   />
-                  <span>Updating...</span>
                 </div>
-              ) : (
-                "Save Changes"
-              )}
-            </button>
-          </div>
 
+                <div>
+                  <label
+                    className="block text-sm font-semibold mb-2"
+                    style={{ color: "#6b4226" }}
+                  >
+                    Username
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="Choose a unique username"
+                    value={formData.username}
+                    onChange={(e) =>
+                      setFormData({ ...formData, username: e.target.value })
+                    }
+                    className="w-full px-4 py-3 border-2 rounded-xl transition-all duration-300 shadow-sm focus:outline-none focus:ring-2 focus:scale-[1.02]"
+                    style={{
+                      backgroundColor: "rgba(212, 185, 150, 0.1)",
+                      borderColor: "rgba(212, 185, 150, 0.5)",
+                      color: "#6b4226",
+                    }}
+                  />
+                </div>
+              </div>
+
+              {/* Submit Button */}
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full font-semibold py-4 px-6 rounded-xl shadow-lg hover:shadow-xl transform hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 hover:-translate-y-1 active:translate-y-0 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+                style={{
+                  background: loading
+                    ? "#6b4226"
+                    : `linear-gradient(135deg, #6b4226 0%, #8c5e3c 100%)`,
+                  color: "white",
+                }}
+              >
+                {loading ? (
+                  <div className="flex items-center justify-center space-x-2">
+                    <div
+                      className="w-5 h-5 border-2 border-t-transparent rounded-full animate-spin"
+                      style={{
+                        borderColor: "rgba(212, 185, 150, 0.3)",
+                        borderTopColor: "transparent",
+                      }}
+                    />
+                    <span>Updating...</span>
+                  </div>
+                ) : (
+                  "Save Changes"
+                )}
+              </button>
+            </div>
+          </form>
           <div className="mt-6 text-center">
             <p className="text-xs opacity-70" style={{ color: "#6b4226" }}>
               Enjoying your chai break? ☕ Your profile information is secure

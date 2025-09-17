@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { authApi } from "../../../../ApiFetch/authApiFetch";
 import { useNavigate, useParams } from "react-router";
 import toast from "react-hot-toast";
-import { logout, updateUser } from "../../../../redux/authSlicer";
+import { logout, updateUser } from "../../../../redux/slicers/authSlicer";
 
 const EmailVerificationPage = () => {
   const user = useSelector((state) => state.auth.user);

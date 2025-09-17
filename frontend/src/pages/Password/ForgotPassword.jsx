@@ -4,7 +4,7 @@ import { authApi } from "../../ApiFetch/authApiFetch";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
-import { logout } from "../../redux/authSlicer";
+import { logout } from "../../redux/slicers/authSlicer";
 
 const ForgotPassword = () => {
   const [email, setEmail] = useState("");
@@ -46,7 +46,6 @@ const ForgotPassword = () => {
       toast.error(error.message);
     }
     dispatch(logout());
-    navigate("/login");
   };
 
   return (

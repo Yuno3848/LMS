@@ -6,7 +6,7 @@ import { authApi } from "../ApiFetch/authApiFetch";
 import { HashLink } from "react-router-hash-link";
 import { useDispatch, useSelector } from "react-redux";
 import toast from "react-hot-toast";
-import { logout } from "../redux/authSlicer";
+import { logout } from "../redux/slicers/authSlicer";
 const Header = () => {
   const user = useSelector((state) => state.auth.user);
   const loading = useSelector((state) => state.auth.loading);

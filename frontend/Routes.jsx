@@ -75,6 +75,10 @@ export const routes = createBrowserRouter([
           </ProtectedRoute>
         ),
       },
+      {
+        path: "/create-student-profile",
+        element: <StudentProfile />,
+      },
     ],
   },
   {

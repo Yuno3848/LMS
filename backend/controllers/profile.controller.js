@@ -31,6 +31,10 @@ export const createStudentProfile = async (req, res) => {
     interests,
   });
 
+  if(!newStudentProfile){
+    throw new ApiError(400,)
+  }
+
   user.studentProfile = newStudentProfile._id;
   await user.save();
 
@@ -43,7 +47,7 @@ export const updatedStudentProfile = asyncHandler(async (req, res) => {
   const userId = req.user.id;
 
   if (!userId) {
-    throw new ApiError(401, 'User not authrozied');
+    throw new ApiError(401, 'User not authorized');
   }
 
   const user = await User.findById(userId).populate('studentProfile');
@@ -78,7 +82,7 @@ export const verifyStudentProfile = asyncHandler(async (req, res) => {
   const userId = req.user.id;
 
   if (!userId || !mongoose.Types.ObjectId.isValid(userId.toString())) {
-    throw new ApiError(401, 'User not authrozied');
+    throw new ApiError(401, 'User not authorozied');
   }
 
   const user = await User.findById(userId).populate('studentProfile');

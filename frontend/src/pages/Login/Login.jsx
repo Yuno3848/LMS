@@ -1,24 +1,25 @@
 import React, { useContext, useState } from "react";
 import toast from "react-hot-toast";
-import { Link, useNavigate } from "react-router";
+import { Link, useNavigate } from "react-router-dom";
 import { authApi } from "../../ApiFetch/authApiFetch";
 import { useDispatch, useSelector } from "react-redux";
-import { loginSuccess, setLoading } from "../../redux/authSlicer";
+import { loginSuccess } from "../../redux/slicers/authSlicer";
 
 const Login = () => {
   const [formData, setFormData] = useState({
     email: "",
     password: "",
   });
+
+  const [loading, setLoading] = useState(false);
+
   const user = useSelector((state) => state.auth.user);
-  const loading = useSelector((state) => state.auth.loading);
+
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    dispatch(setLoading(true));
-
+    setLoading(true);
     try {
       const result = await authApi.login(formData);
       if (result.success) {
@@ -33,7 +34,7 @@ const Login = () => {
     } catch (error) {
       toast.error(error.message || "Something went wrong");
     } finally {
-      dispatch(setLoading(false));
+      setLoading(false);
     }
   };
 

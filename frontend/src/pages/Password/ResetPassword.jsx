@@ -2,10 +2,10 @@ import React, { useState } from "react";
 import { Lock, ArrowLeft, CheckCircle } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { authApi } from "../../ApiFetch/authApiFetch";
-import { useParams } from "react-router";
+import { useParams } from "react-router-dom";
 import toast from "react-hot-toast";
 import { useDispatch } from "react-redux";
-import { logout } from "../../redux/authSlicer";
+import { logout } from "../../redux/slicers/authSlicer";
 
 const ResetPassword = () => {
   const [password, setPassword] = useState("");

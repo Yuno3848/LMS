@@ -4,12 +4,12 @@ import { RouterProvider } from "react-router";
 import routes from "../routes";
 import { useDispatch, useSelector } from "react-redux";
 import Loading from "./components/Loading";
-import { authApi } from "./ApiFetch";
-import { loginSuccess, logout } from "./redux/authSlicer";
+
+import { loginSuccess, logout } from "./redux/slicers/authSlicer";
 import { useEffect } from "react";
+import { authApi } from "./ApiFetch/authApiFetch";
 
 function App() {
-  const loading = useSelector((state) => state.auth.loading);
   const dispatch = useDispatch();
   useEffect(() => {
     const fetchUser = async () => {
@@ -25,10 +25,6 @@ function App() {
     };
     fetchUser();
   }, [dispatch]);
-
-  if (loading) {
-    return <Loading />;
-  }
 
   return (
     <>

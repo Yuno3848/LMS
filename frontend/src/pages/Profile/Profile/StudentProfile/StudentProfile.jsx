@@ -16,11 +16,52 @@ import {
   MapPin,
   Calendar,
 } from "lucide-react";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import { studentProfileApiFetch } from "../../../../ApiFetch/studentProfileApiFetch";
+import { useState } from "react";
+import toast from "react-hot-toast";
 
 const StudentProfile = () => {
+  const [formData, setFormData] = useState({
+    bio: "",
+    skills: "",
+    socialLinks: {
+      linkedin: "",
+      twitter: "",
+      facebook: "",
+      instagram: "",
+    },
+    education: "",
+    interests: "",
+  });
+
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const user = useSelector((state) => state.auth.user);
+  console.log("user in studentprofile :", user);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    try {
+      const result = await studentProfileApiFetch.createStudentProfile(
+        formData
+      );
+      if (result.success) {
+        toast.success(result?.data?.message);
+        dispatch()
+      } else {
+        toast.error(result?.error);
+      }
+    } catch (error) {
+      toast.error(error.message);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-stone-100 via-amber-50 to-yellow-50 py-12 px-4">
-      <div className="max-w-4xl mx-auto">
+      <form onChange={handleSubmit} className="max-w-4xl mx-auto">
         {/* Header Card */}
         <div className="bg-white/90 backdrop-blur-sm rounded-3xl shadow-2xl border border-stone-200/50 p-8 mb-8 relative overflow-hidden">
           {/* Decorative background elements */}
@@ -41,7 +82,6 @@ const StudentProfile = () => {
             </p>
           </div>
         </div>
-
         {/* Main Profile Card */}
         <div className="bg-white/95 backdrop-blur-sm rounded-3xl shadow-2xl border border-stone-200/50 overflow-hidden">
           {/* Profile Picture Section */}
@@ -81,7 +121,8 @@ const StudentProfile = () => {
                   </label>
                   <input
                     type="text"
-                    placeholder="Enter your full name"
+                    value={user.data.fullname}
+                    readOnly
                     className="w-full px-4 py-3 border-2 border-stone-200 rounded-xl bg-stone-50/50 focus:border-stone-400 focus:bg-white focus:ring-4 focus:ring-stone-100 transition-all duration-200 outline-none placeholder:text-stone-400"
                   />
                 </div>
@@ -93,31 +134,9 @@ const StudentProfile = () => {
                   </label>
                   <input
                     type="email"
+                    value={user.data.email}
                     placeholder="your.email@example.com"
                     className="w-full px-4 py-3 border-2 border-stone-200 rounded-xl bg-stone-50/50 focus:border-stone-400 focus:bg-white focus:ring-4 focus:ring-stone-100 transition-all duration-200 outline-none placeholder:text-stone-400"
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <label className="text-sm font-semibold text-stone-700 flex items-center gap-2">
-                    <Phone className="w-4 h-4" />
-                    Phone Number
-                  </label>
-                  <input
-                    type="tel"
-                    placeholder="+1 (555) 123-4567"
-                    className="w-full px-4 py-3 border-2 border-stone-200 rounded-xl bg-stone-50/50 focus:border-stone-400 focus:bg-white focus:ring-4 focus:ring-stone-100 transition-all duration-200 outline-none placeholder:text-stone-400"
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <label className="text-sm font-semibold text-stone-700 flex items-center gap-2">
-                    <Calendar className="w-4 h-4" />
-                    Date of Birth
-                  </label>
-                  <input
-                    type="date"
-                    className="w-full px-4 py-3 border-2 border-stone-200 rounded-xl bg-stone-50/50 focus:border-stone-400 focus:bg-white focus:ring-4 focus:ring-stone-100 transition-all duration-200 outline-none"
                   />
                 </div>
               </div>
@@ -127,11 +146,6 @@ const StudentProfile = () => {
                   <MapPin className="w-4 h-4" />
                   Location
                 </label>
-                <input
-                  type="text"
-                  placeholder="City, State, Country"
-                  className="w-full px-4 py-3 border-2 border-stone-200 rounded-xl bg-stone-50/50 focus:border-stone-400 focus:bg-white focus:ring-4 focus:ring-stone-100 transition-all duration-200 outline-none placeholder:text-stone-400"
-                />
               </div>
 
               <div className="space-y-2">
@@ -140,6 +154,9 @@ const StudentProfile = () => {
                   Bio
                 </label>
                 <textarea
+                  onChange={(e) => {
+                    setFormData({ ...formData, bio: e.target.value });
+                  }}
                   className="w-full px-4 py-3 border-2 border-stone-200 rounded-xl bg-stone-50/50 focus:border-stone-400 focus:bg-white focus:ring-4 focus:ring-stone-100 transition-all duration-200 outline-none resize-none placeholder:text-stone-400"
                   rows="4"
                   placeholder="Tell us about yourself, your goals, and what makes you unique..."
@@ -164,6 +181,9 @@ const StudentProfile = () => {
                   </label>
                   <input
                     type="text"
+                    onChange={(e) => {
+                      setFormData({ ...formData, skills: e.target.value });
+                    }}
                     placeholder="JavaScript, Python, React, Node.js..."
                     className="w-full px-4 py-3 border-2 border-stone-200 rounded-xl bg-stone-50/50 focus:border-stone-400 focus:bg-white focus:ring-4 focus:ring-stone-100 transition-all duration-200 outline-none placeholder:text-stone-400"
                   />
@@ -176,6 +196,9 @@ const StudentProfile = () => {
                   </label>
                   <input
                     type="text"
+                    onChange={(e) => {
+                      setFormData({ ...formData, interests: e.target.value });
+                    }}
                     placeholder="Machine Learning, Photography, Music..."
                     className="w-full px-4 py-3 border-2 border-stone-200 rounded-xl bg-stone-50/50 focus:border-stone-400 focus:bg-white focus:ring-4 focus:ring-stone-100 transition-all duration-200 outline-none placeholder:text-stone-400"
                   />
@@ -200,22 +223,12 @@ const StudentProfile = () => {
                   </label>
                   <input
                     type="text"
+                    onChange={(e) => {
+                      setFormData({ ...formData, education: e.target.value });
+                    }}
                     placeholder="B.Sc in Computer Science, University Name"
                     className="w-full px-4 py-3 border-2 border-stone-200 rounded-xl bg-stone-50/50 focus:border-stone-400 focus:bg-white focus:ring-4 focus:ring-stone-100 transition-all duration-200 outline-none placeholder:text-stone-400"
                   />
-                </div>
-
-                <div className="space-y-2">
-                  <label className="text-sm font-semibold text-stone-700 flex items-center gap-2">
-                    <Award className="w-4 h-4" />
-                    Verification Status
-                  </label>
-                  <select className="w-full px-4 py-3 border-2 border-stone-200 rounded-xl bg-stone-50/50 focus:border-stone-400 focus:bg-white focus:ring-4 focus:ring-stone-100 transition-all duration-200 outline-none">
-                    <option value="not_requested">Not Requested</option>
-                    <option value="pending">Pending Verification</option>
-                    <option value="verified">✓ Verified</option>
-                    <option value="rejected">Verification Rejected</option>
-                  </select>
                 </div>
               </div>
             </section>
@@ -238,6 +251,15 @@ const StudentProfile = () => {
                   <div className="relative">
                     <input
                       type="url"
+                      onChange={(e) => {
+                        setFormData({
+                          ...formData,
+                          socialLinks: {
+                            ...formData.socialLinks,
+                            linkedin: e.target.value,
+                          },
+                        });
+                      }}
                       placeholder="https://linkedin.com/in/yourprofile"
                       className="w-full px-4 py-3 pl-12 border-2 border-stone-200 rounded-xl bg-stone-50/50 focus:border-stone-400 focus:bg-white focus:ring-4 focus:ring-stone-100 transition-all duration-200 outline-none placeholder:text-stone-400"
                     />
@@ -253,6 +275,15 @@ const StudentProfile = () => {
                   <div className="relative">
                     <input
                       type="url"
+                      onChange={(e) => {
+                        setFormData({
+                          ...formData,
+                          socialLinks: {
+                            ...formData.socialLinks,
+                            twitter: e.target.value,
+                          },
+                        });
+                      }}
                       placeholder="https://twitter.com/yourusername"
                       className="w-full px-4 py-3 pl-12 border-2 border-stone-200 rounded-xl bg-stone-50/50 focus:border-stone-400 focus:bg-white focus:ring-4 focus:ring-stone-100 transition-all duration-200 outline-none placeholder:text-stone-400"
                     />
@@ -268,6 +299,15 @@ const StudentProfile = () => {
                   <div className="relative">
                     <input
                       type="url"
+                      onChange={(e) => {
+                        setFormData({
+                          ...formData,
+                          socialLinks: {
+                            ...formData.socialLinks,
+                            facebook: e.target.value,
+                          },
+                        });
+                      }}
                       placeholder="https://facebook.com/yourprofile"
                       className="w-full px-4 py-3 pl-12 border-2 border-stone-200 rounded-xl bg-stone-50/50 focus:border-stone-400 focus:bg-white focus:ring-4 focus:ring-stone-100 transition-all duration-200 outline-none placeholder:text-stone-400"
                     />
@@ -283,6 +323,15 @@ const StudentProfile = () => {
                   <div className="relative">
                     <input
                       type="url"
+                      onChange={(e) => {
+                        setFormData({
+                          ...formData,
+                          socialLinks: {
+                            ...formData.socialLinks,
+                            instagram: e.target.value,
+                          },
+                        });
+                      }}
                       placeholder="https://instagram.com/yourusername"
                       className="w-full px-4 py-3 pl-12 border-2 border-stone-200 rounded-xl bg-stone-50/50 focus:border-stone-400 focus:bg-white focus:ring-4 focus:ring-stone-100 transition-all duration-200 outline-none placeholder:text-stone-400"
                     />
@@ -303,7 +352,7 @@ const StudentProfile = () => {
             </div>
           </div>
         </div>
-      </div>
+      </form>
     </div>
   );
 };
