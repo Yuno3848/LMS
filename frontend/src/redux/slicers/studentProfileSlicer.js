@@ -5,7 +5,9 @@ const studentProfileSlice = createSlice({
   initialState: { profile: null },
   reducers: {
     setStudentProfile: (state, action) => {
-      state.profile = state.actionPayload;
+      state.profile = action.payload;
     },
   },
 });
+export const { setStudentProfile } = studentProfileSlice.actions;
+export default studentProfileSlice.reducer;

@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import toast from "react-hot-toast";
 import { Link, useNavigate } from "react-router";
 import { authApi } from "../../ApiFetch/authApiFetch";
-import { useDispatch, useSelector } from "react-redux";
+
 
 const SignUp = () => {
   const [formData, setFormData] = useState({
@@ -16,7 +16,7 @@ const SignUp = () => {
 
   const [loading, setLoading] = useState(false);
 
-  const dispatch = useDispatch();
+
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {

@@ -6,21 +6,20 @@ import {
   Camera,
   Save,
   User,
-  Award,
   BookOpen,
   Globe,
   Star,
   GraduationCap,
   Mail,
   Phone,
-  MapPin,
-  Calendar,
+,
 } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { studentProfileApiFetch } from "../../../../ApiFetch/studentProfileApiFetch";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
+import { setStudentProfile } from "../../../../redux/slicers/studentProfileSlicer";
 
 const StudentProfile = () => {
   const [formData, setFormData] = useState({
@@ -37,20 +36,29 @@ const StudentProfile = () => {
   });
 
   const dispatch = useDispatch();
-  const navigate = useNavigate();
   const user = useSelector((state) => state.auth.user);
-  console.log("user in studentprofile :", user);
+  const studentProfile = useSelector((state) => state.studentProfile.profile);
+
+  useEffect(() => {
+    if (studentProfile._id || studentProfile.id ) {
+      setFormData(studentProfile);
+    }
+  }, [studentProfile]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     try {
-      const result = await studentProfileApiFetch.createStudentProfile(
-        formData
-      );
+      let result;
+      if (studentProfile) {
+        result = await studentProfileApiFetch.updateStudentProfile(formData);
+      } else {
+        result = await studentProfileApiFetch.createStudentProfile(formData);
+      }
+
       if (result.success) {
         toast.success(result?.data?.message);
-        dispatch()
+        dispatch(setStudentProfile(result.data));
       } else {
         toast.error(result?.error);
       }
@@ -61,7 +69,7 @@ const StudentProfile = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-stone-100 via-amber-50 to-yellow-50 py-12 px-4">
-      <form onChange={handleSubmit} className="max-w-4xl mx-auto">
+      <form onSubmit={handleSubmit} className="max-w-4xl mx-auto">
         {/* Header Card */}
         <div className="bg-white/90 backdrop-blur-sm rounded-3xl shadow-2xl border border-stone-200/50 p-8 mb-8 relative overflow-hidden">
           {/* Decorative background elements */}
@@ -121,7 +129,7 @@ const StudentProfile = () => {
                   </label>
                   <input
                     type="text"
-                    value={user.data.fullname}
+                    value={user.data.fullname || ""}
                     readOnly
                     className="w-full px-4 py-3 border-2 border-stone-200 rounded-xl bg-stone-50/50 focus:border-stone-400 focus:bg-white focus:ring-4 focus:ring-stone-100 transition-all duration-200 outline-none placeholder:text-stone-400"
                   />
@@ -134,7 +142,8 @@ const StudentProfile = () => {
                   </label>
                   <input
                     type="email"
-                    value={user.data.email}
+                    value={user.data.email || ""}
+                    readOnly
                     placeholder="your.email@example.com"
                     className="w-full px-4 py-3 border-2 border-stone-200 rounded-xl bg-stone-50/50 focus:border-stone-400 focus:bg-white focus:ring-4 focus:ring-stone-100 transition-all duration-200 outline-none placeholder:text-stone-400"
                   />
@@ -143,17 +152,11 @@ const StudentProfile = () => {
 
               <div className="space-y-2">
                 <label className="text-sm font-semibold text-stone-700 flex items-center gap-2">
-                  <MapPin className="w-4 h-4" />
-                  Location
-                </label>
-              </div>
-
-              <div className="space-y-2">
-                <label className="text-sm font-semibold text-stone-700 flex items-center gap-2">
                   <BookOpen className="w-4 h-4" />
                   Bio
                 </label>
                 <textarea
+                  value={formData.bio}
                   onChange={(e) => {
                     setFormData({ ...formData, bio: e.target.value });
                   }}
@@ -181,6 +184,7 @@ const StudentProfile = () => {
                   </label>
                   <input
                     type="text"
+                    value={formData.skills}
                     onChange={(e) => {
                       setFormData({ ...formData, skills: e.target.value });
                     }}
@@ -196,6 +200,7 @@ const StudentProfile = () => {
                   </label>
                   <input
                     type="text"
+                    value={formData.interests}
                     onChange={(e) => {
                       setFormData({ ...formData, interests: e.target.value });
                     }}
@@ -223,6 +228,7 @@ const StudentProfile = () => {
                   </label>
                   <input
                     type="text"
+                    value={formData.education}
                     onChange={(e) => {
                       setFormData({ ...formData, education: e.target.value });
                     }}
@@ -251,6 +257,7 @@ const StudentProfile = () => {
                   <div className="relative">
                     <input
                       type="url"
+                      value={formData.socialLinks.linkedin}
                       onChange={(e) => {
                         setFormData({
                           ...formData,
@@ -275,6 +282,7 @@ const StudentProfile = () => {
                   <div className="relative">
                     <input
                       type="url"
+                      value={formData.socialLinks.twitter}
                       onChange={(e) => {
                         setFormData({
                           ...formData,
@@ -299,6 +307,7 @@ const StudentProfile = () => {
                   <div className="relative">
                     <input
                       type="url"
+                      value={formData.socialLinks.facebook}
                       onChange={(e) => {
                         setFormData({
                           ...formData,
@@ -323,6 +332,7 @@ const StudentProfile = () => {
                   <div className="relative">
                     <input
                       type="url"
+                      value={formData.socialLinks.instagram}
                       onChange={(e) => {
                         setFormData({
                           ...formData,
