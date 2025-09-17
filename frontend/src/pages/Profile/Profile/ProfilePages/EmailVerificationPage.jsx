@@ -10,16 +10,15 @@ const EmailVerificationPage = () => {
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { token } = useParams(); // get token from URL
+  const { token } = useParams();
   const [message, setMessage] = useState("");
   const [status, setStatus] = useState("verifying");
 
   useEffect(() => {
     const verifyEmail = async () => {
       try {
-        const response = await authApi.verifyMail(token); // send token
-        console.log("email verification token :", token);
-        console.log("emal verification result :", response);
+        const response = await authApi.verifyMail(token);
+
         if (response.success) {
           toast.success(
             response?.data?.message || "Email verified successfully"
@@ -42,7 +41,16 @@ const EmailVerificationPage = () => {
     };
 
     verifyEmail();
-  }, [token, navigate, dispatch]);
+  }, [token]);
+
+  useEffect(() => {
+    if (status === "success") {
+      const timer = setTimeout(() => {
+        navigate("/profile");
+      }, 2000);
+      return () => clearTimeout(timer);
+    }
+  }, [status, navigate]);
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#f5e6ca] via-[#fefaf5] to-[#e7d3b5]">

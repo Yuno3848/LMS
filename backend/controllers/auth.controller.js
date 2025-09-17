@@ -92,9 +92,9 @@ export const registeredUser = asyncHandler(async (req, res) => {
 export const verifyMail = asyncHandler(async (req, res) => {
   // Extract token from query parameters
   const { token } = req.params;
-
+  console.log('token from params :', token);
   //create a hash of the token to match with the stored token
-  const emailVerifiedToken =  crypto.createHash('sha256').update(token).digest('hex');
+  const emailVerifiedToken = crypto.createHash('sha256').update(token).digest('hex');
   console.log('🔍 Hashed token for DB lookup:', emailVerifiedToken);
   // Find user by email verification token
   const user = await User.findOne({
@@ -102,7 +102,7 @@ export const verifyMail = asyncHandler(async (req, res) => {
     emailVerificationTokenExpiry: { $gt: Date.now() },
   }).select('-password -forgotPasswordExpiry  -createdAt -updatedAt');
   console.log('🔍 User found:', user);
-  
+
   // If user not found, throw an error
   if (!user) {
     throw new ApiError(400, 'User not found or token is invalid');
@@ -274,27 +274,18 @@ export const resetPassword = asyncHandler(async (req, res) => {
   // Hash the token to match with the stored token
   const forgotPasswordToken = crypto.createHash('sha256').update(token).digest('hex');
   // Find user by forgot password token and check if the token is still valid
-  const user = await User.findOneAndUpdate(
-    {
-      forgotPasswordToken,
-      forgotPasswordExpiry: { $gt: Date.now() },
-    },
-    {
-      $set: {
-        password: newPassword,
-        isEmailVerified: true,
-        forgotPasswordToken: undefined,
-        forgotPasswordExpiry: undefined,
-      },
-    },
-    {
-      new: true,
-    },
-  );
+  const user = await User.findOneAndUpdate({
+    forgotPasswordToken,
+    forgotPasswordExpiry: { $gt: Date.now() },
+  });
   // If user not found, throw an error
   if (!user) {
     throw new ApiError(404, 'user or token not found...');
   }
+
+  user.password = newPassword;
+  user.forgotPasswordToken = undefined;
+  user.forgotPasswordExpiry = undefined;
   // Save the updated user document
   await user.save();
   // Send success response
