@@ -25,7 +25,7 @@ studentProfile.patch(
   updatedStudentProfile,
 );
 
-studentProfile.get('/verifyStudentProfile', isLogged, verifyStudentProfile);
+studentProfile.get('/verify-student-profile', isLogged, verifyStudentProfile);
 
 // studentProfile.get('/get-student-profile', isLogged, getStudentProfile);
 // export default studentProfile;
