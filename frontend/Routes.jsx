@@ -17,13 +17,17 @@ import StudentProfile from "./src/pages/Profile/Profile/StudentProfile/StudentPr
 import ForgotPassword from "./src/pages/Password/ForgotPassword";
 import ResetPassword from "./src/pages/Password/ResetPassword";
 import UpdateStudentProfile from "./src/pages/Profile/Profile/StudentProfile/UpdateStudentProfile";
+import Loading from "./src/components/Loading";
 
 const ProtectedRoute = ({ children }) => {
   const user = useSelector((state) => state.auth.user);
-  const isAuthenticated = user && (user.data || user.id || user._id)
-  return isAuthenticated ? children : <Navigate to="/login" />;
+  const loading = useSelector((state) => state.auth.loading);
+  if (loading) {
+    return <Loading />;
+  }
+  return user ? children : <Navigate to="/login" />;
 };
-export const routes = createBrowserRouter([
+export const Routes = createBrowserRouter([
   {
     element: <LayoutWithFooter />,
     children: [
@@ -122,4 +126,4 @@ export const routes = createBrowserRouter([
     element: <Navigate to="/" replace />,
   },
 ]);
-export default routes;
+export default Routes;

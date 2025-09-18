@@ -3,7 +3,7 @@ import { createSlice } from "@reduxjs/toolkit";
 const authSlice = createSlice({
   name: "auth",
 
-  initialState: { user: null },
+  initialState: { user: null, loading: true },
   reducers: {
     loginSuccess: (state, action) => {
       state.user = action.payload;
@@ -22,6 +22,9 @@ const authSlice = createSlice({
       } else {
         state.user = action.payload;
       }
+    },
+    setLoading: (state, action) => {
+      state.loading = action.payload; 
     },
   },
 });
