@@ -189,21 +189,21 @@ export const verifyStudentProfile = asyncHandler(async (req, res) => {
 //     .json(new ApiResponse(200, 'student profile successfully', customStudentProfile));
 // });
 
-// export const getStudentProfileById = asyncHandler(async (req, res) => {
-//   const userId = req.params.id;
-//   if (!userId) {
-//     throw new ApiError(401, 'User not authorized');
-//   }
+export const getStudentProfileById = asyncHandler(async (req, res) => {
+  const userId = req.params.id;
+  if (!userId) {
+    throw new ApiError(401, 'User not authorized');
+  }
 
-//   const studentProfile = await User.findById(userId).populate('studentProfile');
-//   if (!studentProfile) {
-//     throw new ApiError(404, 'student profile not found');
-//   }
+  const studentProfile = await User.findById(userId).populate('studentProfile');
+  if (!studentProfile) {
+    throw new ApiError(404, 'student profile not found');
+  }
 
-//   return res
-//     .status(200)
-//     .json(new ApiResponse(200, 'student profile successfully', studentProfile.studentProfile));
-// });
+  return res
+    .status(200)
+    .json(new ApiResponse(200, 'student profile successfully', studentProfile.studentProfile));
+});
 
 // export const getAllStudentProfiles = asyncHandler(async (req, res) => {
 //   const studentProfiles = await User.aggreate([

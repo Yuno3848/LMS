@@ -50,7 +50,23 @@ export const studentProfileApiFetch = {
       });
       const data = await res.json();
       if (!res.ok) {
-        throw new Error("Failed to verify-student-profile");
+        throw new Error("Failed to verify student profile");
+      }
+      return { success: true, data };
+    } catch (error) {
+      return { success: false, message: error.message };
+    }
+  },
+
+  getStudentProfileById: async () => {
+    try {
+      const res = await fetch(`${baseUrl}/get-student-profile-byId/${id}`, {
+        method: "GET",
+        credentials: "include",
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error("Failed to fetch student profile");
       }
       return { success: true, data };
     } catch (error) {

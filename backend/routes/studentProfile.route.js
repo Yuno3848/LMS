@@ -4,6 +4,7 @@ import { isLogged } from '../middlewares/isLogged.middleware.js';
 import { validateStudentProfile } from '../validators/studentProfile.validator.js';
 import {
   createStudentProfile,
+  getStudentProfileById,
   updatedStudentProfile,
   verifyStudentProfile,
 } from '../controllers/profile.controller.js';
@@ -30,6 +31,6 @@ studentProfile.get('/verify-student-profile', isLogged, verifyStudentProfile);
 // studentProfile.get('/get-student-profile', isLogged, getStudentProfile);
 // export default studentProfile;
 
-// studentProfile.get('/get-student-profile-byId/:id', isLogged, getStudentProfileById);
+studentProfile.get('/get-student-profile-byId/:id', isLogged, getStudentProfileById);
 
 export default studentProfile;

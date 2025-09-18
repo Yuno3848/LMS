@@ -75,27 +75,7 @@ export const Routes = createBrowserRouter([
       },
       {
         path: "/forgot-password",
-        element: (
-          <ProtectedRoute>
-            <ForgotPassword />
-          </ProtectedRoute>
-        ),
-      },
-      {
-        path: "/student-profile",
-        element: (
-          <ProtectedRoute>
-            <StudentProfile />
-          </ProtectedRoute>
-        ),
-      },
-      {
-        path: "/update-student-profile",
-        element: (
-          <ProtectedRoute>
-            <UpdateStudentProfile />
-          </ProtectedRoute>
-        ),
+        element: <ForgotPassword />,
       },
     ],
   },
