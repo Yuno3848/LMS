@@ -46,8 +46,13 @@ export const validateStudentProfile = () => {
     body('education')
       .notEmpty()
       .withMessage('education field required')
-      .isString()
-      .withMessage('education must be a string')
+      .bail()
+      .custom((value) => {
+        if (typeof value === 'string') return true;
+        if (Array.isArray(value) && education.every((education) => typeof education === 'string')) {
+          return true;
+        }
+      })
       .isLength({ max: 500 })
       .withMessage("bio can't be more than 500 characters"),
     body('interests')

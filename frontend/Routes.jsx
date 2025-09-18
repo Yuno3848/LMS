@@ -20,7 +20,8 @@ import UpdateStudentProfile from "./src/pages/Profile/Profile/StudentProfile/Upd
 
 const ProtectedRoute = ({ children }) => {
   const user = useSelector((state) => state.auth.user);
-  return user ? children : <Navigate to="/login" />;
+  const isAuthenticated = user && (user.data || user.id || user._id)
+  return isAuthenticated ? children : <Navigate to="/login" />;
 };
 export const routes = createBrowserRouter([
   {
@@ -78,11 +79,19 @@ export const routes = createBrowserRouter([
       },
       {
         path: "/student-profile",
-        element: <StudentProfile />,
+        element: (
+          <ProtectedRoute>
+            <StudentProfile />
+          </ProtectedRoute>
+        ),
       },
       {
         path: "/update-student-profile",
-        element: <UpdateStudentProfile />,
+        element: (
+          <ProtectedRoute>
+            <UpdateStudentProfile />
+          </ProtectedRoute>
+        ),
       },
     ],
   },
