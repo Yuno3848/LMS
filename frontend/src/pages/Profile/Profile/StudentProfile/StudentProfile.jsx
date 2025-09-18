@@ -11,11 +11,8 @@ import {
   Star,
   GraduationCap,
   Mail,
-  Phone,
-,
 } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
 import { studentProfileApiFetch } from "../../../../ApiFetch/studentProfileApiFetch";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
@@ -38,9 +35,9 @@ const StudentProfile = () => {
   const dispatch = useDispatch();
   const user = useSelector((state) => state.auth.user);
   const studentProfile = useSelector((state) => state.studentProfile.profile);
-
+  console.log("student profile :",studentProfile)
   useEffect(() => {
-    if (studentProfile._id || studentProfile.id ) {
+    if (studentProfile?._id) {
       setFormData(studentProfile);
     }
   }, [studentProfile]);
@@ -50,7 +47,10 @@ const StudentProfile = () => {
 
     try {
       let result;
-      if (studentProfile) {
+
+      if (studentProfile?._id) {
+        console.log("inside block");
+        console.log("form Data :", formData);
         result = await studentProfileApiFetch.updateStudentProfile(formData);
       } else {
         result = await studentProfileApiFetch.createStudentProfile(formData);
@@ -58,7 +58,7 @@ const StudentProfile = () => {
 
       if (result.success) {
         toast.success(result?.data?.message);
-        dispatch(setStudentProfile(result.data));
+        dispatch(setStudentProfile(result?.data?.data));
       } else {
         toast.error(result?.error);
       }
@@ -129,7 +129,7 @@ const StudentProfile = () => {
                   </label>
                   <input
                     type="text"
-                    value={user.data.fullname || ""}
+                    value={user?.data?.fullname || ""}
                     readOnly
                     className="w-full px-4 py-3 border-2 border-stone-200 rounded-xl bg-stone-50/50 focus:border-stone-400 focus:bg-white focus:ring-4 focus:ring-stone-100 transition-all duration-200 outline-none placeholder:text-stone-400"
                   />
@@ -142,7 +142,7 @@ const StudentProfile = () => {
                   </label>
                   <input
                     type="email"
-                    value={user.data.email || ""}
+                    value={user?.data?.email || ""}
                     readOnly
                     placeholder="your.email@example.com"
                     className="w-full px-4 py-3 border-2 border-stone-200 rounded-xl bg-stone-50/50 focus:border-stone-400 focus:bg-white focus:ring-4 focus:ring-stone-100 transition-all duration-200 outline-none placeholder:text-stone-400"

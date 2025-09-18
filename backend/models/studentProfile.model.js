@@ -19,10 +19,10 @@ const studentProfileSchema = new Schema(
       facebook: String,
       instagram: String,
     },
-    education: {
+    education: [{
       type: String,
       trim: true,
-    },
+    }],
     interests: [
       {
         type: String,

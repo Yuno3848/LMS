@@ -5,10 +5,14 @@ export const studentProfileApiFetch = {
       const res = await fetch(`${baseUrl}/create-student-profile`, {
         method: "POST",
         credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
         body: JSON.stringify(credentials),
       });
 
       const data = await res.json();
+      console.log("create studentprofile data:", data);
       if (!res.ok) {
         throw new Error("Failed to create student profile");
       }
@@ -22,10 +26,14 @@ export const studentProfileApiFetch = {
       const res = await fetch(`${baseUrl}/update-student-profile`, {
         method: "PATCH",
         credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
         body: JSON.stringify(credentials),
       });
 
       const data = await res.json();
+      console.log("create updateprofile data:", data);
       if (!res.ok) {
         throw new Error("Failed to update student profile");
       }

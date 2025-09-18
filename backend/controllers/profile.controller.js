@@ -31,8 +31,8 @@ export const createStudentProfile = async (req, res) => {
     interests,
   });
 
-  if(!newStudentProfile){
-    throw new ApiError(400,)
+  if (!newStudentProfile) {
+    throw new ApiError(400, 'failed to create student profile');
   }
 
   user.studentProfile = newStudentProfile._id;
@@ -45,7 +45,7 @@ export const createStudentProfile = async (req, res) => {
 
 export const updatedStudentProfile = asyncHandler(async (req, res) => {
   const userId = req.user.id;
-
+  console.log('user id', userId);
   if (!userId) {
     throw new ApiError(401, 'User not authorized');
   }
@@ -61,15 +61,10 @@ export const updatedStudentProfile = asyncHandler(async (req, res) => {
 
   const { bio, skills, socialLinks, education, interests } = req.body;
 
-  const updatedProfile = await studentProfile.findByIdAndUpdate(
+  console.log(req.body);
+  const updatedProfile = await StudentProfile.findByIdAndUpdate(
     user.studentProfile._id,
-    {
-      bio,
-      skills,
-      socialLinks,
-      education,
-      interests,
-    },
+    { $set: { bio, skills, socialLinks, education, interests } },
     { new: true, runValidators: true },
   );
 
@@ -82,7 +77,7 @@ export const verifyStudentProfile = asyncHandler(async (req, res) => {
   const userId = req.user.id;
 
   if (!userId || !mongoose.Types.ObjectId.isValid(userId.toString())) {
-    throw new ApiError(401, 'User not authorozied');
+    throw new ApiError(401, 'User not authorized');
   }
 
   const user = await User.findById(userId).populate('studentProfile');

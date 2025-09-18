@@ -16,6 +16,7 @@ import EmailVerificationPage from "./src/pages/Profile/Profile/ProfilePages/Emai
 import StudentProfile from "./src/pages/Profile/Profile/StudentProfile/StudentProfile";
 import ForgotPassword from "./src/pages/Password/ForgotPassword";
 import ResetPassword from "./src/pages/Password/ResetPassword";
+import UpdateStudentProfile from "./src/pages/Profile/Profile/StudentProfile/UpdateStudentProfile";
 
 const ProtectedRoute = ({ children }) => {
   const user = useSelector((state) => state.auth.user);
@@ -76,8 +77,12 @@ export const routes = createBrowserRouter([
         ),
       },
       {
-        path: "/create-student-profile",
+        path: "/student-profile",
         element: <StudentProfile />,
+      },
+      {
+        path: "/update-student-profile",
+        element: <UpdateStudentProfile />,
       },
     ],
   },

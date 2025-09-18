@@ -10,11 +10,17 @@ export const validateStudentProfile = () => {
       .withMessage('Bio must be a string'),
     body('skills')
       .optional()
-      .isArray()
-      .withMessage('Skills must be an array of strings')
       .bail()
-      .custom((skills) => skills.every((skill) => typeof skill === 'string'))
+      .custom((value) => {
+        if (typeof value === 'string') {
+          return true;
+        }
+        if (Array.isArray(value) && value.every((v) => typeof v === 'string')) {
+          return true;
+        }
+      })
       .withMessage('Each skill must be a string'),
+
     body('socialLinks').optional().isObject().withMessage('Social links must be an object'),
 
     body('socialLinks.linkedin')
@@ -40,14 +46,18 @@ export const validateStudentProfile = () => {
     body('education')
       .notEmpty()
       .withMessage('education field required')
+      .isString()
+      .withMessage('education must be a string')
       .isLength({ max: 500 })
       .withMessage("bio can't be more than 500 characters"),
     body('interests')
       .optional()
-      .isArray()
-      .withMessage('Interests must be an array of strings')
       .bail()
-      .custom((interests) => interests.every((interest) => typeof interest === 'string'))
-      .withMessage('Each interest must be a string'),
+      .custom((value) => {
+        if (typeof value === 'string') return true;
+        if (Array.isArray(value) && interests.every((interest) => typeof interest === 'string')) {
+          return true;
+        }
+      }),
   ];
 };
