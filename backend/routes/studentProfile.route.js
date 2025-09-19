@@ -18,7 +18,7 @@ studentProfile.post(
   isLogged,
   createStudentProfile,
 );
-studentProfile.patch(
+studentProfile.post(
   '/update-student-profile',
   validateStudentProfile(),
   validatorError,

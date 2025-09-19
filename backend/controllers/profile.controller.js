@@ -62,7 +62,7 @@ export const updatedStudentProfile = asyncHandler(async (req, res) => {
   const { bio, skills, socialLinks, education, interests } = req.body;
 
   console.log(req.body);
-  const updatedProfile = await StudentProfile.findByIdAndUpdate(
+  const updatedProfile = await studentProfile.findByIdAndUpdate(
     user.studentProfile._id,
     { $set: { bio, skills, socialLinks, education, interests } },
     { new: true, runValidators: true },

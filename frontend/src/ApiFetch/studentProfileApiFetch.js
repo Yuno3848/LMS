@@ -14,7 +14,7 @@ export const studentProfileApiFetch = {
       const data = await res.json();
       console.log("create studentprofile data:", data);
       if (!res.ok) {
-        throw new Error("Failed to create student profile");
+        throw new Error("You can't create student profile again");
       }
       return { success: true, data };
     } catch (error) {
@@ -24,7 +24,7 @@ export const studentProfileApiFetch = {
   updateStudentProfile: async (credentials) => {
     try {
       const res = await fetch(`${baseUrl}/update-student-profile`, {
-        method: "PATCH",
+        method: "POST",
         credentials: "include",
         headers: {
           "Content-Type": "application/json",

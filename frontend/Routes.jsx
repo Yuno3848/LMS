@@ -13,11 +13,12 @@ import LayoutWithoutFooter from "./Layouts/LayoutWithoutFooter";
 import LayoutwithFooter_Header from "./Layouts/LayoutwithFooter_Header";
 import HelpAndSupport from "./src/pages/HelpAndSupport/HelpAndSupport";
 import EmailVerificationPage from "./src/pages/Profile/Profile/ProfilePages/EmailVerificationPage";
-import StudentProfile from "./src/pages/Profile/Profile/StudentProfile/StudentProfile";
+import StudentProfile from "./src/pages/Profile/Profile/StudentProfile/StudentProfileForm";
 import ForgotPassword from "./src/pages/Password/ForgotPassword";
 import ResetPassword from "./src/pages/Password/ResetPassword";
-import UpdateStudentProfile from "./src/pages/Profile/Profile/StudentProfile/UpdateStudentProfile";
+import UpdateStudentProfile from "./src/pages/Profile/Profile/StudentProfile/SubStudentProfilePages/UpdateStudentProfile";
 import Loading from "./src/components/Loading";
+import CreateStudentProfile from "./src/pages/Profile/Profile/StudentProfile/SubStudentProfilePages/CreateStudentProfile";
 
 const ProtectedRoute = ({ children }) => {
   const user = useSelector((state) => state.auth.user);
@@ -44,8 +45,25 @@ export const Routes = createBrowserRouter([
           </ProtectedRoute>
         ),
       },
+      {
+        path: "/create-student-profile",
+        element: (
+          <ProtectedRoute>
+            <CreateStudentProfile />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "/update-student-profile",
+        element: (
+          <ProtectedRoute>
+            <UpdateStudentProfile />
+          </ProtectedRoute>
+        ),
+      },
     ],
   },
+
   {
     element: <LayoutwithFooter_Header />,
     children: [
@@ -73,11 +91,11 @@ export const Routes = createBrowserRouter([
           </ProtectedRoute>
         ),
       },
-      {
-        path: "/forgot-password",
-        element: <ForgotPassword />,
-      },
     ],
+  },
+  {
+    path: "/forgot-password",
+    element: <ForgotPassword />,
   },
   {
     path: "/reset-password/:token",

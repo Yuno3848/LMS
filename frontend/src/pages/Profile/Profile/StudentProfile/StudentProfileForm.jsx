@@ -12,28 +12,21 @@ import {
   GraduationCap,
   Mail,
 } from "lucide-react";
-import { useDispatch, useSelector } from "react-redux";
-import { useEffect, useState } from "react";
-import toast from "react-hot-toast";
-import { studentProfileApiFetch } from "../../../../ApiFetch/studentProfileApiFetch";
-import { setStudentProfile } from "../../../../redux/slicers/studentProfileSlicer";
+import { useEffect } from "react";
+import { useSelector } from "react-redux";
 
-const StudentProfile = () => {
-  const dispatch = useDispatch();
+const StudentProfileForm = ({
+  title,
+  formData,
+  setFormData,
+  handleSubmit,
+  submitLabel,
+  submitIcon,
+}) => {
   const user = useSelector((state) => state.auth.user);
   const studentProfile = useSelector((state) => state.studentProfile.profile);
-
-  const [formData, setFormData] = useState({
-    bio: "",
-    skills: "",
-    socialLinks: { linkedin: "", twitter: "", facebook: "", instagram: "" },
-    education: "",
-    interests: "",
-  });
-
-  // Populate form if profile exists
   useEffect(() => {
-    if (studentProfile) {
+    if (studentProfile?.data) {
       setFormData({
         bio: studentProfile.bio || "",
         skills: studentProfile.skills || "",
@@ -48,26 +41,6 @@ const StudentProfile = () => {
       });
     }
   }, [studentProfile]);
-
-  // Handle form submit
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      const result = studentProfile?._id
-        ? await studentProfileApiFetch.updateStudentProfile(formData)
-        : await studentProfileApiFetch.createStudentProfile(formData);
-
-      if (result.success) {
-        toast.success(result?.data?.message || "Profile saved successfully");
-        dispatch(setStudentProfile(result?.data?.data));
-      } else {
-        toast.error(result?.error || "Failed to save profile");
-      }
-    } catch (error) {
-      toast.error(error.message || "Something went wrong");
-    }
-  };
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-stone-100 via-amber-50 to-yellow-50 py-12 px-4">
       <form onSubmit={handleSubmit} className="max-w-4xl mx-auto">
@@ -81,7 +54,7 @@ const StudentProfile = () => {
                 <User className="w-8 h-8 text-white" />
               </div>
               <h1 className="text-4xl font-bold bg-gradient-to-r from-stone-700 to-amber-800 bg-clip-text text-transparent">
-                Student Profile
+                {title}
               </h1>
             </div>
             <p className="text-stone-600/80 text-lg font-medium">
@@ -145,7 +118,7 @@ const StudentProfile = () => {
                   <BookOpen className="w-4 h-4" /> Bio
                 </label>
                 <textarea
-                  value={formData.bio}
+                  value={studentProfile?.bio}
                   onChange={(e) =>
                     setFormData({ ...formData, bio: e.target.value })
                   }
@@ -288,8 +261,8 @@ const StudentProfile = () => {
             <div className="flex justify-center pt-8">
               <button className="group relative px-8 py-4 bg-stone-800 hover:bg-stone-900 text-white font-bold rounded-2xl shadow-xl hover:shadow-2xl transform hover:-translate-y-1 transition-all duration-300">
                 <div className="flex items-center gap-3">
-                  <Save className="w-5 h-5 group-hover:rotate-12 transition-transform duration-300" />
-                  Save Profile
+                  {submitIcon || <Save className="w-5 h-5" />}
+                  {submitLabel}
                 </div>
               </button>
             </div>
@@ -300,4 +273,4 @@ const StudentProfile = () => {
   );
 };
 
-export default StudentProfile;
+export default StudentProfileForm;
