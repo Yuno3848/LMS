@@ -9,23 +9,11 @@ import { loginSuccess, logout } from "./redux/slicers/authSlicer";
 import { useEffect } from "react";
 import { authApi } from "./ApiFetch/authApiFetch";
 import Routes from "../Routes";
+import useInitAuth from "./EffectsForApp/UseInitAuth";
+
 
 function App() {
-  const dispatch = useDispatch();
-  useEffect(() => {
-    const fetchUser = async () => {
-      try {
-        const result = await authApi.me();
-        console.log("app jsx", result);
-        if (result.success) {
-          dispatch(loginSuccess(result.data));
-        }
-      } catch (error) {
-        dispatch(logout());
-      }
-    };
-    fetchUser();
-  }, [dispatch]);
+  useInitAuth()
 
   return (
     <>
