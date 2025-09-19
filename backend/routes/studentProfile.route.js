@@ -28,8 +28,8 @@ studentProfile.post(
 
 studentProfile.get('/verify-student-profile', isLogged, verifyStudentProfile);
 
-// studentProfile.get('/get-student-profile', isLogged, getStudentProfile);
-// export default studentProfile;
+studentProfile.get('/get-student-profile', isLogged, getStudentProfile);
+
 
 studentProfile.get('/get-student-profile-byId/:id', isLogged, getStudentProfileById);
 

@@ -138,56 +138,56 @@ export const verifyStudentProfile = asyncHandler(async (req, res) => {
     );
 });
 
-// export const getStudentProfile = asyncHandler(async (req, res) => {
-//   const userId = req.user.id;
-//   if (!userId) {
-//     throw new ApiError(401, 'User not authorized');
-//   }
+export const getStudentProfile = asyncHandler(async (req, res) => {
+  const userId = req.user.id;
+  if (!userId) {
+    throw new ApiError(401, 'User not authorized');
+  }
 
-//   const studentProfile = await User.findById(userId);
+  const studentProfile = await User.findById(userId);
 
-//   if (!studentProfile) {
-//     throw new ApiError(404, 'student profile not found');
-//   }
+  if (!studentProfile) {
+    throw new ApiError(404, 'student profile not found');
+  }
 
-//   const customStudentProfile = await User.aggregate([
-//     {
-//       $match: {
-//         _id: new mongoose.Types.ObjectId(userId),
-//       },
-//     },
-//     {
-//       $lookup: {
-//         from: 'studentprofiles',
-//         localField: 'studentProfile',
-//         foreignField: '_id',
-//         as: 'studentProfile',
-//       },
-//     },
-//     {
-//       $unwind: '$studentProfile',
-//     },
-//     {
-//       $project: {
-//         _id: 1,
-//         username: 1,
-//         email: 1,
-//         studentProfile: {
-//           bio: '$studentProfile.bio',
-//           skills: '$studentProfile.skills',
-//           socialLinks: '$studentProfile.socialLinks',
-//           education: '$studentProfile.education',
-//           interests: '$studentProfile.interests',
-//           isVerifiedStudent: '$studentProfile.isVerifiedStudent',
-//         },
-//       },
-//     },
-//   ]);
+  const customStudentProfile = await User.aggregate([
+    {
+      $match: {
+        _id: new mongoose.Types.ObjectId(userId),
+      },
+    },
+    {
+      $lookup: {
+        from: 'studentprofiles',
+        localField: 'studentProfile',
+        foreignField: '_id',
+        as: 'studentProfile',
+      },
+    },
+    {
+      $unwind: '$studentProfile',
+    },
+    {
+      $project: {
+        _id: 1,
+        username: 1,
+        email: 1,
+        studentProfile: {
+          bio: '$studentProfile.bio',
+          skills: '$studentProfile.skills',
+          socialLinks: '$studentProfile.socialLinks',
+          education: '$studentProfile.education',
+          interests: '$studentProfile.interests',
+          isVerifiedStudent: '$studentProfile.isVerifiedStudent',
+        },
+      },
+    },
+  ]);
 
-//   return res
-//     .status(200)
-//     .json(new ApiResponse(200, 'student profile successfully', customStudentProfile));
-// });
+  return res
+    .status(200)
+    .json(new ApiResponse(200, 'student profile successfully', customStudentProfile));
+});
 
 export const getStudentProfileById = asyncHandler(async (req, res) => {
   const userId = req.params.id;
