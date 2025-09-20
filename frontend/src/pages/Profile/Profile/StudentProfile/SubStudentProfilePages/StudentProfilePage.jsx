@@ -9,24 +9,22 @@ import {
   Star,
   GraduationCap,
   Mail,
-  Camera,
 } from "lucide-react";
 import { useEffect } from "react";
 import { useSelector } from "react-redux";
 import { authApi } from "../../../../../ApiFetch/authApiFetch";
 import Loading from "../../../../../components/Loading";
+import { Link } from "react-router";
 
 const StudentProfilePage = () => {
   const user = useSelector((state) => state.auth.user);
   const studentProfile = useSelector((state) => state.studentProfile.profile);
-  console.log("student profile inside studentprofile page :", studentProfile);
   if (!studentProfile) {
     return <Loading />;
   }
   const { bio, skills, interests, education, socialLinks } =
-    studentProfile?.data[0]?.studentProfile;
+    studentProfile?.data[0].studentProfile;
 
-  console.log("student profile user", user.data.avatar.url);
   return (
     <div className="min-h-screen bg-gradient-to-br from-stone-100 via-amber-50 to-yellow-50 py-12 px-4">
       <div className="max-w-4xl mx-auto">
@@ -47,7 +45,6 @@ const StudentProfilePage = () => {
             </p>
           </div>
         </div>
-
         <div className="bg-white/95 backdrop-blur-sm rounded-3xl shadow-2xl border border-stone-200/50 overflow-hidden">
           <div className="bg-gradient-to-r from-stone-100 to-amber-100 p-8 text-center relative">
             <div className="absolute inset-0 bg-gradient-to-br from-stone-50/50 to-amber-50/50"></div>
@@ -63,7 +60,6 @@ const StudentProfilePage = () => {
               </div>
             </div>
           </div>
-
           <div className="p-8 space-y-8">
             <section className="space-y-6">
               <h2 className="text-2xl font-bold text-stone-800 flex items-center gap-3 border-b border-stone-200 pb-3">
@@ -142,13 +138,20 @@ const StudentProfilePage = () => {
               </div>
             </section>
           </div>
+          <div className="flex justify-center pt-8">
+            <Link
+              to="/update-student-profile"
+              className="group relative px-8 py-4 bg-stone-800 hover:bg-stone-900 text-white font-bold rounded-2xl shadow-xl hover:shadow-2xl transform hover:-translate-y-1 transition-all duration-300 top-[-30px]"
+            >
+              <div className="flex items-center gap-3">Update Your Profile</div>
+            </Link>
+          </div>
         </div>
       </div>
     </div>
   );
 };
 
-/* 🔹 Reusable Info Display */
 const InfoItem = ({ icon, label, value, multiline }) => (
   <div className="space-y-2">
     <label className="text-sm font-semibold text-stone-700 flex items-center gap-2">

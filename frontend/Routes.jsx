@@ -7,7 +7,6 @@ import SignUp from "./src/pages/SignUp/SignUp";
 import Profile from "./src/pages/Profile/Profile/Profile";
 import UpdateProfile from "./src/pages/Profile/UpdateProfile";
 import Course from "./src/pages/MainCourse/Course/Course";
-import { useSelector } from "react-redux";
 import LayoutWithFooter from "./Layouts/LayoutWithFooter";
 import LayoutWithoutFooter from "./Layouts/LayoutWithoutFooter";
 import LayoutwithFooter_Header from "./Layouts/LayoutwithFooter_Header";
@@ -15,12 +14,12 @@ import HelpAndSupport from "./src/pages/HelpAndSupport/HelpAndSupport";
 import EmailVerificationPage from "./src/pages/Profile/Profile/ProfilePages/EmailVerificationPage";
 import ForgotPassword from "./src/pages/Password/ForgotPassword";
 import ResetPassword from "./src/pages/Password/ResetPassword";
-import UpdateStudentProfile from "./src/pages/Profile/Profile/StudentProfile/SubStudentProfilePages/UpdateStudentProfile";
+
 import CreateStudentProfile from "./src/pages/Profile/Profile/StudentProfile/SubStudentProfilePages/CreateStudentProfile";
 import ProtectedRoute from "./src/ProtectedRoutes/ProtectedRoute";
 import ProtectedStudentProfile from "./src/ProtectedRoutes/ProtectedStudentProfile";
-import StudentProfileForm from "./src/pages/Profile/Profile/StudentProfile/StudentProfileForm";
 import StudentProfilePage from "./src/pages/Profile/Profile/StudentProfile/SubStudentProfilePages/StudentProfilePage";
+import UpdateStudentProfile from "./src/pages/Profile/Profile/StudentProfile/SubStudentProfilePages/UpdateStudentProfile";
 
 export const Routes = createBrowserRouter([
   {
@@ -76,7 +75,21 @@ export const Routes = createBrowserRouter([
       },
       {
         path: "/create-student-profile",
-        element: <CreateStudentProfile />,
+        element: (
+          <ProtectedRoute>
+            <ProtectedStudentProfile>
+              <CreateStudentProfile />
+            </ProtectedStudentProfile>
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "/update-student-profile",
+        element: (
+          <ProtectedRoute>
+            <UpdateStudentProfile />
+          </ProtectedRoute>
+        ),
       },
       {
         path: "/student-profile",
