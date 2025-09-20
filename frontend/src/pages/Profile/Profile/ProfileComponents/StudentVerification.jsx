@@ -4,7 +4,8 @@ import { Link } from "react-router";
 
 const StudentVerification = () => {
   const user = useSelector((state) => state.auth.user);
-
+   const studentProfile = useSelector((state)=>state.studentProfile.profile)
+   console.log(studentProfile)
   return (
     <div className="border-t border-[#e0c9a6] pt-4">
       <div className="flex items-center justify-between mb-3">

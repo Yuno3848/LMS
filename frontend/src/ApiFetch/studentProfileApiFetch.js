@@ -89,4 +89,20 @@ export const studentProfileApiFetch = {
       return { success: false, message: error.message };
     }
   },
+
+  verifyStudentProfile: async () => {
+    try {
+      const res = await fetch(`${baseUrl}/verify-student-profile`, {
+        method: "GET",
+        credentials: "include",
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error("Failed to verify student profile");
+      }
+      return { success: true, data };
+    } catch (error) {
+      return { success: false, message: error.message };
+    }
+  },
 };
