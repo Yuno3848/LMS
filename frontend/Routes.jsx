@@ -13,21 +13,15 @@ import LayoutWithoutFooter from "./Layouts/LayoutWithoutFooter";
 import LayoutwithFooter_Header from "./Layouts/LayoutwithFooter_Header";
 import HelpAndSupport from "./src/pages/HelpAndSupport/HelpAndSupport";
 import EmailVerificationPage from "./src/pages/Profile/Profile/ProfilePages/EmailVerificationPage";
-import StudentProfile from "./src/pages/Profile/Profile/StudentProfile/StudentProfileForm";
 import ForgotPassword from "./src/pages/Password/ForgotPassword";
 import ResetPassword from "./src/pages/Password/ResetPassword";
 import UpdateStudentProfile from "./src/pages/Profile/Profile/StudentProfile/SubStudentProfilePages/UpdateStudentProfile";
-import Loading from "./src/components/Loading";
 import CreateStudentProfile from "./src/pages/Profile/Profile/StudentProfile/SubStudentProfilePages/CreateStudentProfile";
+import ProtectedRoute from "./src/ProtectedRoutes/ProtectedRoute";
+import ProtectedStudentProfile from "./src/ProtectedRoutes/ProtectedStudentProfile";
+import StudentProfileForm from "./src/pages/Profile/Profile/StudentProfile/StudentProfileForm";
+import StudentProfilePage from "./src/pages/Profile/Profile/StudentProfile/SubStudentProfilePages/StudentProfilePage";
 
-const ProtectedRoute = ({ children }) => {
-  const user = useSelector((state) => state.auth.user);
-  const loading = useSelector((state) => state.auth.loading);
-  if (loading) {
-    return <Loading />;
-  }
-  return user ? children : <Navigate to="/login" />;
-};
 export const Routes = createBrowserRouter([
   {
     element: <LayoutWithFooter />,
@@ -42,22 +36,6 @@ export const Routes = createBrowserRouter([
         element: (
           <ProtectedRoute>
             <Course />
-          </ProtectedRoute>
-        ),
-      },
-      {
-        path: "/create-student-profile",
-        element: (
-          <ProtectedRoute>
-            <CreateStudentProfile />
-          </ProtectedRoute>
-        ),
-      },
-      {
-        path: "/update-student-profile",
-        element: (
-          <ProtectedRoute>
-            <UpdateStudentProfile />
           </ProtectedRoute>
         ),
       },
@@ -91,12 +69,22 @@ export const Routes = createBrowserRouter([
           </ProtectedRoute>
         ),
       },
+
+      {
+        path: "/forgot-password",
+        element: <ForgotPassword />,
+      },
+      {
+        path: "/create-student-profile",
+        element: <CreateStudentProfile />,
+      },
+      {
+        path: "/student-profile",
+        element: <StudentProfilePage />,
+      },
     ],
   },
-  {
-    path: "/forgot-password",
-    element: <ForgotPassword />,
-  },
+
   {
     path: "/reset-password/:token",
     element: <ResetPassword />,

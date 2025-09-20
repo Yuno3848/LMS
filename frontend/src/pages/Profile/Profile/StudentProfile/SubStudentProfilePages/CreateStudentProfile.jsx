@@ -3,12 +3,15 @@ import { useDispatch, useSelector } from "react-redux";
 import toast from "react-hot-toast";
 import { Save } from "lucide-react";
 import { studentProfileApiFetch } from "../../../../../ApiFetch/studentProfileApiFetch";
-import { setStudentProfile } from "../../../../../redux/slicers/studentProfileSlicer";
+import {
+  setStudentLoading,
+  setStudentProfile,
+} from "../../../../../redux/slicers/studentProfileSlicer";
 import StudentProfileForm from "../StudentProfileForm";
 
 const CreateStudentProfile = () => {
   const dispatch = useDispatch();
-
+  const loading = useSelector((state) => state.studentProfile.loading);
   const [formData, setFormData] = useState({
     bio: "",
     skills: "",
@@ -19,20 +22,22 @@ const CreateStudentProfile = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    dispatch(setStudentLoading(true));
     try {
       const result = await studentProfileApiFetch.createStudentProfile(
         formData
       );
-         console.log("result create student profile:",result)
+      console.log("result create student profile:", result);
       if (result.success) {
         toast.success(result?.data?.message || "Profile created successfully");
-        
         dispatch(setStudentProfile(result?.data?.data));
       } else {
-        toast.error(result?.error || "Failed to create profile");
+        toast.error(result?.error || "You can't create more than one profile");
       }
     } catch (error) {
       toast.error(error.message || "Something went wrong");
+    } finally {
+      dispatch(setStudentLoading(false));
     }
   };
 
@@ -43,7 +48,7 @@ const CreateStudentProfile = () => {
       setFormData={setFormData}
       handleSubmit={handleSubmit}
       submitLabel="Create Profile"
-      submitIcon={<Save className="w-5 h-5" />}
+      loading={loading}
     />
   );
 };

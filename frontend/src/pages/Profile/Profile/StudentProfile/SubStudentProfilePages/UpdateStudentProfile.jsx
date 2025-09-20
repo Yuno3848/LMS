@@ -3,13 +3,16 @@ import { useDispatch, useSelector } from "react-redux";
 import toast from "react-hot-toast";
 import { Save } from "lucide-react";
 import { studentProfileApiFetch } from "../../../../../ApiFetch/studentProfileApiFetch";
-import { setStudentProfile } from "../../../../../redux/slicers/studentProfileSlicer";
+import {
+  setStudentLoading,
+  setStudentProfile,
+} from "../../../../../redux/slicers/studentProfileSlicer";
 import StudentProfileForm from "../StudentProfileForm"; // shared form component
 
 const UpdateStudentProfile = () => {
   const dispatch = useDispatch();
   const studentProfile = useSelector((state) => state.studentProfile.profile);
-
+  const loading = useSelector((state) => state.studentProfile.loading);
   const [formData, setFormData] = useState({
     bio: "",
     skills: "",
@@ -19,7 +22,7 @@ const UpdateStudentProfile = () => {
   });
 
   useEffect(() => {
-    if (studentProfile?.data) {
+    if (studentProfile) {
       setFormData({
         bio: studentProfile.bio || "",
         skills: studentProfile.skills || "",
@@ -37,6 +40,7 @@ const UpdateStudentProfile = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    dispatch(setStudentLoading(true));
     try {
       const result = await studentProfileApiFetch.updateStudentProfile(
         formData
@@ -49,6 +53,8 @@ const UpdateStudentProfile = () => {
       }
     } catch (error) {
       toast.error(error.message || "Something went wrong");
+    } finally {
+      dispatch(setStudentLoading(false));
     }
   };
 
@@ -59,7 +65,7 @@ const UpdateStudentProfile = () => {
       setFormData={setFormData}
       handleSubmit={handleSubmit}
       submitLabel="Update Profile"
-      submitIcon={<Save className="w-5 h-5" />}
+      loading={loading}
     />
   );
 };

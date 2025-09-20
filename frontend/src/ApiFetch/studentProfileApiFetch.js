@@ -73,4 +73,20 @@ export const studentProfileApiFetch = {
       return { success: false, message: error.message };
     }
   },
+
+  getStudentProfile: async () => {
+    try {
+      const res = await fetch(`${baseUrl}/get-student-profile`, {
+        method: "GET",
+        credentials: "include",
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error("Failed to fetch student profile");
+      }
+      return { success: true, data };
+    } catch (error) {
+      return { success: false, message: error.message };
+    }
+  },
 };

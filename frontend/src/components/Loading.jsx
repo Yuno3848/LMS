@@ -105,7 +105,7 @@ const Loading = ({ text = "Brewing your account..." }) => {
         </div>
       </div>
 
-      <style jsx>{`
+      <style>{`
         @keyframes liquidFill {
           0%,
           10% {
