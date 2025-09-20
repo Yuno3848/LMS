@@ -178,7 +178,7 @@ export const getStudentProfile = asyncHandler(async (req, res) => {
           socialLinks: '$studentProfile.socialLinks',
           education: '$studentProfile.education',
           interests: '$studentProfile.interests',
-          isVerifiedStudent: '$studentProfile.isVerifiedStudent',
+          verificationStatus: '$studentProfile.verificationStatus',
         },
       },
     },

@@ -32,8 +32,8 @@ const studentProfileSchema = new Schema(
     ],
     verificationStatus: {
       type: String,
-      enum: ['not_requested', 'pending', 'verified', 'rejected'],
-      default: 'not_requested',
+      enum: ['not requested', 'pending', 'verified', 'rejected'],
+      default: 'not requested',
     },
   },
   { timestamps: true },

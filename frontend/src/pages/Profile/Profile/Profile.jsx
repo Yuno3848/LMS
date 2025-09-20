@@ -5,6 +5,7 @@ import { Link } from "react-router";
 import { useDispatch, useSelector } from "react-redux";
 import StudentVerification from "./ProfileComponents/StudentVerification";
 import EmailVerification from "./ProfileComponents/EmailVerification";
+import VerifyStudentProfile from "./ProfileComponents/VerifyStudentProfile";
 
 const Profile = () => {
   const user = useSelector((state) => state.auth.user);
@@ -58,7 +59,7 @@ const Profile = () => {
           />
           <EmailVerification />
           <StudentVerification />
-          <VerifyStudentProfile/>
+        
           <Link
             to="/update-profile"
             className="block w-full text-center bg-gradient-to-r from-[#b08968] to-[#8c5e3c] text-white py-3 rounded-lg font-semibold shadow-md hover:shadow-lg hover:from-[#8c5e3c] hover:to-[#6b4226] transition transform hover:-translate-y-0.5"

@@ -93,7 +93,11 @@ export const Routes = createBrowserRouter([
       },
       {
         path: "/student-profile",
-        element: <StudentProfilePage />,
+        element: (
+          <ProtectedRoute>
+            <StudentProfilePage />
+          </ProtectedRoute>
+        ),
       },
     ],
   },
