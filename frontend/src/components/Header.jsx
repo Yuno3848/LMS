@@ -7,9 +7,10 @@ import { HashLink } from "react-router-hash-link";
 import { useDispatch, useSelector } from "react-redux";
 import toast from "react-hot-toast";
 import { logout } from "../redux/slicers/authSlicer";
+import { setClearStudentProfile } from "../redux/slicers/studentProfileSlicer";
 const Header = () => {
   const user = useSelector((state) => state.auth.user);
-  const loading = useSelector((state) => state.auth.loading);
+
   const dispatch = useDispatch();
   const navLink = [
     { name: "Home", path: "/#hero" },
@@ -22,6 +23,8 @@ const Header = () => {
       const result = await authApi.logout();
       if (result.success) {
         dispatch(logout());
+        dispatch(setClearStudentProfile());
+
         toast.success(result?.data?.message || "Logout successful");
       } else {
         toast.error(result.error || "Logout failed");

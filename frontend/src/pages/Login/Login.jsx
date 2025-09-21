@@ -4,6 +4,8 @@ import { Link, useNavigate } from "react-router-dom";
 import { authApi } from "../../ApiFetch/authApiFetch";
 import { useDispatch, useSelector } from "react-redux";
 import { loginSuccess } from "../../redux/slicers/authSlicer";
+import { setStudentLoading, setStudentProfile } from "../../redux/slicers/studentProfileSlicer";
+import { studentProfileApiFetch } from "../../ApiFetch/studentProfileApiFetch";
 
 const Login = () => {
   const [formData, setFormData] = useState({
@@ -26,6 +28,13 @@ const Login = () => {
         toast.success("login successfully");
 
         dispatch(loginSuccess(result.data));
+        dispatch(setStudentLoading(true));
+        const profile = await studentProfileApiFetch.getStudentProfile();
+        if (profile.success) {
+          dispatch(setStudentProfile(profile.data));
+        } else {
+          dispatch(setStudentProfile(null));
+        }
 
         navigate("/");
       } else {

@@ -11,8 +11,9 @@ const studentProfileSlice = createSlice({
     setStudentLoading: (state, action) => {
       state.loading = action.payload;
     },
+    setClearStudentProfile: () => initialState,
   },
 });
-export const { setStudentProfile, setStudentLoading } =
+export const { setStudentProfile, setStudentLoading, setClearStudentProfile } =
   studentProfileSlice.actions;
 export default studentProfileSlice.reducer;
