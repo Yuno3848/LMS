@@ -21,7 +21,7 @@ const StudentVerification = () => {
     pending: {
       bg: "bg-[#fff8e6] border-[#ffe58f] text-[#ad6800]",
       icon: "⏳",
-      label: "Pending Verification",
+      label: "Pending",
     },
     "not verified": {
       bg: "bg-[#fdecea] border-[#f5c6cb] text-[#a94442]",
@@ -32,11 +32,6 @@ const StudentVerification = () => {
       bg: "bg-[#fff1f0] border-[#ffa39e] text-[#cf1322]",
       icon: "🚫",
       label: "Rejected",
-    },
-    unknown: {
-      bg: "bg-gray-100 border-gray-300 text-gray-600",
-      icon: "❓",
-      label: "Unknown",
     },
   };
 

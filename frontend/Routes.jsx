@@ -20,6 +20,7 @@ import ProtectedRoute from "./src/ProtectedRoutes/ProtectedRoute";
 import ProtectedStudentProfile from "./src/ProtectedRoutes/ProtectedStudentProfile";
 import StudentProfilePage from "./src/pages/Profile/Profile/StudentProfile/SubStudentProfilePages/StudentProfilePage";
 import UpdateStudentProfile from "./src/pages/Profile/Profile/StudentProfile/SubStudentProfilePages/UpdateStudentProfile";
+import InstructorInfoPage from "./src/pages/InstructorInfoPage.jsx/InstructorInfoPage";
 
 export const Routes = createBrowserRouter([
   {
@@ -105,6 +106,10 @@ export const Routes = createBrowserRouter([
   {
     path: "/reset-password/:token",
     element: <ResetPassword />,
+  },
+  {
+    path: "/instructor-profile-info",
+    element: <InstructorInfoPage />,
   },
   {
     path: "/verify-email/:token",
