@@ -13,5 +13,8 @@ const instructorProfileSlice = createSlice({
       state.loading = false;
     },
 
+    setInstructorLoading: (state, action) => {
+      state.loading = action.payload;
+    },
   },
 });
