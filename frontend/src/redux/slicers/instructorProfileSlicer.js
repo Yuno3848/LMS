@@ -16,5 +16,7 @@ const instructorProfileSlice = createSlice({
     setInstructorLoading: (state, action) => {
       state.loading = action.payload;
     },
+
+    setClearInstructorProfile: () => initialState,
   },
 });
