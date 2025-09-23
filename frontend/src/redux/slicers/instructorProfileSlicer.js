@@ -8,7 +8,7 @@ const instructorProfileSlice = createSlice({
     loading: true,
   },
   reducers: {
-    setCreateInstructorProfile: (state, action) => {
+    setInstructorProfile: (state, action) => {
       state.profile = action.payload;
       state.loading = false;
     },
@@ -22,7 +22,7 @@ const instructorProfileSlice = createSlice({
 });
 
 export const {
-  setCreateInstructorProfile,
+  setInstructorProfile,
   setInstructorLoading,
   setClearInstructorProfile,
 } = instructorProfileSlice.actions;

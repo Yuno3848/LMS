@@ -23,6 +23,7 @@ import UpdateStudentProfile from "./src/pages/Profile/Profile/StudentProfile/Sub
 import InstructorInfoPage from "./src/pages/InstructorInfoPage.jsx/InstructorInfoPage";
 import InstructorProfileForm from "./src/pages/Profile/Profile/InstructorProfile/InstructorProfileFormPage";
 import CreateInstructorProfile from "./src/pages/Profile/Profile/InstructorProfile/InstructorProfileComponents/CreateInstructorProfile";
+import UpdateInstructorProfile from "./src/pages/Profile/Profile/InstructorProfile/InstructorProfileComponents/UpdateInstructorProfile";
 
 export const Routes = createBrowserRouter([
   {
@@ -110,11 +111,15 @@ export const Routes = createBrowserRouter([
           </ProtectedRoute>
         ),
       },
+      {
+        path: "/create-instructor-profile",
+        element: <CreateInstructorProfile />,
+      },
+      {
+        path: "/update-instructor-profile",
+        element: <UpdateInstructorProfile />,
+      },
     ],
-  },
-  {
-    path: "/create-instructor-profile",
-    element: <CreateInstructorProfile />,
   },
 
   {

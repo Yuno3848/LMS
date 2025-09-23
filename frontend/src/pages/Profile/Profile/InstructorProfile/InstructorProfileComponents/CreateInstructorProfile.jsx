@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import InstructorProfileForm from "../InstructorProfileFormPage";
 import { instructorProfileAPIFetch } from "../../../../../ApiFetch/instructorProfileApiFetch";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import {
-  setCreateInstructorProfile,
+  setInstructorProfile,
   setInstructorLoading,
 } from "../../../../../redux/slicers/instructorProfileSlicer";
 import toast from "react-hot-toast";
@@ -29,12 +29,12 @@ const CreateInstructorProfile = () => {
       const result = await instructorProfileAPIFetch.createInstructorProfile(
         formData
       );
-
+      console.log("create instructor profile result :", result);
       if (result.success) {
-        toast.success("Instructor profile created");
-        dispatch(setCreateInstructorProfile(formData));
+        toast.success(result?.data?.message || "Instructor profile created");
+        dispatch(setInstructorProfile(result?.data?.data));
       } else {
-        toast.error("Instructor Profile already exist");
+        toast.error(result?.error || "Instructor Profile already exist");
       }
     } catch (error) {
       toast.error(error.message || "something went wrong");
