@@ -2,7 +2,10 @@ import React, { useState } from "react";
 import InstructorProfileForm from "../InstructorProfileFormPage";
 import { instructorProfileAPIFetch } from "../../../../../ApiFetch/instructorProfileApiFetch";
 import { useDispatch, useSelector } from "react-redux";
-import { setCreateInstructorProfile } from "../../../../../redux/slicers/instructorProfileSlicer";
+import {
+  setCreateInstructorProfile,
+  setInstructorLoading,
+} from "../../../../../redux/slicers/instructorProfileSlicer";
 import toast from "react-hot-toast";
 const CreateInstructorProfile = () => {
   const [formData, setFormData] = useState({
@@ -19,12 +22,9 @@ const CreateInstructorProfile = () => {
 
   const dispatch = useDispatch();
 
-  const instructorLoading = useSelector(
-    (state) => state.instructorLoading.instructorLoading
-  );
   const handleSubmit = async (e) => {
     e.preventDefault();
-    dispatch(instructorLoading(true));
+    dispatch(setInstructorLoading(true));
     try {
       const result = await instructorProfileAPIFetch.createInstructorProfile(
         formData
@@ -37,7 +37,7 @@ const CreateInstructorProfile = () => {
     } catch (error) {
       toast.error(error.message || "Instructor profile already exists");
     } finally {
-      dispatch(instructorLoading(false));
+      dispatch(setInstructorLoading(false));
     }
   };
 
@@ -47,9 +47,7 @@ const CreateInstructorProfile = () => {
       formData={formData}
       setFormData={setFormData}
       handleSubmit={handleSubmit}
-      submitLabel="Instructor Profile"
+      submitLabel="Create Profile"
     />
   );
 };
-
-export default CreateInstructorProfile;
