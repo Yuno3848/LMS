@@ -22,6 +22,7 @@ import StudentProfilePage from "./src/pages/Profile/Profile/StudentProfile/SubSt
 import UpdateStudentProfile from "./src/pages/Profile/Profile/StudentProfile/SubStudentProfilePages/UpdateStudentProfile";
 import InstructorInfoPage from "./src/pages/InstructorInfoPage.jsx/InstructorInfoPage";
 import InstructorProfileForm from "./src/pages/Profile/Profile/InstructorProfile/InstructorProfileFormPage";
+import CreateInstructorProfile from "./src/pages/Profile/Profile/InstructorProfile/InstructorProfileComponents/CreateInstructorProfile";
 
 export const Routes = createBrowserRouter([
   {
@@ -113,7 +114,7 @@ export const Routes = createBrowserRouter([
   },
   {
     path: "/create-instructor-profile",
-    element: <InstructorProfileForm />,
+    element: <CreateInstructorProfile />,
   },
 
   {

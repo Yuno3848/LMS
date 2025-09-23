@@ -9,10 +9,14 @@ export const validateInstructorProfile = () => {
 
     body('expertise')
       .optional()
-      .isArray()
-      .withMessage('experise must be an array of strings')
-      .bail()
-      .custom((expertises) => expertises.every((expertise) => typeof expertise === 'string'))
+      .custom((expertises) => {
+        if (typeof expertises === 'string') {
+          return true;
+        }
+        if (Array.isArray(expertises) && expertises.every((e) => typeof e === 'string')) {
+          return true;
+        }
+      })
       .withMessage('Each expertise must be an string'),
 
     body('socialLinks').optional().isObject().withMessage('Social links must be an object'),

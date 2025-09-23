@@ -29,13 +29,15 @@ const CreateInstructorProfile = () => {
       const result = await instructorProfileAPIFetch.createInstructorProfile(
         formData
       );
-      console.log("instructor result :", result);
+
       if (result.success) {
         toast.success("Instructor profile created");
         dispatch(setCreateInstructorProfile(formData));
+      } else {
+        toast.error("Instructor Profile already exist");
       }
     } catch (error) {
-      toast.error(error.message || "Instructor profile already exists");
+      toast.error(error.message || "something went wrong");
     } finally {
       dispatch(setInstructorLoading(false));
     }
@@ -51,3 +53,5 @@ const CreateInstructorProfile = () => {
     />
   );
 };
+
+export default CreateInstructorProfile;

@@ -21,7 +21,7 @@ const InstructorProfileForm = ({
   submitLabel,
   submitIcon,
 }) => {
-  console.log("title instructorPro :", title);
+  console.log("title instructorPro :", formData);
   return (
     <div className="min-h-screen bg-gradient-to-br from-stone-100 via-amber-50 to-yellow-50 py-12 px-4">
       <form onSubmit={handleSubmit} className="max-w-4xl mx-auto">

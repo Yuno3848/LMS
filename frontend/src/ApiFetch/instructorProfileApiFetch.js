@@ -11,9 +11,9 @@ export const instructorProfileAPIFetch = {
         },
         body: JSON.stringify(credential),
       });
-      const data = res.json();
+      const data = await res.json();
       if (!res.ok) {
-        throw Error("Failed to create instructor profile");
+        throw Error(data.message || "Failed to create instructor profile");
       }
       return { success: true, data };
     } catch (error) {
