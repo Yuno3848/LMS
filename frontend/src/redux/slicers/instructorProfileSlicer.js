@@ -20,3 +20,11 @@ const instructorProfileSlice = createSlice({
     setClearInstructorProfile: () => initialState,
   },
 });
+
+export const {
+  setCreateInstructorProfile,
+  setInstructorLoading,
+  setClearInstructorProfile,
+} = instructorProfileSlice.actions;
+
+export default instructorProfileSlice.reducer;

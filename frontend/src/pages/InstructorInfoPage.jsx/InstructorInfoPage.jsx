@@ -10,6 +10,7 @@ import {
   ArrowRight,
   Sparkles,
 } from "lucide-react";
+import { Link } from "react-router";
 
 const InstructorInfoPage = () => {
   const containerVariants = {
@@ -269,7 +270,7 @@ const InstructorInfoPage = () => {
               whileHover={{ x: "100%" }}
               transition={{ duration: 0.6 }}
             />
-            <span className="relative z-10 flex items-center gap-3">
+            <Link to="create-instructor-profile" className="relative z-10 flex items-center gap-3">
               Join as Instructor
               <motion.div
                 animate={{ x: [0, 5, 0] }}
@@ -281,7 +282,7 @@ const InstructorInfoPage = () => {
               >
                 <ArrowRight className="w-5 h-5" />
               </motion.div>
-            </span>
+            </Link>
           </motion.button>
 
           <motion.p

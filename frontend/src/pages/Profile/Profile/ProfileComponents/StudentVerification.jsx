@@ -23,20 +23,25 @@ const StudentVerification = () => {
       icon: "⏳",
       label: "Pending",
     },
-    "not verified": {
+    "not requested": {
       bg: "bg-[#fdecea] border-[#f5c6cb] text-[#a94442]",
       icon: "❌",
-      label: "Not Verified",
+      label: "Not Requested",
     },
     rejected: {
       bg: "bg-[#fff1f0] border-[#ffa39e] text-[#cf1322]",
       icon: "🚫",
       label: "Rejected",
     },
+    profileNotCreated: {
+      bg: "bg-[#fdecea] border-[#f5c6cb] text-[#a94442]",
+      icon: "❌",
+      label: "Profile not created",
+    },
   };
 
   const { bg, icon, label } =
-    statusConfig[verificationStatus] || statusConfig.unknown;
+    statusConfig[verificationStatus] || statusConfig.profileNotCreated;
 
   return (
     <div className="border-t border-[#e0c9a6] pt-4">

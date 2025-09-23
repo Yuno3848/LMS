@@ -70,7 +70,7 @@ const InstructorProfileForm = ({
                 About You
               </h2>
               <textarea
-                value={formData.bio}
+                value={formData?.bio}
                 onChange={(e) =>
                   setFormData({ ...formData, bio: e.target.value })
                 }
@@ -90,7 +90,7 @@ const InstructorProfileForm = ({
               </h2>
               <input
                 type="text"
-                value={formData.expertise}
+                value={formData?.expertise}
                 onChange={(e) =>
                   setFormData({ ...formData, expertise: e.target.value })
                 }
@@ -117,14 +117,14 @@ const InstructorProfileForm = ({
                     min="0"
                     max="5"
                     step="0.1"
-                    value={formData.rating}
+                    value={formData?.rating}
                     onChange={(e) =>
                       setFormData({ ...formData, rating: e.target.value })
                     }
                     className="w-full px-4 py-3 border-2 border-stone-200 rounded-xl bg-stone-50/50 focus:border-stone-400 focus:bg-white focus:ring-4 focus:ring-stone-100 outline-none"
                   />
                 </div>
-                <div>
+                {/* <div>
                   <label className="text-sm font-semibold text-stone-700">
                     Verification Status
                   </label>
@@ -143,7 +143,7 @@ const InstructorProfileForm = ({
                     <option value="verified">Verified</option>
                     <option value="rejected">Rejected</option>
                   </select>
-                </div>
+                </div> */}
               </div>
             </section>
 
@@ -172,12 +172,12 @@ const InstructorProfileForm = ({
                         </label>
                         <input
                           type="url"
-                          value={formData.socialLinks[platform]}
+                          value={formData?.socialLinks[platform]}
                           onChange={(e) =>
                             setFormData({
                               ...formData,
                               socialLinks: {
-                                ...formData.socialLinks,
+                                ...formData?.socialLinks,
                                 [platform]: e.target.value,
                               },
                             })

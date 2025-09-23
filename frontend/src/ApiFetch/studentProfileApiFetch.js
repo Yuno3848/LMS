@@ -12,7 +12,7 @@ export const studentProfileApiFetch = {
       });
 
       const data = await res.json();
-      console.log("create studentprofile data:", data);
+
       if (!res.ok) {
         throw new Error("You can't create student profile again");
       }
@@ -89,5 +89,4 @@ export const studentProfileApiFetch = {
       return { success: false, message: error.message };
     }
   },
-
 };
