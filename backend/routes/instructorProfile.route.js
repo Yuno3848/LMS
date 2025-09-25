@@ -18,7 +18,7 @@ instructor.post(
   createInstructorProfile,
 );
 
-instructor.patch(
+instructor.post(
   '/update-instructor-profile',
   validateInstructorProfile(),
   validatorError,

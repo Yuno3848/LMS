@@ -50,10 +50,10 @@ const UpdateInstructorProfile = () => {
       );
 
       if (result.success) {
-        toast.success(result?.data?.message || "Instructor profile created");
+        toast.success(result?.data?.message || "Instructor profile updated");
         dispatch(setInstructorProfile(result?.data?.data));
       } else {
-        toast.error(result?.error || "Instructor Profile already exist");
+        toast.error(result?.error || "Instructor profile not updated");
       }
     } catch (error) {
       toast.error(error.message || "something went wrong");

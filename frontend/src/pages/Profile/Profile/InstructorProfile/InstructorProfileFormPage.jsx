@@ -12,6 +12,8 @@ import {
   GraduationCap,
   CheckCircle,
 } from "lucide-react";
+import { useEffect } from "react";
+import { useSelector } from "react-redux";
 
 const InstructorProfileForm = ({
   title,
@@ -21,7 +23,25 @@ const InstructorProfileForm = ({
   submitLabel,
   submitIcon,
 }) => {
- console.log("instructor profile form data :", formData)
+  const instructorProfile = useSelector(
+    (state) => state.instructorProfile.profile
+  );
+
+  useEffect(() => {
+    if (instructorProfile?.data) {
+      setFormData({
+        bio: instructorProfile.bio || "",
+        skills: instructorProfile.expertise || "",
+        socialLinks: {
+          linkedin: instructorProfile.socialLinks?.linkedin || "",
+          twitter: instructorProfile.socialLinks?.twitter || "",
+          facebook: instructorProfile.socialLinks?.facebook || "",
+          instagram: instructorProfile.socialLinks?.instagram || "",
+        },
+        socialLinks: instructorProfile?.rating,
+      });
+    }
+  }, [instructorProfile]);
   return (
     <div className="min-h-screen bg-gradient-to-br from-stone-100 via-amber-50 to-yellow-50 py-12 px-4">
       <form onSubmit={handleSubmit} className="max-w-4xl mx-auto">
@@ -71,7 +91,7 @@ const InstructorProfileForm = ({
                 About You
               </h2>
               <textarea
-                value={formData?.bio}
+                value={instructorProfile?.bio}
                 onChange={(e) =>
                   setFormData({ ...formData, bio: e.target.value })
                 }

@@ -7,7 +7,6 @@ const ProtectedStudentProfile = ({ children }) => {
   const studentProfile = useSelector((state) => state.studentProfile.profile);
   const studentLoading = useSelector((state) => state.studentProfile.loading);
 
-
   if (studentLoading) {
     return <Loading />;
   }
