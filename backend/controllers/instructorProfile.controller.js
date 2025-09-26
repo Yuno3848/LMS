@@ -71,7 +71,9 @@ export const updateInstructorProfile = asyncHandler(async (req, res) => {
     throw new ApiError(404, 'instructor profile could not be updated');
   }
 
-  return res.status(200).json(new ApiResponse(200, 'instructor profile updated successfully'));
+  return res
+    .status(200)
+    .json(new ApiResponse(200, 'instructor profile updated successfully', updateInstructorProfile));
 });
 
 export const reqInstructorRole = asyncHandler(async (req, res) => {
@@ -116,4 +118,23 @@ export const reqInstructorRole = asyncHandler(async (req, res) => {
   return res
     .status(200)
     .json(new ApiResponse(200, 'instructor request submitted successfully', user));
+});
+
+export const getInstructorProfile = asyncHandler(async (req, res) => {
+  const userId = req.user.id;
+
+  if (!userId || !mongoose.Types.ObjectId.isValid(userId.toString())) {
+    throw new ApiError(401, 'User not authorized');
+  }
+
+  const instructorDetails = await User.findById(userId)
+    .populate('instructorProfile')
+    .select('-emailVerificationTokenExpiry -emailVerifiedToken -refreshToken');
+  if (!instructorDetails) {
+    throw new ApiError(404, 'Instructor Details not found');
+  }
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, 'Instructor profile fetched successfully', instructorDetails));
 });

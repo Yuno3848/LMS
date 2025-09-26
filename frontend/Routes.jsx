@@ -24,6 +24,7 @@ import InstructorInfoPage from "./src/pages/InstructorInfoPage.jsx/InstructorInf
 import InstructorProfileForm from "./src/pages/Profile/Profile/InstructorProfile/InstructorProfileFormPage";
 import CreateInstructorProfile from "./src/pages/Profile/Profile/InstructorProfile/InstructorProfileComponents/CreateInstructorProfile";
 import UpdateInstructorProfile from "./src/pages/Profile/Profile/InstructorProfile/InstructorProfileComponents/UpdateInstructorProfile";
+import ProtectedInstructorProfile from "./src/ProtectedRoutes/ProtectedInstructorProfile";
 
 export const Routes = createBrowserRouter([
   {
@@ -113,11 +114,19 @@ export const Routes = createBrowserRouter([
       },
       {
         path: "/create-instructor-profile",
-        element: <CreateInstructorProfile />,
+        element: (
+          <ProtectedRoute>
+            <CreateInstructorProfile />
+          </ProtectedRoute>
+        ),
       },
       {
         path: "/update-instructor-profile",
-        element: <UpdateInstructorProfile />,
+        element: (
+          <ProtectedRoute>
+            <UpdateInstructorProfile />
+          </ProtectedRoute>
+        ),
       },
     ],
   },

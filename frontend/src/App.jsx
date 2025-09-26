@@ -7,6 +7,7 @@ import useInitStudentProfile from "./EffectsForApp/useInitStudentProfile";
 function App() {
   useInitAuth();
   useInitStudentProfile();
+  
 
   return (
     <>

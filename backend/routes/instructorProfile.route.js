@@ -4,6 +4,7 @@ import { isLogged } from '../middlewares/isLogged.middleware.js';
 import { validateInstructorProfile } from '../validators/instructorProfile.validator.js';
 import {
   createInstructorProfile,
+  getInstructorProfile,
   reqInstructorRole,
   updateInstructorProfile,
 } from '../controllers/instructorProfile.controller.js';
@@ -26,5 +27,6 @@ instructor.post(
   updateInstructorProfile,
 );
 
+instructor.get('/get-instructor-profile', isLogged, getInstructorProfile);
 instructor.get('/req-instructor-role', isLogged, reqInstructorRole);
 export default instructor;
