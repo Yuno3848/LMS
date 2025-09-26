@@ -1,13 +1,13 @@
 import { Coffee, LogOut } from "lucide-react";
 import { Link } from "react-router";
 import React from "react";
-
 import { authApi } from "../ApiFetch/authApiFetch";
 import { HashLink } from "react-router-hash-link";
 import { useDispatch, useSelector } from "react-redux";
 import toast from "react-hot-toast";
 import { logout } from "../redux/slicers/authSlicer";
 import { setClearStudentProfile } from "../redux/slicers/studentProfileSlicer";
+import { setClearInstructorProfile } from "../redux/slicers/instructorProfileSlicer";
 const Header = () => {
   const user = useSelector((state) => state.auth.user);
 
@@ -24,6 +24,7 @@ const Header = () => {
       if (result.success) {
         dispatch(logout());
         dispatch(setClearStudentProfile());
+        dispatch(setClearInstructorProfile());
 
         toast.success(result?.data?.message || "Logout successful");
       } else {

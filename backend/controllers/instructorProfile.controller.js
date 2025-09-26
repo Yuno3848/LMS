@@ -71,9 +71,15 @@ export const updateInstructorProfile = asyncHandler(async (req, res) => {
     throw new ApiError(404, 'instructor profile could not be updated');
   }
 
+  const instructorDetails = await User.findById(userId)
+    .populate('instructorProfile')
+    .select(
+      '-emailVerifiedToken -emailVerificationTokenExpiry -forgotPasswordExpiry -forgotPasswordToken -refreshToken',
+    );
+
   return res
     .status(200)
-    .json(new ApiResponse(200, 'instructor profile updated successfully', updateInstructorProfile));
+    .json(new ApiResponse(200, 'instructor profile updated successfully', instructorDetails));
 });
 
 export const reqInstructorRole = asyncHandler(async (req, res) => {

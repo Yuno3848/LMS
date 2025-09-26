@@ -270,7 +270,11 @@ const InstructorInfoPage = () => {
               whileHover={{ x: "100%" }}
               transition={{ duration: 0.6 }}
             />
-            <Link to="create-instructor-profile" className="relative z-10 flex items-center gap-3">
+
+            <Link
+              to="/create-instructor-profile"
+              className="relative z-10 flex items-center gap-3"
+            >
               Join as Instructor
               <motion.div
                 animate={{ x: [0, 5, 0] }}

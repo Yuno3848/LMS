@@ -116,7 +116,9 @@ export const Routes = createBrowserRouter([
         path: "/create-instructor-profile",
         element: (
           <ProtectedRoute>
-            <CreateInstructorProfile />
+            <ProtectedInstructorProfile>
+              <CreateInstructorProfile />
+            </ProtectedInstructorProfile>
           </ProtectedRoute>
         ),
       },

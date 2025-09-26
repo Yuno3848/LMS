@@ -4,7 +4,10 @@ import { Link, useNavigate } from "react-router-dom";
 import { authApi } from "../../ApiFetch/authApiFetch";
 import { useDispatch, useSelector } from "react-redux";
 import { loginSuccess } from "../../redux/slicers/authSlicer";
-import { setStudentLoading, setStudentProfile } from "../../redux/slicers/studentProfileSlicer";
+import {
+  setStudentLoading,
+  setStudentProfile,
+} from "../../redux/slicers/studentProfileSlicer";
 import { studentProfileApiFetch } from "../../ApiFetch/studentProfileApiFetch";
 
 const Login = () => {

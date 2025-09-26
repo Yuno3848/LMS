@@ -1,12 +1,12 @@
 import { createSlice } from "@reduxjs/toolkit";
-let initialState;
+const initialState = {
+  profile: null,
+  loading: false,
+};
 
 const instructorProfileSlice = createSlice({
   name: "instructorProfile",
-  initialState: {
-    profile: null,
-    loading: true,
-  },
+  initialState,
   reducers: {
     setInstructorProfile: (state, action) => {
       state.profile = action.payload;
@@ -17,7 +17,7 @@ const instructorProfileSlice = createSlice({
       state.loading = action.payload;
     },
 
-    setClearInstructorProfile: () => initialState,
+    setClearInstructorProfile: () => ({ ...initialState }),
   },
 });
 

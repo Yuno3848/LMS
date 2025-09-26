@@ -3,11 +3,12 @@ import { RouterProvider } from "react-router";
 import Routes from "../Routes";
 import useInitAuth from "./EffectsForApp/UseInitAuth";
 import useInitStudentProfile from "./EffectsForApp/useInitStudentProfile";
+import useInitInstructorProfile from "./EffectsForApp/useInitInstructorProfile";
 
 function App() {
   useInitAuth();
   useInitStudentProfile();
-  
+  useInitInstructorProfile();
 
   return (
     <>
