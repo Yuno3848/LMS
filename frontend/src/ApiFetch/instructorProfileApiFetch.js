@@ -40,4 +40,21 @@ export const instructorProfileAPIFetch = {
       return { success: false, message: error.message };
     }
   },
+
+  getInstructorProfile: async () => {
+    try {
+      const res = await fetch(`${baseURL}/get-instructor-profile`, {
+        method: "GET",
+        credentials: "include",
+      });
+
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error("Failed to fetch instructor profile");
+      }
+      return { success: true, data };
+    } catch (error) {
+      return { success: false, message: error.message };
+    }
+  },
 };
