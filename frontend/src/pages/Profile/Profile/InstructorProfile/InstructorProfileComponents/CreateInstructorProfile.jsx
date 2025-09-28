@@ -7,6 +7,7 @@ import {
   setInstructorLoading,
 } from "../../../../../redux/slicers/instructorProfileSlicer";
 import toast from "react-hot-toast";
+import { setClearStudentProfile } from "../../../../../redux/slicers/studentProfileSlicer";
 const CreateInstructorProfile = () => {
   const [formData, setFormData] = useState({
     bio: "",
@@ -32,6 +33,7 @@ const CreateInstructorProfile = () => {
       console.log("create instructor profile result :", result);
       if (result.success) {
         toast.success(result?.data?.message || "Instructor profile created");
+        dispatch(setClearStudentProfile());
         dispatch(setInstructorProfile(result?.data?.data));
       } else {
         toast.error(result?.error || "Instructor Profile already exist");

@@ -32,6 +32,10 @@ const instructorProfileSchema = new Schema(
       enum: ['not_requested', 'pending', 'verified', 'rejected'],
       default: 'not_requested',
     },
+    instructorId: {
+      type: Schema.Types.ObjectId,
+      ref: 'User',
+    },
     courses: [
       {
         type: Schema.Types.ObjectId,

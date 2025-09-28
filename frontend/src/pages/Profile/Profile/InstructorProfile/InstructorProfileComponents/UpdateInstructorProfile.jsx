@@ -11,6 +11,7 @@ const UpdateInstructorProfile = () => {
   const instructorProfile = useSelector(
     (state) => state.instructorProfile.profile
   );
+  console.log("instructor profile :", instructorProfile);
   const [formData, setFormData] = useState({
     bio: "",
     expertise: "",
@@ -26,7 +27,7 @@ const UpdateInstructorProfile = () => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    if (instructorProfile) {
+    if (instructorProfile?.socialLinks) {
       setFormData({
         bio: instructorProfile?.bio || "",
         expertise: instructorProfile?.expertise || "",
@@ -51,7 +52,7 @@ const UpdateInstructorProfile = () => {
       console.log("updated result instructorProfile :", result);
       if (result.success) {
         toast.success(result?.data?.message || "Instructor profile updated");
-        dispatch(setInstructorProfile(result?.data?.data));
+        dispatch(setInstructorProfile(result?.data?.data?.instructorProfile));
       } else {
         toast.error(result?.error || "Instructor profile not updated");
       }

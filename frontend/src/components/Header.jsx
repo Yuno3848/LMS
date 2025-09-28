@@ -27,6 +27,8 @@ const Header = () => {
         dispatch(setClearInstructorProfile());
 
         toast.success(result?.data?.message || "Logout successful");
+        dispatch(setClearInstructorProfile());
+        dispatch(setClearStudentProfile());
       } else {
         toast.error(result.error || "Logout failed");
       }

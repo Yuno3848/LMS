@@ -3,196 +3,120 @@ import {
   Twitter,
   Facebook,
   Instagram,
-  Camera,
-  Save,
   User,
   BookOpen,
   Globe,
   Star,
   CheckCircle,
+  Camera,
 } from "lucide-react";
-import React from "react";
-import { useSelector } from "react-redux";
+import React, { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import Loading from "../../../../../components/Loading";
 
-const ShowInstructorProfile = () => {
-  const user = useSelector((state) => state.auth.user);
-  const profile = useSelector(
-    (state) => state.instructorProfile.profile?.data?.instructorProfile
-  );
-  const loading = useSelector((state) => state.instructProfile);
-  console.log("instructor profile show :", profile);
-  if (loading) {
-    return <Loading />;
-  }
+const InstructorProfileCard = () => {
+  const dispatch = useDispatch();
+  const profile = useSelector((state) => state.instructorProfile.profile);
+  console.log("show instructor profile from redux :", profile);
+  const userDetails = useSelector((state) => state.auth.user);
+
+  const username = userDetails?.data?.username;
+  const loading = useSelector((state) => state.instructorProfile.loading);
+
+  if (loading) return <Loading />;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-stone-100 via-amber-50 to-yellow-50 py-12 px-4">
-      <form className="max-w-4xl mx-auto">
-        {/* Header */}
-        <div className="bg-white/90 backdrop-blur-sm rounded-3xl shadow-2xl border border-stone-200/50 p-8 mb-8 relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-stone-200/20 to-amber-200/20 rounded-full -translate-y-16 translate-x-16"></div>
-          <div className="absolute bottom-0 left-0 w-24 h-24 bg-gradient-to-tr from-yellow-100/20 to-stone-200/20 rounded-full translate-y-12 -translate-x-12"></div>
-          <div className="relative z-10 text-center">
-            <div className="inline-flex items-center gap-3 mb-4">
-              <div className="p-3 bg-gradient-to-br from-amber-700 to-stone-700 rounded-2xl shadow-lg">
-                <User className="w-8 h-8 text-white" />
+      <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-8">
+        {/* Left Sidebar */}
+        <div className="lg:col-span-1 space-y-8">
+          {/* Profile Card */}
+          <div className="bg-white/90 backdrop-blur-md rounded-3xl shadow-xl border border-stone-200/60 p-6 text-center relative">
+            <div className="absolute inset-0 bg-gradient-to-tr from-amber-50/20 to-stone-50/20 rounded-3xl"></div>
+            <div className="relative z-10">
+              <div className="inline-block relative">
+                <div className="w-40 h-40 rounded-full bg-gradient-to-br from-amber-700 via-stone-700 to-amber-800 p-1 shadow-2xl">
+                  <div className="w-full h-full rounded-full bg-gradient-to-br from-amber-200 to-stone-300 flex items-center justify-center overflow-hidden">
+                    <User className="w-20 h-20 text-stone-700" />
+                  </div>
+                </div>
+                <div className="absolute -bottom-2 -right-2 bg-white rounded-full p-3 shadow-lg border-2 border-stone-200 hover:scale-110 transition-transform cursor-pointer">
+                  <Camera className="w-6 h-6 text-stone-600" />
+                </div>
               </div>
-              <h1 className="text-4xl font-bold bg-gradient-to-r from-stone-700 to-amber-800 bg-clip-text text-transparent">
-                Instructor Profile
-              </h1>
+              <h2 className="mt-4 text-2xl font-bold text-stone-800">
+                {username || "Instructor Name"}
+              </h2>
+              <p className="text-stone-500">{profile?.expertise}</p>
             </div>
-            <p className="text-stone-600/80 text-lg font-medium">
-              Your teaching journey and expertise
+          </div>
+
+          {/* Status Card */}
+          <div className="bg-white/90 backdrop-blur-md rounded-3xl shadow-xl border border-stone-200/60 p-6 space-y-4">
+            <h3 className="text-lg font-bold flex items-center gap-2 text-stone-800">
+              <CheckCircle className="w-5 h-5 text-amber-600" /> Status
+            </h3>
+            <div className="flex justify-between text-stone-600 font-medium">
+              <span>Rating:</span>
+              <span>{profile?.rating || "—"}</span>
+            </div>
+            <div className="flex justify-between text-stone-600 font-medium">
+              <span>Verified:</span>
+              <span>{profile?.isVerifiedInstructor ? "Yes" : "No"}</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Main Content */}
+        <div className="lg:col-span-2 space-y-8">
+          {/* Bio */}
+          <div className="bg-white/90 backdrop-blur-md rounded-3xl shadow-xl border border-stone-200/60 p-6">
+            <h3 className="text-xl font-bold flex items-center gap-2 text-stone-800 border-b border-stone-200 pb-3 mb-4">
+              <BookOpen className="w-5 h-5 text-amber-700" /> About
+            </h3>
+            <p className="text-stone-600 leading-relaxed whitespace-pre-line">
+              {profile?.bio ||
+                "Tell students about your background, teaching style, and journey."}
             </p>
           </div>
-        </div>
 
-        {/* Main Profile Card */}
-        <div className="bg-white/95 backdrop-blur-sm rounded-3xl shadow-2xl border border-stone-200/50 overflow-hidden">
-          {/* Profile Picture */}
-          <div className="bg-gradient-to-r from-stone-100 to-amber-100 p-8 text-center relative">
-            <div className="absolute inset-0 bg-gradient-to-br from-stone-50/50 to-amber-50/50"></div>
-            <div className="relative inline-block group">
-              <div className="w-40 h-40 rounded-full bg-gradient-to-br from-amber-600 via-stone-600 to-amber-700 p-1 shadow-2xl">
-                <div className="w-full h-full rounded-full bg-gradient-to-br from-amber-200 to-stone-300 flex items-center justify-center overflow-hidden">
-                  <User className="w-20 h-20 text-stone-700" />
-                </div>
-              </div>
-              <div className="absolute -bottom-2 -right-2 bg-white rounded-full p-3 shadow-lg border-2 border-stone-200 group-hover:scale-110 transition-transform cursor-pointer">
-                <Camera className="w-6 h-6 text-stone-600" />
-              </div>
+          {/* Social Links */}
+          <div className="bg-white/90 backdrop-blur-md rounded-3xl shadow-xl border border-stone-200/60 p-6">
+            <h3 className="text-xl font-bold flex items-center gap-2 text-stone-800 border-b border-stone-200 pb-3 mb-4">
+              <Globe className="w-5 h-5 text-amber-700" /> Social Links
+            </h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {["linkedin", "twitter", "facebook", "instagram"].map(
+                (platform) => {
+                  const Icon = {
+                    linkedin: Linkedin,
+                    twitter: Twitter,
+                    facebook: Facebook,
+                    instagram: Instagram,
+                  }[platform];
+                  return (
+                    <div key={platform} className="space-y-1">
+                      <label className="text-sm font-semibold text-stone-700 flex items-center gap-2">
+                        <Icon className="w-4 h-4" />
+                        {platform.charAt(0).toUpperCase() + platform.slice(1)}
+                      </label>
+                      <input
+                        type="url"
+                        value={profile?.socialLinks?.[platform] || ""}
+                        readOnly
+                        placeholder={`https://${platform}.com/yourprofile`}
+                        className="w-full px-4 py-3 border-2 border-stone-200 rounded-xl bg-stone-50/50 focus:border-amber-400 focus:bg-white focus:ring-4 focus:ring-amber-100 transition-all outline-none placeholder:text-stone-400"
+                      />
+                    </div>
+                  );
+                }
+              )}
             </div>
           </div>
-
-          <div className="p-8 space-y-8">
-            {/* Bio */}
-            <section className="space-y-6">
-              <h2 className="text-2xl font-bold text-stone-800 flex items-center gap-3 border-b border-stone-200 pb-3">
-                <div className="p-2 bg-stone-100 rounded-lg">
-                  <BookOpen className="w-5 h-5 text-stone-600" />
-                </div>
-                About You
-              </h2>
-              <textarea
-                value={profile?.bio}
-                readOnly
-                rows="4"
-                placeholder="Tell students about your background and teaching style..."
-                className="w-full px-4 py-3 border-2 border-stone-200 rounded-xl bg-stone-50/50 focus:border-stone-400 focus:bg-white focus:ring-4 focus:ring-stone-100 transition-all duration-200 outline-none resize-none placeholder:text-stone-400"
-              />
-            </section>
-
-            {/* Expertise */}
-            <section className="space-y-6">
-              <h2 className="text-2xl font-bold text-stone-800 flex items-center gap-3 border-b border-stone-200 pb-3">
-                <div className="p-2 bg-stone-100 rounded-lg">
-                  <Star className="w-5 h-5 text-stone-600" />
-                </div>
-                Expertise
-              </h2>
-              <input
-                type="text"
-                value={profile?.expertise}
-                readOnly
-                placeholder="E.g., Web Development, Data Science"
-                className="w-full px-4 py-3 border-2 border-stone-200 rounded-xl bg-stone-50/50 focus:border-stone-400 focus:bg-white focus:ring-4 focus:ring-stone-100 transition-all duration-200 outline-none placeholder:text-stone-400"
-              />
-            </section>
-
-            {/* Rating & Verification */}
-            <section className="space-y-6">
-              <h2 className="text-2xl font-bold text-stone-800 flex items-center gap-3 border-b border-stone-200 pb-3">
-                <div className="p-2 bg-stone-100 rounded-lg">
-                  <CheckCircle className="w-5 h-5 text-stone-600" />
-                </div>
-                Status
-              </h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                  <label className="text-sm font-semibold text-stone-700">
-                    Rating
-                  </label>
-                  <input
-                    value={profile?.rating}
-                    readOnly
-                    className="w-full px-4 py-3 border-2 border-stone-200 rounded-xl bg-stone-50/50 focus:border-stone-400 focus:bg-white focus:ring-4 focus:ring-stone-100 outline-none"
-                  />
-                </div>
-                {/* <div>
-                  <label className="text-sm font-semibold text-stone-700">
-                    Verification Status
-                  </label>
-                  <select
-                    value={formData.isVerifiedInstructor}
-                    onChange={(e) =>
-                      setFormData({
-                        ...formData,
-                        isVerifiedInstructor: e.target.value,
-                      })
-                    }
-                    className="w-full px-4 py-3 border-2 border-stone-200 rounded-xl bg-stone-50/50 focus:border-stone-400 focus:bg-white focus:ring-4 focus:ring-stone-100 outline-none"
-                  >
-                    <option value="not_requested">Not Requested</option>
-                    <option value="pending">Pending</option>
-                    <option value="verified">Verified</option>
-                    <option value="rejected">Rejected</option>
-                  </select>
-                </div> */}
-              </div>
-            </section>
-
-            {/* Social Links */}
-            <section className="space-y-6">
-              <h2 className="text-2xl font-bold text-stone-800 flex items-center gap-3 border-b border-stone-200 pb-3">
-                <div className="p-2 bg-stone-100 rounded-lg">
-                  <Globe className="w-5 h-5 text-stone-600" />
-                </div>
-                Social Links
-              </h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {["linkedin", "twitter", "facebook", "instagram"].map(
-                  (platform) => {
-                    const Icon = {
-                      linkedin: Linkedin,
-                      twitter: Twitter,
-                      facebook: Facebook,
-                      instagram: Instagram,
-                    }[platform];
-                    return (
-                      <div key={platform} className="space-y-2">
-                        <label className="text-sm font-semibold text-stone-700 flex items-center gap-2">
-                          <Icon className="w-4 h-4" />
-                          {platform.charAt(0).toUpperCase() + platform.slice(1)}
-                        </label>
-                        <input
-                          type="url"
-                          value={profile?.socialLinks[platform]}
-                          readOnly
-                          placeholder={`https://${platform}.com/yourprofile`}
-                          className="w-full px-4 py-3 border-2 border-stone-200 rounded-xl bg-stone-50/50 focus:border-stone-400 focus:bg-white focus:ring-4 focus:ring-stone-100 transition-all outline-none placeholder:text-stone-400"
-                        />
-                      </div>
-                    );
-                  }
-                )}
-              </div>
-            </section>
-
-            {/* Submit */}
-            {/* <div className="flex justify-center pt-8">
-              <button className="group relative px-8 py-4 bg-stone-800 hover:bg-stone-900 text-white font-bold rounded-2xl shadow-xl hover:shadow-2xl transform hover:-translate-y-1 transition-all duration-300">
-                <div className="flex items-center gap-3">
-                  {submitIcon || <Save className="w-5 h-5" />}
-                  {submitLabel}
-                </div>
-              </button>
-            </div> */}
-          </div>
         </div>
-      </form>
+      </div>
     </div>
   );
 };
 
-export default ShowInstructorProfile;
+export default InstructorProfileCard;

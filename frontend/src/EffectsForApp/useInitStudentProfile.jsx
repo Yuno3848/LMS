@@ -18,7 +18,7 @@ const useInitStudentProfile = () => {
 
         if (result.success) {
           console.log("useInitStudentProfile :", result);
-          dispatch(setStudentProfile(result.data));
+          dispatch(setStudentProfile(result?.data?.data));
         } else {
           dispatch(setStudentProfile(null));
         }

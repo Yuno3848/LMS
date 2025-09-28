@@ -11,25 +11,29 @@ import { useEffect } from "react";
 
 const useInitInstructorProfile = () => {
   const dispatch = useDispatch();
+  const user = useSelector((state) => state.auth.user);
 
   useEffect(() => {
+    if (!user) return;
+
     const fetchInstructorProfile = async () => {
       try {
         const result = await instructorProfileAPIFetch.getInstructorProfile();
+
         if (result.success) {
-          dispatch(setInstructorProfile(result?.data));
+          dispatch(setInstructorProfile(result?.data?.data));
         } else {
           dispatch(setClearInstructorProfile());
         }
       } catch (error) {
-        dispatch(logout());
         dispatch(setClearInstructorProfile());
       } finally {
         dispatch(setInstructorLoading(false));
       }
     };
+
     fetchInstructorProfile();
-  }, [dispatch]);
+  }, [dispatch, user]);
 };
 
 export default useInitInstructorProfile;

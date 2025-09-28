@@ -10,140 +10,135 @@ import {
   GraduationCap,
   Mail,
 } from "lucide-react";
-import { useEffect } from "react";
 import { useSelector } from "react-redux";
-import { authApi } from "../../../../../ApiFetch/authApiFetch";
-import Loading from "../../../../../components/Loading";
 import { Link } from "react-router";
+import Loading from "../../../../../components/Loading";
+import ShowStudentProfile from "../../../../../components/ShowStudentProfile";
 
 const StudentProfilePage = () => {
   const user = useSelector((state) => state.auth.user);
   const studentProfile = useSelector((state) => state.studentProfile.profile);
-  if (!studentProfile) {
-    return <Loading />;
+  const instructorProfile = useSelector(
+    (state) => state.instructorProfile.profile
+  );
+  const isLoading = !studentProfile;
+  console.log("instructor profile in studentprofile page :", instructorProfile);
+  console.log("instructor profile in studentprofile page :", studentProfile);
+  const studentData = studentProfile?.data?.[0]?.studentProfile || {};
+  const { bio, skills, interests, education, socialLinks } = studentData;
+
+  if (instructorProfile)
+    return <ShowStudentProfile type="instructor" />;
+  if (studentProfile.data == 0) {
+    return <ShowStudentProfile />;
   }
-  const { bio, skills, interests, education, socialLinks } =
-    studentProfile?.data[0].studentProfile;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-stone-100 via-amber-50 to-yellow-50 py-12 px-4">
-      <div className="max-w-4xl mx-auto">
-        <div className="bg-white/90 backdrop-blur-sm rounded-3xl shadow-2xl border border-stone-200/50 p-8 mb-8 relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-stone-200/20 to-amber-200/20 rounded-full -translate-y-16 translate-x-16"></div>
-          <div className="absolute bottom-0 left-0 w-24 h-24 bg-gradient-to-tr from-yellow-100/20 to-stone-200/20 rounded-full translate-y-12 -translate-x-12"></div>
-          <div className="relative z-10 text-center">
-            <div className="inline-flex items-center gap-3 mb-4">
-              <div className="p-3 bg-gradient-to-br from-amber-700 to-stone-700 rounded-2xl shadow-lg">
-                <User className="w-8 h-8 text-white" />
+    <div className="min-h-screen bg-gradient-to-br from-stone-100 via-amber-50 to-yellow-50 py-12 px-6">
+      <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
+        {/* Left Column */}
+        <div className="space-y-6">
+          {/* Avatar Card */}
+          <div className="bg-white/90 backdrop-blur-md rounded-3xl shadow-xl border border-stone-200/60 p-6 flex flex-col items-center relative">
+            <div className="absolute inset-0 bg-gradient-to-tr from-amber-50/20 to-stone-50/20 rounded-3xl"></div>
+            <div className="relative z-10 flex flex-col items-center">
+              <div className="w-32 h-32 rounded-full bg-gradient-to-br from-amber-700 via-stone-700 to-amber-800 p-1 shadow-2xl">
+                <div className="w-full h-full rounded-full bg-gradient-to-br from-amber-200 to-stone-300 flex items-center justify-center overflow-hidden">
+                  {user?.data?.avatar?.url ? (
+                    <img
+                      src={user.data.avatar.url}
+                      alt="avatar"
+                      className="w-full h-full object-cover rounded-full"
+                    />
+                  ) : (
+                    <User className="w-16 h-16 text-stone-700" />
+                  )}
+                </div>
               </div>
-              <h1 className="text-4xl font-bold bg-gradient-to-r from-stone-700 to-amber-800 bg-clip-text text-transparent">
-                Student Profile
-              </h1>
+              <h2 className="mt-4 text-xl font-bold text-stone-800">
+                {user?.data?.fullname || "Unnamed"}
+              </h2>
+              <p className="text-stone-500 text-sm">{user?.data?.email}</p>
             </div>
-            <p className="text-stone-600/80 text-lg font-medium">
-              Discover the student’s journey and achievements
-            </p>
           </div>
         </div>
-        <div className="bg-white/95 backdrop-blur-sm rounded-3xl shadow-2xl border border-stone-200/50 overflow-hidden">
-          <div className="bg-gradient-to-r from-stone-100 to-amber-100 p-8 text-center relative">
-            <div className="absolute inset-0 bg-gradient-to-br from-stone-50/50 to-amber-50/50"></div>
-            <div className="relative inline-block">
-              <div className="w-40 h-40 rounded-full bg-gradient-to-br from-amber-600 via-stone-600 to-amber-700 p-1 shadow-2xl">
-                <div className="w-full h-full rounded-full bg-gradient-to-br from-amber-200 to-stone-300 flex items-center justify-center overflow-hidden">
-                  <img
-                    src={user.data.avatar.url}
-                    alt="User Avatar"
-                    className="w-full h-full object-cover rounded-full"
-                  />
-                </div>
-              </div>
+
+        {/* Right Column */}
+        <div className="col-span-2 space-y-6">
+          {/* About */}
+          <ProfileCard
+            icon={<BookOpen className="w-5 h-5 text-amber-700" />}
+            title="About"
+          >
+            <p className="text-stone-600 leading-relaxed">
+              {bio ||
+                "Tell students about your background, journey, and style."}
+            </p>
+          </ProfileCard>
+
+          {/* Skills & Interests */}
+          <ProfileCard
+            icon={<Star className="w-5 h-5 text-amber-700" />}
+            title="Skills & Interests"
+          >
+            <div className="grid md:grid-cols-2 gap-4 text-stone-600">
+              <p>
+                <span className="font-semibold">Technical Skills:</span>{" "}
+                {skills || "Not provided"}
+              </p>
+              <p>
+                <span className="font-semibold">Interests:</span>{" "}
+                {interests || "Not provided"}
+              </p>
             </div>
-          </div>
-          <div className="p-8 space-y-8">
-            <section className="space-y-6">
-              <h2 className="text-2xl font-bold text-stone-800 flex items-center gap-3 border-b border-stone-200 pb-3">
-                <div className="p-2 bg-stone-100 rounded-lg">
-                  <User className="w-5 h-5 text-stone-600" />
-                </div>
-                Basic Information
-              </h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <InfoItem
-                  icon={<User className="w-4 h-4" />}
-                  label="Full Name"
-                  value={user?.data?.fullname}
-                />
-                <InfoItem
-                  icon={<Mail className="w-4 h-4" />}
-                  label="Email Address"
-                  value={user?.data?.email}
-                />
-              </div>
-              <InfoItem
-                icon={<BookOpen className="w-4 h-4" />}
-                label="Bio"
-                value={bio || "Not provided"}
-                multiline
+          </ProfileCard>
+
+          {/* Education */}
+          <ProfileCard
+            icon={<GraduationCap className="w-5 h-5 text-amber-700" />}
+            title="Education"
+          >
+            <p className="text-stone-600">
+              {education || "No education details added yet."}
+            </p>
+          </ProfileCard>
+
+          {/* Social Links */}
+          <ProfileCard
+            icon={<Globe className="w-5 h-5 text-amber-700" />}
+            title="Social Links"
+          >
+            <div className="grid md:grid-cols-2 gap-4">
+              <SocialField
+                icon={<Linkedin className="w-4 h-4 text-sky-700" />}
+                label="LinkedIn"
+                url={socialLinks?.linkedin}
               />
-            </section>
-
-            <section className="space-y-6">
-              <h2 className="text-2xl font-bold text-stone-800 flex items-center gap-3 border-b border-stone-200 pb-3">
-                <div className="p-2 bg-stone-100 rounded-lg">
-                  <Star className="w-5 h-5 text-stone-600" />
-                </div>
-                Skills & Interests
-              </h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <InfoItem
-                  icon={<Star className="w-4 h-4" />}
-                  label="Technical Skills"
-                  value={skills || "Not provided"}
-                />
-                <InfoItem
-                  icon={<Globe className="w-4 h-4" />}
-                  label="Interests & Hobbies"
-                  value={interests || "Not provided"}
-                />
-              </div>
-            </section>
-
-            <section className="space-y-6">
-              <h2 className="text-2xl font-bold text-stone-800 flex items-center gap-3 border-b border-stone-200 pb-3">
-                <div className="p-2 bg-stone-100 rounded-lg">
-                  <GraduationCap className="w-5 h-5 text-stone-600" />
-                </div>
-                Education
-              </h2>
-              <InfoItem
-                icon={<BookOpen className="w-4 h-4" />}
-                label="Education"
-                value={education || "Not provided"}
+              <SocialField
+                icon={<Twitter className="w-4 h-4 text-sky-500" />}
+                label="Twitter"
+                url={socialLinks?.twitter}
               />
-            </section>
+              <SocialField
+                icon={<Facebook className="w-4 h-4 text-blue-600" />}
+                label="Facebook"
+                url={socialLinks?.facebook}
+              />
+              <SocialField
+                icon={<Instagram className="w-4 h-4 text-pink-500" />}
+                label="Instagram"
+                url={socialLinks?.instagram}
+              />
+            </div>
+          </ProfileCard>
 
-            <section className="space-y-6">
-              <h2 className="text-2xl font-bold text-stone-800 flex items-center gap-3 border-b border-stone-200 pb-3">
-                <div className="p-2 bg-stone-100 rounded-lg">
-                  <Globe className="w-5 h-5 text-stone-600" />
-                </div>
-                Social Links
-              </h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <SocialLink platform="linkedin" url={socialLinks?.linkedin} />
-                <SocialLink platform="twitter" url={socialLinks?.twitter} />
-                <SocialLink platform="facebook" url={socialLinks?.facebook} />
-                <SocialLink platform="instagram" url={socialLinks?.instagram} />
-              </div>
-            </section>
-          </div>
-          <div className="flex justify-center pt-8">
+          {/* Update Button */}
+          <div className="flex justify-end">
             <Link
               to="/update-student-profile"
-              className="group relative px-8 py-4 bg-stone-800 hover:bg-stone-900 text-white font-bold rounded-2xl shadow-xl hover:shadow-2xl transform hover:-translate-y-1 transition-all duration-300 top-[-30px]"
+              className="px-6 py-3 bg-[#956847] hover:bg-[#794e30] text-white font-bold rounded-xl shadow-md transition-all"
             >
-              <div className="flex items-center gap-3">Update Your Profile</div>
+              Update Profile
             </Link>
           </div>
         </div>
@@ -152,57 +147,30 @@ const StudentProfilePage = () => {
   );
 };
 
-const InfoItem = ({ icon, label, value, multiline }) => (
-  <div className="space-y-2">
-    <label className="text-sm font-semibold text-stone-700 flex items-center gap-2">
-      {icon} {label}
-    </label>
-    {multiline ? (
-      <p className="px-4 py-3 border-2 border-stone-200 rounded-xl bg-stone-50/50 text-stone-700 whitespace-pre-wrap">
-        {value}
-      </p>
-    ) : (
-      <p className="px-4 py-3 border-2 border-stone-200 rounded-xl bg-stone-50/50 text-stone-700">
-        {value}
-      </p>
-    )}
+/* ========== Reusable Card & Field Components ========== */
+const ProfileCard = ({ icon, title, children }) => (
+  <div className="bg-white/90 backdrop-blur-md rounded-3xl shadow-xl border border-stone-200/60 p-6">
+    <h3 className="flex items-center gap-2 text-stone-800 font-semibold mb-4 border-b border-stone-200 pb-2">
+      {icon} {title}
+    </h3>
+    {children}
   </div>
 );
 
-const SocialLink = ({ platform, url }) => {
-  const Icon = {
-    linkedin: Linkedin,
-    twitter: Twitter,
-    facebook: Facebook,
-    instagram: Instagram,
-  }[platform];
-
-  if (!url) return null;
-
-  return (
-    <div className="space-y-2">
-      <label className="text-sm font-semibold text-stone-700 flex items-center gap-2">
-        <Icon
-          className={`w-4 h-4 ${
-            platform === "twitter"
-              ? "text-sky-500"
-              : platform === "instagram"
-              ? "text-pink-500"
-              : "text-blue-600"
-          }`}
-        />
-        {platform.charAt(0).toUpperCase() + platform.slice(1)}
-      </label>
-      <a
-        href={url}
-        target="_blank"
-        rel="noreferrer"
-        className="block px-4 py-3 border-2 border-stone-200 rounded-xl bg-stone-50/50 text-stone-700 hover:text-amber-700 hover:border-amber-300 transition-all"
-      >
-        {url}
-      </a>
-    </div>
-  );
-};
+const SocialField = ({ icon, label, url }) => (
+  <div>
+    <label className="flex items-center gap-2 text-sm font-semibold text-stone-700 mb-1">
+      {icon} {label}
+    </label>
+    <a
+      href={url || "#"}
+      target="_blank"
+      rel="noreferrer"
+      className="block px-4 py-3 border-2 border-stone-200 rounded-xl bg-stone-50/50 text-stone-600 text-sm hover:border-amber-400 hover:text-amber-700 transition-all"
+    >
+      {url || `https://${label.toLowerCase()}.com/yourprofile`}
+    </a>
+  </div>
+);
 
 export default StudentProfilePage;

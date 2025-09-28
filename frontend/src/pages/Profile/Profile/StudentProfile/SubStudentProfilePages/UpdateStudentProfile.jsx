@@ -12,6 +12,7 @@ import StudentProfileForm from "../StudentProfileForm"; // shared form component
 const UpdateStudentProfile = () => {
   const dispatch = useDispatch();
   const studentProfile = useSelector((state) => state.studentProfile.profile);
+  console.log("student Profile update student profile :", studentProfile);
   const loading = useSelector((state) => state.studentProfile.loading);
   const [formData, setFormData] = useState({
     bio: "",

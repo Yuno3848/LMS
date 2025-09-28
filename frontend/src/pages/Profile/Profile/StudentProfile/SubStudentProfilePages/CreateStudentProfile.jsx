@@ -7,10 +7,12 @@ import {
   setStudentProfile,
 } from "../../../../../redux/slicers/studentProfileSlicer";
 import StudentProfileForm from "../StudentProfileForm";
+import { setClearInstructorProfile } from "../../../../../redux/slicers/instructorProfileSlicer";
 
 const CreateStudentProfile = () => {
   const dispatch = useDispatch();
   const loading = useSelector((state) => state.studentProfile.loading);
+
   const [formData, setFormData] = useState({
     bio: "",
     skills: "",
@@ -30,6 +32,7 @@ const CreateStudentProfile = () => {
       if (result.success) {
         toast.success(result?.data?.message || "Profile created successfully");
         dispatch(setStudentProfile(result?.data?.data));
+        
       } else {
         toast.error(result?.error || "You can't create more than one profile");
       }

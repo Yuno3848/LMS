@@ -10,6 +10,14 @@ const ProtectedStudentProfile = ({ children }) => {
   if (studentLoading) {
     return <Loading />;
   }
+
+  if (
+    !studentProfile ||
+    !studentProfile.data ||
+    studentProfile.data.length === 0
+  ) {
+    return children;
+  }
   return !studentProfile ? children : <Navigate to="/update-student-profile" />;
 };
 

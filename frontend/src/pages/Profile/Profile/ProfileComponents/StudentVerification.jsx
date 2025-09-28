@@ -1,11 +1,11 @@
 import React from "react";
 import { useSelector } from "react-redux";
 import { Link } from "react-router";
+import Loading from "../../../../components/Loading";
 
 const StudentVerification = () => {
   const user = useSelector((state) => state.auth.user);
   const studentProfile = useSelector((state) => state.studentProfile.profile);
-  console.log(studentProfile);
 
   const verificationStatus =
     studentProfile?.data[0]?.studentProfile?.verificationStatus

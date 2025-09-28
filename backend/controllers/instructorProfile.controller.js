@@ -28,6 +28,7 @@ export const createInstructorProfile = asyncHandler(async (req, res) => {
     expertise,
     socialLinks,
     rating,
+    instructorId: userId,
   });
 
   if (!instructor) {
@@ -133,9 +134,8 @@ export const getInstructorProfile = asyncHandler(async (req, res) => {
     throw new ApiError(401, 'User not authorized');
   }
 
-  const instructorDetails = await User.findById(userId)
-    .populate('instructorProfile')
-    .select('-emailVerificationTokenExpiry -emailVerifiedToken -refreshToken');
+  const instructorDetails = await instructorProfile.findOne({ instructorId: userId });
+
   if (!instructorDetails) {
     throw new ApiError(404, 'Instructor Details not found');
   }

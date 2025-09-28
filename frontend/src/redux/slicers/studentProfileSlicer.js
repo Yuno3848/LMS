@@ -1,19 +1,26 @@
 import { createSlice } from "@reduxjs/toolkit";
-let initialState;
+
+const initialState = {
+  profile: null,
+  loading: false, // <-- start as false so it doesn’t show loading by default
+};
+
 const studentProfileSlice = createSlice({
   name: "studentProfile",
-  initialState: { profile: null, loading: true },
+  initialState,
   reducers: {
     setStudentProfile: (state, action) => {
       state.profile = action.payload;
-      state.loading = false;
+      state.loading = false; // ensure loading is stopped when profile is set
     },
     setStudentLoading: (state, action) => {
       state.loading = action.payload;
     },
-    setClearStudentProfile: () => initialState,
+    setClearStudentProfile: () => ({ ...initialState }),
   },
 });
+
 export const { setStudentProfile, setStudentLoading, setClearStudentProfile } =
   studentProfileSlice.actions;
+
 export default studentProfileSlice.reducer;
