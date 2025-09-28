@@ -21,14 +21,12 @@ const StudentProfilePage = () => {
   const instructorProfile = useSelector(
     (state) => state.instructorProfile.profile
   );
-  const isLoading = !studentProfile;
-  console.log("instructor profile in studentprofile page :", instructorProfile);
+
   console.log("instructor profile in studentprofile page :", studentProfile);
-  const studentData = studentProfile?.data?.[0]?.studentProfile || {};
+  const studentData = studentProfile[0]?.studentProfile || {};
   const { bio, skills, interests, education, socialLinks } = studentData;
 
-  if (instructorProfile)
-    return <ShowStudentProfile type="instructor" />;
+  if (instructorProfile) return <ShowStudentProfile type="instructor" />;
   if (studentProfile.data == 0) {
     return <ShowStudentProfile />;
   }

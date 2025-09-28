@@ -25,25 +25,9 @@ const StudentProfileForm = ({
 }) => {
   const user = useSelector((state) => state.auth.user);
   const studentProfile = useSelector((state) => state.studentProfile.profile);
+  const isLoading = useSelector((state) => state.studentProfile.loading);
 
-  useEffect(() => {
-    if (studentProfile?.data) {
-      setFormData({
-        bio: studentProfile?.bio || "",
-        skills: studentProfile?.skills || "",
-        education: studentProfile?.education || "",
-        interests: studentProfile?.interests || "",
-        socialLinks: {
-          linkedin: studentProfile?.socialLinks?.linkedin || "",
-          twitter: studentProfile?.socialLinks?.twitter || "",
-          facebook: studentProfile?.socialLinks?.facebook || "",
-          instagram: studentProfile?.socialLinks?.instagram || "",
-        },
-      });
-    }
-  }, [studentProfile]);
-
-  if (!studentProfile?.data) return <Loading />;
+  if (isLoading || !studentProfile) return <Loading />;
 
   const socialPlatforms = ["linkedin", "twitter", "facebook", "instagram"];
   const socialColors = {

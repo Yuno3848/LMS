@@ -50,9 +50,9 @@ const UpdateInstructorProfile = () => {
         formData
       );
       console.log("updated result instructorProfile :", result);
-      if (result.success) {
+      if (result?.success) {
         toast.success(result?.data?.message || "Instructor profile updated");
-        dispatch(setInstructorProfile(result?.data?.data?.instructorProfile));
+        dispatch(setInstructorProfile(result?.data?.data));
       } else {
         toast.error(result?.error || "Instructor profile not updated");
       }

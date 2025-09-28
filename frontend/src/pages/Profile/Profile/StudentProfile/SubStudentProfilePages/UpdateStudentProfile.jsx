@@ -8,12 +8,17 @@ import {
   setStudentProfile,
 } from "../../../../../redux/slicers/studentProfileSlicer";
 import StudentProfileForm from "../StudentProfileForm"; // shared form component
+import Loading from "../../../../../components/Loading";
+import { useNavigate } from "react-router";
 
 const UpdateStudentProfile = () => {
   const dispatch = useDispatch();
   const studentProfile = useSelector((state) => state.studentProfile.profile);
-  console.log("student Profile update student profile :", studentProfile);
-  const loading = useSelector((state) => state.studentProfile.loading);
+  const isLoading = useSelector((state) => state.studentProfile.loading);
+  const studentProfileData = studentProfile[0]?.studentProfile || {};
+  const navigate = useNavigate();
+  const { bio, skills, education, interests, socialLinks } = studentProfileData;
+
   const [formData, setFormData] = useState({
     bio: "",
     skills: "",
@@ -22,25 +27,29 @@ const UpdateStudentProfile = () => {
     socialLinks: { linkedin: "", twitter: "", facebook: "", instagram: "" },
   });
 
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   useEffect(() => {
-    if (studentProfile) {
+    if (studentProfile && Object.keys(studentProfileData).length > 0) {
       setFormData({
-        bio: studentProfile.bio || "",
-        skills: studentProfile.skills || "",
-        education: studentProfile.education || "",
-        interests: studentProfile.interests || "",
+        bio: bio || "",
+        skills: skills || "",
+        education: education || "",
+        interests: interests || "",
         socialLinks: {
-          linkedin: studentProfile.socialLinks?.linkedin || "",
-          twitter: studentProfile.socialLinks?.twitter || "",
-          facebook: studentProfile.socialLinks?.facebook || "",
-          instagram: studentProfile.socialLinks?.instagram || "",
+          linkedin: socialLinks?.linkedin || "",
+          facebook: socialLinks?.facebook || "",
+          instagram: socialLinks?.instagram || "",
+          twitter: socialLinks?.twitter || "",
         },
       });
     }
-  }, [studentProfile]);
+  }, [studentProfile, bio, skills, education, interests, socialLinks]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (isSubmitting) return;
+    setIsSubmitting(true);
     dispatch(setStudentLoading(true));
     try {
       const result = await studentProfileApiFetch.updateStudentProfile(
@@ -49,6 +58,7 @@ const UpdateStudentProfile = () => {
       if (result.success) {
         toast.success(result?.data?.message || "Profile updated successfully");
         dispatch(setStudentProfile(result?.data?.data));
+        navigate("/student-profile");
       } else {
         toast.error(result?.error || "Failed to update profile");
       }
@@ -59,15 +69,20 @@ const UpdateStudentProfile = () => {
     }
   };
 
+  if (isLoading || !studentProfile) {
+    return <Loading />;
+  }
+
   return (
-    <StudentProfileForm
-      title="Update Student Profile"
-      formData={formData}
-      setFormData={setFormData}
-      handleSubmit={handleSubmit}
-      submitLabel="Update Profile"
-      loading={loading}
-    />
+    <>
+      <StudentProfileForm
+        title="Update Student Profile"
+        formData={formData}
+        setFormData={setFormData}
+        handleSubmit={handleSubmit}
+        submitLabel="Update Profile"
+      />
+    </>
   );
 };
 
