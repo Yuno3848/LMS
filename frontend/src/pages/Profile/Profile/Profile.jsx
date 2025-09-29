@@ -10,7 +10,7 @@ import VerifyStudentProfile from "./ProfileComponents/VerifyStudentProfile";
 const Profile = () => {
   const user = useSelector((state) => state.auth.user);
   const avatar = useSelector((state) => state.auth.avatar);
-
+  console.log("user in profile :", user);
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#f5e6ca] via-[#fefaf5] to-[#e7d3b5]">
       <div className="w-full max-w-md p-8 rounded-2xl shadow-xl bg-[#fffaf2] border border-[#e0c9a6]  ">

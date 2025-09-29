@@ -21,8 +21,10 @@ const StudentProfilePage = () => {
   const instructorProfile = useSelector(
     (state) => state.instructorProfile.profile
   );
+  if (!studentProfile) {
+    return <Loading />;
+  }
 
-  console.log("instructor profile in studentprofile page :", studentProfile);
   const studentData = studentProfile[0]?.studentProfile || {};
   const { bio, skills, interests, education, socialLinks } = studentData;
 

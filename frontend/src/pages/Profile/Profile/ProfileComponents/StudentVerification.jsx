@@ -6,9 +6,9 @@ import Loading from "../../../../components/Loading";
 const StudentVerification = () => {
   const user = useSelector((state) => state.auth.user);
   const studentProfile = useSelector((state) => state.studentProfile.profile);
- console.log(studentProfile)
+
   const verificationStatus =
-    studentProfile[0]?.studentProfile?.verificationStatus
+    studentProfile?.data?.[0]?.studentProfile?.verificationStatus
       ?.trim()
       .toLowerCase();
 
