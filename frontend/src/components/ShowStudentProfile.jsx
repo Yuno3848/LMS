@@ -1,4 +1,5 @@
 import React from "react";
+//show header and footer
 
 const ShowStudentProfile = ({ type = "student" }) => {
   const message =

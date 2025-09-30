@@ -126,7 +126,7 @@ export const verifyStudentProfile = asyncHandler(async (req, res) => {
         role: '$studentProfileDetails.role',
         email: '$studentProfileDetails.email',
         isEmailVerified: '$studentProfileDetails.isEmailVerified',
-        isVerifiedStudent: 1,
+        verificationStatus: 1,
       },
     },
   ]);

@@ -38,7 +38,7 @@ const StudentProfileForm = ({
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-stone-100 via-amber-50 to-yellow-50 py-12 px-4">
+    <div className="min-h-screen bg-gradient-to-br from-stone-100 via-amber-50 to-yellow-50 py-12 px-4"> 
       <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Left Sidebar */}
         <div className="lg:col-span-1 space-y-8">

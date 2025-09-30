@@ -9,23 +9,28 @@ import {
   Star,
   GraduationCap,
   Mail,
+  Pencil,
+  Shield,
 } from "lucide-react";
 import { useSelector } from "react-redux";
-import { Link } from "react-router";
+import { Link } from "react-router-dom"; // ✅ use react-router-dom instead of react-router
 import Loading from "../../../../../components/Loading";
 import ShowStudentProfile from "../../../../../components/ShowStudentProfile";
 
 const StudentProfilePage = () => {
   const user = useSelector((state) => state.auth.user);
   const studentProfile = useSelector((state) => state.studentProfile.profile);
+  console.log(studentProfile);
   const instructorProfile = useSelector(
     (state) => state.instructorProfile.profile
   );
+
   if (!studentProfile) {
     return <Loading />;
   }
 
   const studentData = studentProfile[0]?.studentProfile || {};
+  
   const { bio, skills, interests, education, socialLinks } = studentData;
 
   if (instructorProfile) return <ShowStudentProfile type="instructor" />;
@@ -36,7 +41,7 @@ const StudentProfilePage = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-stone-100 via-amber-50 to-yellow-50 py-12 px-6">
       <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
-        {/* Left Column */}
+        {/* ===== LEFT SIDEBAR ===== */}
         <div className="space-y-6">
           {/* Avatar Card */}
           <div className="bg-white/90 backdrop-blur-md rounded-3xl shadow-xl border border-stone-200/60 p-6 flex flex-col items-center relative">
@@ -61,9 +66,49 @@ const StudentProfilePage = () => {
               <p className="text-stone-500 text-sm">{user?.data?.email}</p>
             </div>
           </div>
+
+          {/* Sidebar Navigation */}
+          <div className="bg-white/90 backdrop-blur-md rounded-3xl shadow-xl border border-stone-200/60 p-6 space-y-4">
+            <h3 className="text-lg font-bold text-stone-800 mb-3">
+              Navigation
+            </h3>
+            <ul className="space-y-3">
+              <li>
+                <Link
+                  to="/update-student-profile"
+                  className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-amber-50 text-stone-700 font-medium"
+                >
+                  <Pencil className="w-4 h-4" /> Update Profile
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/verify-student-profile"
+                  className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-amber-50 text-stone-700 font-medium"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    class="lucide lucide-badge-x-icon lucide-badge-x"
+                  >
+                    <path d="M3.85 8.62a4 4 0 0 1 4.78-4.77 4 4 0 0 1 6.74 0 4 4 0 0 1 4.78 4.78 4 4 0 0 1 0 6.74 4 4 0 0 1-4.77 4.78 4 4 0 0 1-6.75 0 4 4 0 0 1-4.78-4.77 4 4 0 0 1 0-6.76Z" />
+                    <line x1="15" x2="9" y1="9" y2="15" />
+                    <line x1="9" x2="15" y1="9" y2="15" />
+                  </svg>
+                  <p>Verify Student</p>
+                </Link>
+              </li>
+            </ul>
+          </div>
         </div>
 
-        {/* Right Column */}
         <div className="col-span-2 space-y-6">
           {/* About */}
           <ProfileCard
@@ -131,16 +176,6 @@ const StudentProfilePage = () => {
               />
             </div>
           </ProfileCard>
-
-          {/* Update Button */}
-          <div className="flex justify-end">
-            <Link
-              to="/update-student-profile"
-              className="px-6 py-3 bg-[#956847] hover:bg-[#794e30] text-white font-bold rounded-xl shadow-md transition-all"
-            >
-              Update Profile
-            </Link>
-          </div>
         </div>
       </div>
     </div>

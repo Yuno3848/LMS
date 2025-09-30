@@ -10,7 +10,10 @@ import VerifyStudentProfile from "./ProfileComponents/VerifyStudentProfile";
 const Profile = () => {
   const user = useSelector((state) => state.auth.user);
   const avatar = useSelector((state) => state.auth.avatar);
-  console.log("user in profile :", user);
+  
+  
+
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#f5e6ca] via-[#fefaf5] to-[#e7d3b5]">
       <div className="w-full max-w-md p-8 rounded-2xl shadow-xl bg-[#fffaf2] border border-[#e0c9a6]  ">
@@ -28,7 +31,6 @@ const Profile = () => {
               />
             )}
           </div>
-
           <input
             type="text"
             placeholder="Username"
@@ -59,7 +61,6 @@ const Profile = () => {
           />
           <EmailVerification />
           <StudentVerification />
-
           <Link
             to="/update-profile"
             className="block w-full text-center bg-gradient-to-r from-[#b08968] to-[#8c5e3c] text-white py-3 rounded-lg font-semibold shadow-md hover:shadow-lg hover:from-[#8c5e3c] hover:to-[#6b4226] transition transform hover:-translate-y-0.5"

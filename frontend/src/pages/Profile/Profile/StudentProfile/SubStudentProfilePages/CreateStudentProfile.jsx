@@ -28,11 +28,10 @@ const CreateStudentProfile = () => {
       const result = await studentProfileApiFetch.createStudentProfile(
         formData
       );
-      console.log("result create student profile:", result);
+
       if (result.success) {
         toast.success(result?.data?.message || "Profile created successfully");
         dispatch(setStudentProfile(result?.data?.data));
-        
       } else {
         toast.error(result?.error || "You can't create more than one profile");
       }

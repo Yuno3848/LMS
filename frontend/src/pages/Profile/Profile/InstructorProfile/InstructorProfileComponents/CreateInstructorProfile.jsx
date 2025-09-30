@@ -30,7 +30,7 @@ const CreateInstructorProfile = () => {
       const result = await instructorProfileAPIFetch.createInstructorProfile(
         formData
       );
-      console.log("create instructor profile result :", result);
+
       if (result.success) {
         toast.success(result?.data?.message || "Instructor profile created");
         dispatch(setClearStudentProfile());

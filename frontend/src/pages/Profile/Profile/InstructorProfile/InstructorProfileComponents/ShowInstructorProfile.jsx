@@ -6,18 +6,18 @@ import {
   User,
   BookOpen,
   Globe,
-  Star,
   CheckCircle,
   Camera,
+  Pencil,
 } from "lucide-react";
-import React, { useEffect } from "react";
+import React from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { Link } from "react-router-dom";
 import Loading from "../../../../../components/Loading";
 
 const InstructorProfileCard = () => {
   const dispatch = useDispatch();
   const profile = useSelector((state) => state.instructorProfile.profile);
-  console.log("show instructor profile from redux :", profile);
   const userDetails = useSelector((state) => state.auth.user);
 
   const username = userDetails?.data?.username;
@@ -64,6 +64,23 @@ const InstructorProfileCard = () => {
               <span>Verified:</span>
               <span>{profile?.isVerifiedInstructor ? "Yes" : "No"}</span>
             </div>
+          </div>
+
+          {/* Sidebar Navigation */}
+          <div className="bg-white/90 backdrop-blur-md rounded-3xl shadow-xl border border-stone-200/60 p-6 space-y-4">
+            <h3 className="text-lg font-bold text-stone-800 mb-3">
+              Navigation
+            </h3>
+            <ul className="space-y-3">
+              <li>
+                <Link
+                  to="/update-instructor-profile"
+                  className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-amber-50 text-stone-700 font-medium"
+                >
+                  <Pencil className="w-4 h-4" /> Update Profile
+                </Link>
+              </li>
+            </ul>
           </div>
         </div>
 

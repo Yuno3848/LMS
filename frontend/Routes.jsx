@@ -26,6 +26,8 @@ import CreateInstructorProfile from "./src/pages/Profile/Profile/InstructorProfi
 import UpdateInstructorProfile from "./src/pages/Profile/Profile/InstructorProfile/InstructorProfileComponents/UpdateInstructorProfile";
 import ProtectedInstructorProfile from "./src/ProtectedRoutes/ProtectedInstructorProfile";
 import ShowInstructorProfile from "./src/pages/Profile/Profile/InstructorProfile/InstructorProfileComponents/ShowInstructorProfile";
+import VerifyStudentProfile from "./src/pages/Profile/Profile/ProfileComponents/VerifyStudentProfile";
+import VerifyStudent from "./src/pages/Profile/Profile/StudentProfile/SubStudentProfilePages/VerifyStudent";
 
 export const Routes = createBrowserRouter([
   {
@@ -104,6 +106,10 @@ export const Routes = createBrowserRouter([
             <StudentProfilePage />
           </ProtectedRoute>
         ),
+      },
+      {
+        path: "/verify-student-profile",
+        element: <VerifyStudent />,
       },
       {
         path: "/instructor-details",
