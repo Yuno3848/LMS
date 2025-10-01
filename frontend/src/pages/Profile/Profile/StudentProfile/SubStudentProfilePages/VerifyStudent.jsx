@@ -14,7 +14,7 @@ const VerifyStudent = () => {
 
   if (!studentProfile) return <Loading />;
 
-  const { username, email } = studentProfile[0];
+  const { username, email } = studentProfile[0] || {};
 
   const user =
     Array.isArray(studentProfile) && studentProfile.length > 0
