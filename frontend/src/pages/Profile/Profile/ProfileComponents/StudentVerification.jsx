@@ -55,21 +55,6 @@ const StudentVerification = () => {
         </div>
       </div>
 
-      {!user?.data?.studentVerified && (
-        <div className="bg-[#fdf8f0] border border-[#e8d4b8] rounded-lg p-4 mb-3">
-          <p className="text-sm text-[#6b4226] mb-2">
-            📚 Verify your student status to access exclusive benefits and
-            discounts! First update your student profile
-          </p>
-          <Link
-            to="/create-student-profile"
-            className="block text-center w-full bg-gradient-to-r from-[#9c6644] to-[#7a4d30] text-white py-2 px-4 rounded-lg font-medium text-sm shadow-sm hover:shadow-md hover:from-[#7a4d30] hover:to-[#5d3623] transition transform hover:-translate-y-0.5"
-          >
-            🎯 Start Verification
-          </Link>
-        </div>
-      )}
-
       {user?.data?.studentVerified && (
         <div className="bg-[#e8f5e8] border border-[#c3e6c3] rounded-lg p-4 mb-3">
           <div className="flex items-center text-sm text-[#2d5a2d]">

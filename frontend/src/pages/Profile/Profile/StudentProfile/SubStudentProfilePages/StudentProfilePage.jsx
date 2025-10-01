@@ -13,7 +13,7 @@ import {
   Shield,
 } from "lucide-react";
 import { useSelector } from "react-redux";
-import { Link } from "react-router-dom"; // ✅ use react-router-dom instead of react-router
+import { Link } from "react-router-dom"; 
 import Loading from "../../../../../components/Loading";
 import ShowStudentProfile from "../../../../../components/ShowStudentProfile";
 
@@ -30,13 +30,10 @@ const StudentProfilePage = () => {
   }
 
   const studentData = studentProfile[0]?.studentProfile || {};
-  
+
   const { bio, skills, interests, education, socialLinks } = studentData;
 
   if (instructorProfile) return <ShowStudentProfile type="instructor" />;
-  if (studentProfile.data == 0) {
-    return <ShowStudentProfile />;
-  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-stone-100 via-amber-50 to-yellow-50 py-12 px-6">
@@ -73,6 +70,14 @@ const StudentProfilePage = () => {
               Navigation
             </h3>
             <ul className="space-y-3">
+              <li>
+                <Link
+                  to="/create-student-profile"
+                  className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-amber-50 text-stone-700 font-medium"
+                >
+                  <Pencil className="w-4 h-4" /> Create Profile
+                </Link>
+              </li>
               <li>
                 <Link
                   to="/update-student-profile"
