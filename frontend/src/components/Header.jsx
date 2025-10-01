@@ -1,5 +1,5 @@
 import { Coffee, LogOut } from "lucide-react";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 import React from "react";
 import { authApi } from "../ApiFetch/authApiFetch";
 import { HashLink } from "react-router-hash-link";
@@ -10,7 +10,7 @@ import { setClearStudentProfile } from "../redux/slicers/studentProfileSlicer";
 import { setClearInstructorProfile } from "../redux/slicers/instructorProfileSlicer";
 const Header = () => {
   const user = useSelector((state) => state.auth.user);
-
+  const navigate = useNavigate();
   const dispatch = useDispatch();
   const navLink = [
     { name: "Home", path: "/#hero" },
@@ -27,8 +27,7 @@ const Header = () => {
         dispatch(setClearInstructorProfile());
 
         toast.success(result?.data?.message || "Logout successful");
-        dispatch(setClearInstructorProfile());
-        dispatch(setClearStudentProfile());
+        navigate("/");
       } else {
         toast.error(result.error || "Logout failed");
       }

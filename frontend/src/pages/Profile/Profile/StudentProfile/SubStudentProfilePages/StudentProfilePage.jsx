@@ -13,14 +13,13 @@ import {
   Shield,
 } from "lucide-react";
 import { useSelector } from "react-redux";
-import { Link } from "react-router-dom"; 
+import { Link } from "react-router-dom";
 import Loading from "../../../../../components/Loading";
 import ShowStudentProfile from "../../../../../components/ShowStudentProfile";
 
 const StudentProfilePage = () => {
   const user = useSelector((state) => state.auth.user);
   const studentProfile = useSelector((state) => state.studentProfile.profile);
-  console.log(studentProfile);
   const instructorProfile = useSelector(
     (state) => state.instructorProfile.profile
   );
@@ -28,14 +27,19 @@ const StudentProfilePage = () => {
   if (!studentProfile) {
     return <Loading />;
   }
+  console.log(studentProfile);
 
-  const studentData = studentProfile[0]?.studentProfile || {};
+  const studentData =
+    studentProfile[0]?.studentProfile ||
+    studentProfile?.[0]?.studentProfile ||
+    studentProfile?.data[0]?.studentProfile ||
+    {};
 
   const { bio, skills, interests, education, socialLinks } = studentData;
 
-  if (instructorProfile) return <ShowStudentProfile type="instructor" />;
-
-  return (
+  return instructorProfile ? (
+    <ShowStudentProfile type="instructor" />
+  ) : (
     <div className="min-h-screen bg-gradient-to-br from-stone-100 via-amber-50 to-yellow-50 py-12 px-6">
       <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
         {/* ===== LEFT SIDEBAR ===== */}
@@ -98,12 +102,12 @@ const StudentProfilePage = () => {
                     viewBox="0 0 24 24"
                     fill="none"
                     stroke="currentColor"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    class="lucide lucide-badge-x-icon lucide-badge-x"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    className="lucide lucide-badge-x-icon lucide-badge-x"
                   >
-                    <path d="M3.85 8.62a4 4 0 0 1 4.78-4.77 4 4 0 0 1 6.74 0 4 4 0 0 1 4.78 4.78 4 4 0 0 1 0 6.74 4 4 0 0 1-4.77 4.78 4 4 0 0 1-6.75 0 4 4 0 0 1-4.78-4.77 4 4 0 0 1 0-6.76Z" />
+                    <path d="M3.85 8.62a4 4 0 0 1 4.78-4.77 ..." />
                     <line x1="15" x2="9" y1="9" y2="15" />
                     <line x1="9" x2="15" y1="9" y2="15" />
                   </svg>

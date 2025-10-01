@@ -15,7 +15,11 @@ const UpdateStudentProfile = () => {
   const dispatch = useDispatch();
   const studentProfile = useSelector((state) => state.studentProfile.profile);
   const isLoading = useSelector((state) => state.studentProfile.loading);
-  const studentProfileData = studentProfile[0]?.studentProfile || {};
+  const studentProfileData =
+    studentProfile[0]?.studentProfile ||
+    studentProfile?.[0]?.studentProfile ||
+    studentProfile?.data[0]?.studentProfile ||
+    {};
   const navigate = useNavigate();
   const { bio, skills, education, interests, socialLinks } = studentProfileData;
 

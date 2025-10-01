@@ -10,7 +10,13 @@ const StudentVerification = () => {
     return <Loading />;
   }
   const verificationStatus =
-    studentProfile[0]?.studentProfile?.verificationStatus?.trim().toLowerCase();
+    studentProfile?.data[0]?.studentProfile?.verificationStatus
+      ?.trim()
+      .toLowerCase() ||
+    studentProfile?.[0]?.studentProfile?.verificationStatus
+      ?.trim()
+      .toLowerCase();
+  studentProfile[0]?.studentProfile?.verificationStatus?.trim().toLowerCase();
 
   const statusConfig = {
     verified: {

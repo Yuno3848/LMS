@@ -14,11 +14,13 @@ const VerifyStudent = () => {
 
   if (!studentProfile) return <Loading />;
 
-  const { username, email } = studentProfile[0] || {};
+  const { username, email } = studentProfile?.data[0] || {};
 
   const user =
     Array.isArray(studentProfile) && studentProfile.length > 0
-      ? studentProfile[0].studentProfile
+      ? studentProfile[0]?.studentProfile ||
+        studentProfile?.[0]?.studentProfile ||
+        studentProfile?.data[0]?.studentProfile
       : {};
 
   const handleVerify = async () => {
