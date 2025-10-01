@@ -30,9 +30,11 @@ const StudentProfilePage = () => {
   console.log(studentProfile);
 
   const studentData =
-    studentProfile[0]?.studentProfile ||
-    studentProfile?.[0]?.studentProfile ||
-    studentProfile?.data[0]?.studentProfile ||
+    (Array.isArray(studentProfile) && studentProfile[0]?.studentProfile) ||
+    (studentProfile?.data &&
+      Array.isArray(studentProfile.data) &&
+      studentProfile.data[0]?.studentProfile) ||
+    studentProfile ||
     {};
 
   const { bio, skills, interests, education, socialLinks } = studentData;
