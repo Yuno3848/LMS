@@ -1,25 +1,48 @@
 import { User, Shield } from "lucide-react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import toast from "react-hot-toast";
 import Loading from "../../../../../components/Loading";
+import {
+  setStudentLoading,
+  setStudentProfile,
+} from "../../../../../redux/slicers/studentProfileSlicer";
+import { studentProfileApiFetch } from "../../../../../ApiFetch/studentProfileApiFetch";
 
 const VerifyStudent = () => {
+  const dispatch = useDispatch();
   const studentProfile = useSelector((state) => state.studentProfile.profile);
-  console.log(studentProfile);
 
   if (!studentProfile) return <Loading />;
 
+  const { username, email } = studentProfile[0];
 
   const user =
     Array.isArray(studentProfile) && studentProfile.length > 0
       ? studentProfile[0].studentProfile
       : {};
 
-  const handleVerify = () => {
-    toast.success(
-      `${studentProfile?.fullname || "Student"} verified successfully!`
-    );
-   
+  const handleVerify = async () => {
+    dispatch(setStudentLoading(true));
+    console.log("handle verify");
+    try {
+      const result = await studentProfileApiFetch.verifyStudent();
+
+      console.log("result handle verify :", result);
+      if (result.success) {
+        toast.success(
+          `${username || "Student"} verification sent successfully!`
+        );
+        dispatch(setStudentProfile(result?.data?.data));
+      } else {
+        toast.error(
+          `A verification request for this student has already been submitted. !`
+        );
+      }
+    } catch (error) {
+      toast.error("student verification failed");
+    } finally {
+      dispatch(setStudentLoading(false));
+    }
   };
 
   return (
@@ -42,11 +65,9 @@ const VerifyStudent = () => {
 
         {/* Name & Email */}
         <h2 className="text-xl font-bold text-stone-800 mb-1">
-          {studentProfile[0]?.username || "Unnamed"}
+          {username || "Unnamed"}
         </h2>
-        <p className="text-stone-500 mb-6">
-          {studentProfile[0]?.email || "No email provided"}
-        </p>
+        <p className="text-stone-500 mb-6">{email || "No email provided"}</p>
 
         {/* Verify Button */}
         <button

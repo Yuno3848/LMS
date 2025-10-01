@@ -6,11 +6,11 @@ import Loading from "../../../../components/Loading";
 const StudentVerification = () => {
   const user = useSelector((state) => state.auth.user);
   const studentProfile = useSelector((state) => state.studentProfile.profile);
-
+  if (!studentProfile) {
+    return <Loading />;
+  }
   const verificationStatus =
-    studentProfile?.data?.[0]?.studentProfile?.verificationStatus
-      ?.trim()
-      .toLowerCase();
+    studentProfile[0]?.studentProfile?.verificationStatus?.trim().toLowerCase();
 
   const statusConfig = {
     verified: {

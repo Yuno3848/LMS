@@ -103,33 +103,11 @@ export const verifyStudentProfile = asyncHandler(async (req, res) => {
     throw new ApiError(404, 'student profile verified student status could not be updated');
   }
 
-  const studentProfileDetails = await studentProfile.aggregate([
-    {
-      $match: {
-        _id: new mongoose.Types.ObjectId(user.studentProfile),
-      },
-    },
-    {
-      $lookup: {
-        from: 'users',
-        foreignField: 'studentProfile',
-        localField: '_id',
-        as: 'studentProfileDetails',
-      },
-    },
-    {
-      $unwind: '$studentProfileDetails',
-    },
-    {
-      $project: {
-        username: '$studentProfileDetails.username',
-        role: '$studentProfileDetails.role',
-        email: '$studentProfileDetails.email',
-        isEmailVerified: '$studentProfileDetails.isEmailVerified',
-        verificationStatus: 1,
-      },
-    },
-  ]);
+  const studentProfileDetails = await User.findById(userId)
+    .populate('studentProfile')
+    .select(
+      '-password -refreshToken -forgotPasswordToken -forgotPasswordExpiry -emailVerificationTokenExpiry -emailVerifiedToken',
+    );
 
   return res
     .status(200)
