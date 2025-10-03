@@ -9,14 +9,18 @@ const StudentVerification = () => {
   if (!studentProfile) {
     return <Loading />;
   }
-  const verificationStatus =
-    studentProfile?.data[0]?.studentProfile?.verificationStatus
-      ?.trim()
-      .toLowerCase() ||
-    studentProfile?.[0]?.studentProfile?.verificationStatus
-      ?.trim()
-      .toLowerCase();
-  studentProfile[0]?.studentProfile?.verificationStatus?.trim().toLowerCase();
+
+  const studentData =
+    (Array.isArray(studentProfile) && studentProfile[0]?.studentProfile) ||
+    (studentProfile?.data &&
+      Array.isArray(studentProfile.data) &&
+      studentProfile.data[0]?.studentProfile) ||
+    studentProfile ||
+    {};
+
+  const verificationStatus = studentData.verificationStatus
+    ?.trim()
+    .toLowerCase();
 
   const statusConfig = {
     verified: {

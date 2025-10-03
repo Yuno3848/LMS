@@ -49,7 +49,15 @@ const StudentProfileForm = ({
               <div className="inline-block relative">
                 <div className="w-40 h-40 rounded-full bg-gradient-to-br from-amber-700 via-stone-700 to-amber-800 p-1 shadow-2xl">
                   <div className="w-full h-full rounded-full bg-gradient-to-br from-amber-200 to-stone-300 flex items-center justify-center overflow-hidden">
-                    <User className="w-20 h-20 text-stone-700" />
+                    {user?.data?.avatar ? (
+                      <img
+                        src={user?.data?.avatar?.url}
+                        alt="Profile"
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <User className="w-20 h-20 text-stone-700" />
+                    )}
                   </div>
                 </div>
                 <div className="absolute -bottom-2 -right-2 bg-white rounded-full p-3 shadow-lg border-2 border-stone-200 hover:scale-110 transition-transform cursor-pointer">
