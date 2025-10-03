@@ -1,6 +1,5 @@
-import React, { useEffect } from "react";
+import React from "react";
 import {
-  User,
   BookOpen,
   Star,
   GraduationCap,
@@ -29,157 +28,209 @@ const StudentProfileForm = ({
 
   if (isLoading || !studentProfile) return <Loading />;
 
-  const socialPlatforms = ["linkedin", "twitter", "facebook", "instagram"];
-  const socialColors = {
-    linkedin: "text-blue-600",
-    twitter: "text-sky-500",
-    facebook: "text-blue-600",
-    instagram: "text-pink-500",
-  };
+  const socialPlatforms = [
+    { name: "linkedin", icon: Linkedin, color: "text-blue-600" },
+    { name: "twitter", icon: Twitter, color: "text-sky-500" },
+    { name: "facebook", icon: Facebook, color: "text-blue-700" },
+    { name: "instagram", icon: Instagram, color: "text-pink-600" },
+  ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-stone-100 via-amber-50 to-yellow-50 py-12 px-4">
-      <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Left Sidebar */}
-        <div className="lg:col-span-1 space-y-8">
-          {/* Profile Card */}
-          <div className="bg-white/90 backdrop-blur-md rounded-3xl shadow-xl border border-stone-200/60 p-6 text-center relative">
-            <div className="absolute inset-0 bg-gradient-to-tr from-amber-50/20 to-stone-50/20 rounded-3xl"></div>
-            <div className="relative z-10">
-              <div className="inline-block relative">
-                <div className="w-40 h-40 rounded-full bg-gradient-to-br from-amber-700 via-stone-700 to-amber-800 p-1 shadow-2xl">
-                  <div className="w-full h-full rounded-full bg-gradient-to-br from-amber-200 to-stone-300 flex items-center justify-center overflow-hidden">
-                    {user?.data?.avatar ? (
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#f5e6ca] via-[#fefaf5] to-[#e7d3b5] p-4">
+      <div className="w-full max-w-5xl">
+        {/* Main Card with Glass Effect */}
+        <div className="relative rounded-3xl shadow-2xl bg-white/80 backdrop-blur-sm border border-[#e0c9a6] overflow-hidden">
+          {/* Decorative Background Pattern */}
+          <div className="absolute inset-0 opacity-5">
+            <div
+              className="absolute inset-0"
+              style={{
+                backgroundImage:
+                  "radial-gradient(circle, #b08968 1px, transparent 1px)",
+                backgroundSize: "20px 20px",
+              }}
+            ></div>
+          </div>
+
+          {/* Hero Section with Avatar */}
+          <div className="relative bg-gradient-to-r from-[#b08968] via-[#9c7556] to-[#8c5e3c] p-8">
+            <div className="flex flex-col md:flex-row items-center gap-6">
+              <div className="relative group">
+                <div className="relative">
+                  <div className="absolute inset-0 bg-white rounded-full blur-xl opacity-50 group-hover:opacity-70 transition"></div>
+                  <div className="relative w-32 h-32 rounded-full border-4 border-white shadow-2xl ring-4 ring-white/30 bg-gradient-to-br from-[#fdfaf7] to-[#f9f3ec] flex items-center justify-center overflow-hidden">
+                    {user?.data?.avatar?.url ? (
                       <img
-                        src={user?.data?.avatar?.url}
-                        alt="Profile"
+                        src={user.data.avatar.url}
+                        alt="Profile Avatar"
                         className="w-full h-full object-cover"
                       />
                     ) : (
-                      <User className="w-20 h-20 text-stone-700" />
+                      <span className="text-5xl">👤</span>
                     )}
                   </div>
-                </div>
-                <div className="absolute -bottom-2 -right-2 bg-white rounded-full p-3 shadow-lg border-2 border-stone-200 hover:scale-110 transition-transform cursor-pointer">
-                  <Camera className="w-6 h-6 text-stone-600" />
+                  <button className="absolute bottom-0 right-0 w-10 h-10 bg-white rounded-full shadow-lg border-2 border-[#e0c9a6] flex items-center justify-center hover:scale-110 transition-transform">
+                    <Camera className="w-5 h-5 text-[#6b4226]" />
+                  </button>
                 </div>
               </div>
-              <h2 className="mt-4 text-2xl font-bold text-stone-800">
-                {user?.data?.fullname || "Student Name"}
-              </h2>
-              <p className="text-stone-500">{studentProfile?.education}</p>
-            </div>
-          </div>
-        </div>
-
-        {/* Main Content */}
-        <div className="lg:col-span-2 space-y-8">
-          {/* About / Bio */}
-          <div className="bg-white/90 backdrop-blur-md rounded-3xl shadow-xl border border-stone-200/60 p-6">
-            <h3 className="text-xl font-bold flex items-center gap-2 text-stone-800 border-b border-stone-200 pb-3 mb-4">
-              <BookOpen className="w-5 h-5 text-amber-700" /> About
-            </h3>
-            <textarea
-              value={formData.bio}
-              onChange={(e) =>
-                setFormData({ ...formData, bio: e.target.value })
-              }
-              rows={4}
-              placeholder="Tell students about yourself..."
-              className="w-full px-4 py-3 border-2 border-stone-200 rounded-xl bg-stone-50/50 focus:border-amber-400 focus:bg-white focus:ring-4 focus:ring-amber-100 transition-all outline-none placeholder:text-stone-400"
-            />
-          </div>
-
-          {/* Skills & Interests */}
-          <div className="bg-white/90 backdrop-blur-md rounded-3xl shadow-xl border border-stone-200/60 p-6">
-            <h3 className="text-xl font-bold flex items-center gap-2 text-stone-800 border-b border-stone-200 pb-3 mb-4">
-              <Star className="w-5 h-5 text-amber-700" /> Skills & Interests
-            </h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <input
-                type="text"
-                value={formData.skills}
-                onChange={(e) =>
-                  setFormData({ ...formData, skills: e.target.value })
-                }
-                placeholder="Technical Skills"
-                className="w-full px-4 py-3 border-2 border-stone-200 rounded-xl bg-stone-50/50 focus:border-amber-400 focus:bg-white focus:ring-4 focus:ring-amber-100 transition-all outline-none placeholder:text-stone-400"
-              />
-              <input
-                type="text"
-                value={formData.interests}
-                onChange={(e) =>
-                  setFormData({ ...formData, interests: e.target.value })
-                }
-                placeholder="Interests & Hobbies"
-                className="w-full px-4 py-3 border-2 border-stone-200 rounded-xl bg-stone-50/50 focus:border-amber-400 focus:bg-white focus:ring-4 focus:ring-amber-100 transition-all outline-none placeholder:text-stone-400"
-              />
+              <div className="text-center md:text-left flex-1">
+                <h1 className="text-4xl font-bold text-white mb-2">
+                  {title || "Edit Your Profile"}
+                </h1>
+                <p className="text-white/90 text-lg">
+                  {user?.data?.fullname || "Student Name"}
+                </p>
+                <div className="mt-3 inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm px-4 py-1.5 rounded-full">
+                  <span className="text-white text-sm font-medium">
+                    ✏️ Update your information
+                  </span>
+                </div>
+              </div>
             </div>
           </div>
 
-          {/* Education */}
-          <div className="bg-white/90 backdrop-blur-md rounded-3xl shadow-xl border border-stone-200/60 p-6">
-            <h3 className="text-xl font-bold flex items-center gap-2 text-stone-800 border-b border-stone-200 pb-3 mb-4">
-              <GraduationCap className="w-5 h-5 text-amber-700" /> Education
-            </h3>
-            <input
-              type="text"
-              value={formData.education}
-              onChange={(e) =>
-                setFormData({ ...formData, education: e.target.value })
-              }
-              placeholder="Degree, University"
-              className="w-full px-4 py-3 border-2 border-stone-200 rounded-xl bg-stone-50/50 focus:border-amber-400 focus:bg-white focus:ring-4 focus:ring-amber-100 transition-all outline-none placeholder:text-stone-400"
-            />
-          </div>
+          {/* Form Content */}
+          <div className="relative p-8">
+            <div className="space-y-6">
+              {/* About Section */}
+              <div className="bg-gradient-to-br from-[#fdfaf7] to-[#f9f3ec] p-6 rounded-2xl border border-[#e0c9a6] shadow-sm">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#b08968] to-[#8c5e3c] flex items-center justify-center">
+                    <BookOpen className="w-5 h-5 text-white" />
+                  </div>
+                  <h3 className="text-lg font-bold text-[#6b4226]">About Me</h3>
+                </div>
+                <textarea
+                  value={formData.bio}
+                  onChange={(e) =>
+                    setFormData({ ...formData, bio: e.target.value })
+                  }
+                  rows={4}
+                  placeholder="Share your story, interests, and what drives your passion for learning..."
+                  className="w-full px-4 py-3 border-2 border-[#e0c9a6] rounded-xl bg-white/70 focus:border-[#b08968] focus:bg-white focus:ring-4 focus:ring-[#b08968]/10 transition-all outline-none placeholder:text-[#6b4226]/40 text-[#6b4226] resize-none"
+                />
+              </div>
 
-          {/* Social Links */}
-          <div className="bg-white/90 backdrop-blur-md rounded-3xl shadow-xl border border-stone-200/60 p-6">
-            <h3 className="text-xl font-bold flex items-center gap-2 text-stone-800 border-b border-stone-200 pb-3 mb-4">
-              <Globe className="w-5 h-5 text-amber-700" /> Social Links
-            </h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {socialPlatforms.map((platform) => {
-                const Icon = {
-                  linkedin: Linkedin,
-                  twitter: Twitter,
-                  facebook: Facebook,
-                  instagram: Instagram,
-                }[platform];
-                return (
-                  <div key={platform} className="relative">
+              {/* Skills & Interests */}
+              <div className="bg-gradient-to-br from-[#fdfaf7] to-[#f9f3ec] p-6 rounded-2xl border border-[#e0c9a6] shadow-sm">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#b08968] to-[#8c5e3c] flex items-center justify-center">
+                    <Star className="w-5 h-5 text-white" />
+                  </div>
+                  <h3 className="text-lg font-bold text-[#6b4226]">
+                    Skills & Interests
+                  </h3>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-xs font-semibold text-[#6b4226]/60 uppercase tracking-wide mb-2">
+                      Technical Skills
+                    </label>
                     <input
-                      type="url"
-                      value={formData.socialLinks[platform]}
+                      type="text"
+                      value={formData.skills}
                       onChange={(e) =>
-                        setFormData({
-                          ...formData,
-                          socialLinks: {
-                            ...formData.socialLinks,
-                            [platform]: e.target.value,
-                          },
-                        })
+                        setFormData({ ...formData, skills: e.target.value })
                       }
-                      placeholder={`${platform}.com/yourprofile`}
-                      className="w-full pl-10 px-4 py-3 border-2 border-stone-200 rounded-xl bg-stone-50/50 focus:border-amber-400 focus:bg-white focus:ring-4 focus:ring-amber-100 transition-all outline-none placeholder:text-stone-400"
-                    />
-                    <Icon
-                      className={`absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 ${socialColors[platform]}`}
+                      placeholder="React, Python, Data Science..."
+                      className="w-full px-4 py-3 border-2 border-[#e0c9a6] rounded-xl bg-white/70 focus:border-[#b08968] focus:bg-white focus:ring-4 focus:ring-[#b08968]/10 transition-all outline-none placeholder:text-[#6b4226]/40 text-[#6b4226]"
                     />
                   </div>
-                );
-              })}
-            </div>
-          </div>
+                  <div>
+                    <label className="block text-xs font-semibold text-[#6b4226]/60 uppercase tracking-wide mb-2">
+                      Interests
+                    </label>
+                    <input
+                      type="text"
+                      value={formData.interests}
+                      onChange={(e) =>
+                        setFormData({ ...formData, interests: e.target.value })
+                      }
+                      placeholder="Photography, Music, Coding..."
+                      className="w-full px-4 py-3 border-2 border-[#e0c9a6] rounded-xl bg-white/70 focus:border-[#b08968] focus:bg-white focus:ring-4 focus:ring-[#b08968]/10 transition-all outline-none placeholder:text-[#6b4226]/40 text-[#6b4226]"
+                    />
+                  </div>
+                </div>
+              </div>
 
-          {/* Submit Button */}
-          <div className="flex justify-center">
-            <button
-              onClick={handleSubmit}
-              className="group relative px-10 py-3 bg-gradient-to-r from-stone-800 via-stone-700 to-stone-800 text-white font-bold rounded-2xl shadow-xl flex items-center gap-2 hover:scale-105 transition-transform"
-            >
-              {submitIcon || <Save className="w-5 h-5" />} {submitLabel}
-            </button>
+              {/* Education */}
+              <div className="bg-gradient-to-br from-[#fdfaf7] to-[#f9f3ec] p-6 rounded-2xl border border-[#e0c9a6] shadow-sm">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#b08968] to-[#8c5e3c] flex items-center justify-center">
+                    <GraduationCap className="w-5 h-5 text-white" />
+                  </div>
+                  <h3 className="text-lg font-bold text-[#6b4226]">
+                    Education
+                  </h3>
+                </div>
+                <input
+                  type="text"
+                  value={formData.education}
+                  onChange={(e) =>
+                    setFormData({ ...formData, education: e.target.value })
+                  }
+                  placeholder="Bachelor's in Computer Science, MIT"
+                  className="w-full px-4 py-3 border-2 border-[#e0c9a6] rounded-xl bg-white/70 focus:border-[#b08968] focus:bg-white focus:ring-4 focus:ring-[#b08968]/10 transition-all outline-none placeholder:text-[#6b4226]/40 text-[#6b4226]"
+                />
+              </div>
+
+              {/* Social Links */}
+              <div className="bg-gradient-to-br from-[#fdfaf7] to-[#f9f3ec] p-6 rounded-2xl border border-[#e0c9a6] shadow-sm">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#b08968] to-[#8c5e3c] flex items-center justify-center">
+                    <Globe className="w-5 h-5 text-white" />
+                  </div>
+                  <h3 className="text-lg font-bold text-[#6b4226]">
+                    Social Links
+                  </h3>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {socialPlatforms.map(({ name, icon: Icon, color }) => (
+                    <div key={name}>
+                      <label className="flex items-center gap-2 text-xs font-semibold text-[#6b4226]/60 uppercase tracking-wide mb-2">
+                        <Icon className={`w-4 h-4 ${color}`} />
+                        {name.charAt(0).toUpperCase() + name.slice(1)}
+                      </label>
+                      <div className="relative">
+                        <input
+                          type="url"
+                          value={formData.socialLinks[name]}
+                          onChange={(e) =>
+                            setFormData({
+                              ...formData,
+                              socialLinks: {
+                                ...formData.socialLinks,
+                                [name]: e.target.value,
+                              },
+                            })
+                          }
+                          placeholder={`https://${name}.com/yourprofile`}
+                          className="w-full pl-11 pr-4 py-3 border-2 border-[#e0c9a6] rounded-xl bg-white/70 focus:border-[#b08968] focus:bg-white focus:ring-4 focus:ring-[#b08968]/10 transition-all outline-none placeholder:text-[#6b4226]/40 text-[#6b4226]"
+                        />
+                        <div className="absolute left-3 top-1/2 -translate-y-1/2">
+                          <Icon className={`w-5 h-5 ${color}`} />
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Submit Button */}
+              <div className="flex justify-center pt-4">
+                <button
+                  onClick={handleSubmit}
+                  className="group relative inline-flex items-center gap-2 bg-gradient-to-r from-[#b08968] to-[#8c5e3c] text-white px-8 py-4 rounded-xl font-semibold shadow-lg hover:shadow-xl transition transform hover:-translate-y-1 overflow-hidden"
+                >
+                  <span className="absolute inset-0 bg-gradient-to-r from-[#8c5e3c] to-[#6b4226] opacity-0 group-hover:opacity-100 transition"></span>
+                  {submitIcon || <Save className="w-5 h-5 relative" />}
+                  <span className="relative">
+                    {submitLabel || "Save Profile"}
+                  </span>
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       </div>
