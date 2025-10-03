@@ -1,3 +1,4 @@
+import React, { useEffect } from "react";
 import {
   Linkedin,
   Twitter,
@@ -5,14 +6,11 @@ import {
   Instagram,
   Camera,
   Save,
-  User,
   BookOpen,
   Globe,
   Star,
-  GraduationCap,
-  CheckCircle,
+  Award,
 } from "lucide-react";
-import { useEffect } from "react";
 import { useSelector } from "react-redux";
 import Loading from "../../../../components/Loading";
 
@@ -27,6 +25,7 @@ const InstructorProfileForm = ({
   const instructorProfile = useSelector(
     (state) => state.instructorProfile.profile
   );
+  const user = useSelector((state) => state.auth.user);
 
   useEffect(() => {
     if (instructorProfile?.data) {
@@ -44,189 +43,196 @@ const InstructorProfileForm = ({
     }
   }, [instructorProfile]);
 
+  const socialPlatforms = [
+    { name: "linkedin", icon: Linkedin, color: "text-blue-600" },
+    { name: "twitter", icon: Twitter, color: "text-sky-500" },
+    { name: "facebook", icon: Facebook, color: "text-blue-700" },
+    { name: "instagram", icon: Instagram, color: "text-pink-600" },
+  ];
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-stone-100 via-amber-50 to-yellow-50 py-12 px-4">
-      <form onSubmit={handleSubmit} className="max-w-4xl mx-auto">
-        {/* Header */}
-        <div className="bg-white/90 backdrop-blur-sm rounded-3xl shadow-2xl border border-stone-200/50 p-8 mb-8 relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-stone-200/20 to-amber-200/20 rounded-full -translate-y-16 translate-x-16"></div>
-          <div className="absolute bottom-0 left-0 w-24 h-24 bg-gradient-to-tr from-yellow-100/20 to-stone-200/20 rounded-full translate-y-12 -translate-x-12"></div>
-          <div className="relative z-10 text-center">
-            <div className="inline-flex items-center gap-3 mb-4">
-              <div className="p-3 bg-gradient-to-br from-amber-700 to-stone-700 rounded-2xl shadow-lg">
-                <User className="w-8 h-8 text-white" />
-              </div>
-              <h1 className="text-4xl font-bold bg-gradient-to-r from-stone-700 to-amber-800 bg-clip-text text-transparent">
-                {title}
-              </h1>
-            </div>
-            <p className="text-stone-600/80 text-lg font-medium">
-              Share your teaching journey and expertise
-            </p>
-          </div>
-        </div>
-
-        {/* Main Profile Card */}
-        <div className="bg-white/95 backdrop-blur-sm rounded-3xl shadow-2xl border border-stone-200/50 overflow-hidden">
-          {/* Profile Picture */}
-          <div className="bg-gradient-to-r from-stone-100 to-amber-100 p-8 text-center relative">
-            <div className="absolute inset-0 bg-gradient-to-br from-stone-50/50 to-amber-50/50"></div>
-            <div className="relative inline-block group">
-              <div className="w-40 h-40 rounded-full bg-gradient-to-br from-amber-600 via-stone-600 to-amber-700 p-1 shadow-2xl">
-                <div className="w-full h-full rounded-full bg-gradient-to-br from-amber-200 to-stone-300 flex items-center justify-center overflow-hidden">
-                  <User className="w-20 h-20 text-stone-700" />
-                </div>
-              </div>
-              <div className="absolute -bottom-2 -right-2 bg-white rounded-full p-3 shadow-lg border-2 border-stone-200 group-hover:scale-110 transition-transform cursor-pointer">
-                <Camera className="w-6 h-6 text-stone-600" />
-              </div>
-            </div>
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#f5e6ca] via-[#fefaf5] to-[#e7d3b5] p-4">
+      <div className="w-full max-w-5xl">
+        {/* Main Card with Glass Effect */}
+        <div className="relative rounded-3xl shadow-2xl bg-white/80 backdrop-blur-sm border border-[#e0c9a6] overflow-hidden">
+          {/* Decorative Background Pattern */}
+          <div className="absolute inset-0 opacity-5">
+            <div
+              className="absolute inset-0"
+              style={{
+                backgroundImage:
+                  "radial-gradient(circle, #b08968 1px, transparent 1px)",
+                backgroundSize: "20px 20px",
+              }}
+            ></div>
           </div>
 
-          <div className="p-8 space-y-8">
-            {/* Bio */}
-            <section className="space-y-6">
-              <h2 className="text-2xl font-bold text-stone-800 flex items-center gap-3 border-b border-stone-200 pb-3">
-                <div className="p-2 bg-stone-100 rounded-lg">
-                  <BookOpen className="w-5 h-5 text-stone-600" />
+          {/* Hero Section with Avatar */}
+          <div className="relative bg-gradient-to-r from-[#b08968] via-[#9c7556] to-[#8c5e3c] p-8">
+            <div className="flex flex-col md:flex-row items-center gap-6">
+              <div className="relative group">
+                <div className="relative">
+                  <div className="absolute inset-0 bg-white rounded-full blur-xl opacity-50 group-hover:opacity-70 transition"></div>
+                  <div className="relative w-32 h-32 rounded-full border-4 border-white shadow-2xl ring-4 ring-white/30 bg-gradient-to-br from-[#fdfaf7] to-[#f9f3ec] flex items-center justify-center overflow-hidden">
+                    {user?.data?.avatar?.url ? (
+                      <img
+                        src={user.data.avatar.url}
+                        alt="Profile Avatar"
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <span className="text-5xl">👨‍🏫</span>
+                    )}
+                  </div>
+                  <button className="absolute bottom-0 right-0 w-10 h-10 bg-white rounded-full shadow-lg border-2 border-[#e0c9a6] flex items-center justify-center hover:scale-110 transition-transform">
+                    <Camera className="w-5 h-5 text-[#6b4226]" />
+                  </button>
                 </div>
-                About You
-              </h2>
-              <textarea
-                value={formData?.bio}
-                onChange={(e) =>
-                  setFormData({ ...formData, bio: e.target.value })
-                }
-                rows="4"
-                placeholder="Tell students about your background and teaching style..."
-                className="w-full px-4 py-3 border-2 border-stone-200 rounded-xl bg-stone-50/50 focus:border-stone-400 focus:bg-white focus:ring-4 focus:ring-stone-100 transition-all duration-200 outline-none resize-none placeholder:text-stone-400"
-              />
-            </section>
-
-            {/* Expertise */}
-            <section className="space-y-6">
-              <h2 className="text-2xl font-bold text-stone-800 flex items-center gap-3 border-b border-stone-200 pb-3">
-                <div className="p-2 bg-stone-100 rounded-lg">
-                  <Star className="w-5 h-5 text-stone-600" />
-                </div>
-                Expertise
-              </h2>
-              <input
-                type="text"
-                value={formData?.expertise}
-                onChange={(e) =>
-                  setFormData({ ...formData, expertise: e.target.value })
-                }
-                placeholder="E.g., Web Development, Data Science"
-                className="w-full px-4 py-3 border-2 border-stone-200 rounded-xl bg-stone-50/50 focus:border-stone-400 focus:bg-white focus:ring-4 focus:ring-stone-100 transition-all duration-200 outline-none placeholder:text-stone-400"
-              />
-            </section>
-
-            {/* Rating & Verification */}
-            <section className="space-y-6">
-              <h2 className="text-2xl font-bold text-stone-800 flex items-center gap-3 border-b border-stone-200 pb-3">
-                <div className="p-2 bg-stone-100 rounded-lg">
-                  <CheckCircle className="w-5 h-5 text-stone-600" />
-                </div>
-                Status
-              </h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                  <label className="text-sm font-semibold text-stone-700">
-                    Rating
-                  </label>
-                  <input
-                    type="number"
-                    min="0"
-                    max="5"
-                    step="0.1"
-                    value={formData?.rating}
-                    onChange={(e) =>
-                      setFormData({ ...formData, rating: e.target.value })
-                    }
-                    className="w-full px-4 py-3 border-2 border-stone-200 rounded-xl bg-stone-50/50 focus:border-stone-400 focus:bg-white focus:ring-4 focus:ring-stone-100 outline-none"
-                  />
-                </div>
-                {/* <div>
-                  <label className="text-sm font-semibold text-stone-700">
-                    Verification Status
-                  </label>
-                  <select
-                    value={formData.isVerifiedInstructor}
-                    onChange={(e) =>
-                      setFormData({
-                        ...formData,
-                        isVerifiedInstructor: e.target.value,
-                      })
-                    }
-                    className="w-full px-4 py-3 border-2 border-stone-200 rounded-xl bg-stone-50/50 focus:border-stone-400 focus:bg-white focus:ring-4 focus:ring-stone-100 outline-none"
-                  >
-                    <option value="not_requested">Not Requested</option>
-                    <option value="pending">Pending</option>
-                    <option value="verified">Verified</option>
-                    <option value="rejected">Rejected</option>
-                  </select>
-                </div> */}
               </div>
-            </section>
-
-            {/* Social Links */}
-            <section className="space-y-6">
-              <h2 className="text-2xl font-bold text-stone-800 flex items-center gap-3 border-b border-stone-200 pb-3">
-                <div className="p-2 bg-stone-100 rounded-lg">
-                  <Globe className="w-5 h-5 text-stone-600" />
+              <div className="text-center md:text-left flex-1">
+                <h1 className="text-4xl font-bold text-white mb-2">
+                  {title || "Edit Instructor Profile"}
+                </h1>
+                <p className="text-white/90 text-lg">
+                  {user?.data?.fullname || "Instructor Name"}
+                </p>
+                <div className="mt-3 inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm px-4 py-1.5 rounded-full">
+                  <span className="text-white text-sm font-medium">
+                    ✏️ Share your teaching journey
+                  </span>
                 </div>
-                Social Links
-              </h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {["linkedin", "twitter", "facebook", "instagram"].map(
-                  (platform) => {
-                    const Icon = {
-                      linkedin: Linkedin,
-                      twitter: Twitter,
-                      facebook: Facebook,
-                      instagram: Instagram,
-                    }[platform];
-                    return (
-                      <div key={platform} className="space-y-2">
-                        <label className="text-sm font-semibold text-stone-700 flex items-center gap-2">
-                          <Icon className="w-4 h-4" />
-                          {platform.charAt(0).toUpperCase() + platform.slice(1)}
-                        </label>
+              </div>
+            </div>
+          </div>
+
+          {/* Form Content */}
+          <form onSubmit={handleSubmit} className="relative p-8">
+            <div className="space-y-6">
+              {/* About Section */}
+              <div className="bg-gradient-to-br from-[#fdfaf7] to-[#f9f3ec] p-6 rounded-2xl border border-[#e0c9a6] shadow-sm">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#b08968] to-[#8c5e3c] flex items-center justify-center">
+                    <BookOpen className="w-5 h-5 text-white" />
+                  </div>
+                  <h3 className="text-lg font-bold text-[#6b4226]">
+                    About You
+                  </h3>
+                </div>
+                <textarea
+                  value={formData?.bio}
+                  onChange={(e) =>
+                    setFormData({ ...formData, bio: e.target.value })
+                  }
+                  rows={4}
+                  placeholder="Tell students about your background, teaching philosophy, and what makes your approach unique..."
+                  className="w-full px-4 py-3 border-2 border-[#e0c9a6] rounded-xl bg-white/70 focus:border-[#b08968] focus:bg-white focus:ring-4 focus:ring-[#b08968]/10 transition-all outline-none placeholder:text-[#6b4226]/40 text-[#6b4226] resize-none"
+                />
+              </div>
+
+              {/* Expertise & Rating */}
+              <div className="bg-gradient-to-br from-[#fdfaf7] to-[#f9f3ec] p-6 rounded-2xl border border-[#e0c9a6] shadow-sm">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#b08968] to-[#8c5e3c] flex items-center justify-center">
+                    <Star className="w-5 h-5 text-white" />
+                  </div>
+                  <h3 className="text-lg font-bold text-[#6b4226]">
+                    Expertise & Rating
+                  </h3>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-xs font-semibold text-[#6b4226]/60 uppercase tracking-wide mb-2">
+                      Area of Expertise
+                    </label>
+                    <input
+                      type="text"
+                      value={formData?.expertise}
+                      onChange={(e) =>
+                        setFormData({ ...formData, expertise: e.target.value })
+                      }
+                      placeholder="e.g., Web Development, Data Science"
+                      className="w-full px-4 py-3 border-2 border-[#e0c9a6] rounded-xl bg-white/70 focus:border-[#b08968] focus:bg-white focus:ring-4 focus:ring-[#b08968]/10 transition-all outline-none placeholder:text-[#6b4226]/40 text-[#6b4226]"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-semibold text-[#6b4226]/60 uppercase tracking-wide mb-2">
+                      Rating (0-5)
+                    </label>
+                    <input
+                      type="number"
+                      min="0"
+                      max="5"
+                      step="0.1"
+                      value={formData?.rating}
+                      onChange={(e) =>
+                        setFormData({ ...formData, rating: e.target.value })
+                      }
+                      placeholder="4.5"
+                      className="w-full px-4 py-3 border-2 border-[#e0c9a6] rounded-xl bg-white/70 focus:border-[#b08968] focus:bg-white focus:ring-4 focus:ring-[#b08968]/10 transition-all outline-none placeholder:text-[#6b4226]/40 text-[#6b4226]"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Social Links */}
+              <div className="bg-gradient-to-br from-[#fdfaf7] to-[#f9f3ec] p-6 rounded-2xl border border-[#e0c9a6] shadow-sm">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#b08968] to-[#8c5e3c] flex items-center justify-center">
+                    <Globe className="w-5 h-5 text-white" />
+                  </div>
+                  <h3 className="text-lg font-bold text-[#6b4226]">
+                    Social Links
+                  </h3>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {socialPlatforms.map(({ name, icon: Icon, color }) => (
+                    <div key={name}>
+                      <label className="flex items-center gap-2 text-xs font-semibold text-[#6b4226]/60 uppercase tracking-wide mb-2">
+                        <Icon className={`w-4 h-4 ${color}`} />
+                        {name.charAt(0).toUpperCase() + name.slice(1)}
+                      </label>
+                      <div className="relative">
                         <input
                           type="url"
-                          value={formData?.socialLinks[platform]}
+                          value={formData?.socialLinks[name]}
                           onChange={(e) =>
                             setFormData({
                               ...formData,
                               socialLinks: {
                                 ...formData?.socialLinks,
-                                [platform]: e.target.value,
+                                [name]: e.target.value,
                               },
                             })
                           }
-                          placeholder={`https://${platform}.com/yourprofile`}
-                          className="w-full px-4 py-3 border-2 border-stone-200 rounded-xl bg-stone-50/50 focus:border-stone-400 focus:bg-white focus:ring-4 focus:ring-stone-100 transition-all outline-none placeholder:text-stone-400"
+                          placeholder={`https://${name}.com/yourprofile`}
+                          className="w-full pl-11 pr-4 py-3 border-2 border-[#e0c9a6] rounded-xl bg-white/70 focus:border-[#b08968] focus:bg-white focus:ring-4 focus:ring-[#b08968]/10 transition-all outline-none placeholder:text-[#6b4226]/40 text-[#6b4226]"
                         />
+                        <div className="absolute left-3 top-1/2 -translate-y-1/2">
+                          <Icon className={`w-5 h-5 ${color}`} />
+                        </div>
                       </div>
-                    );
-                  }
-                )}
-              </div>
-            </section>
-
-            {/* Submit */}
-            <div className="flex justify-center pt-8">
-              <button className="group relative px-8 py-4 bg-stone-800 hover:bg-stone-900 text-white font-bold rounded-2xl shadow-xl hover:shadow-2xl transform hover:-translate-y-1 transition-all duration-300">
-                <div className="flex items-center gap-3">
-                  {submitIcon || <Save className="w-5 h-5" />}
-                  {submitLabel}
+                    </div>
+                  ))}
                 </div>
-              </button>
+              </div>
+
+              {/* Submit Button */}
+              <div className="flex justify-center pt-4">
+                <button
+                  type="submit"
+                  className="group relative inline-flex items-center gap-2 bg-gradient-to-r from-[#b08968] to-[#8c5e3c] text-white px-8 py-4 rounded-xl font-semibold shadow-lg hover:shadow-xl transition transform hover:-translate-y-1 overflow-hidden"
+                >
+                  <span className="absolute inset-0 bg-gradient-to-r from-[#8c5e3c] to-[#6b4226] opacity-0 group-hover:opacity-100 transition"></span>
+                  {submitIcon || <Save className="w-5 h-5 relative" />}
+                  <span className="relative">
+                    {submitLabel || "Save Profile"}
+                  </span>
+                </button>
+              </div>
             </div>
-          </div>
+          </form>
         </div>
-      </form>
+      </div>
     </div>
   );
 };
