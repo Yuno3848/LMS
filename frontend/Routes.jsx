@@ -29,6 +29,8 @@ import ShowInstructorProfile from "./src/pages/Profile/Profile/InstructorProfile
 import VerifyStudentProfile from "./src/pages/Profile/Profile/ProfileComponents/VerifyStudentProfile";
 import VerifyStudent from "./src/pages/Profile/Profile/StudentProfile/SubStudentProfilePages/VerifyStudent";
 import StudentVerificationSent from "./src/components/StudentVerificationSent";
+import InstructorDashboard from "./src/Instructor/InstructorDashboard";
+import CreateCourseForm from "./src/Instructor/CreateCourseForm";
 
 export const Routes = createBrowserRouter([
   {
@@ -147,6 +149,14 @@ export const Routes = createBrowserRouter([
           </ProtectedRoute>
         ),
       },
+      {
+        path: "/instructor-dashboard",
+        element: <InstructorDashboard />,
+      },
+      {
+        path:"/create-course",
+        element: <CreateCourseForm/>
+      }
     ],
   },
 
