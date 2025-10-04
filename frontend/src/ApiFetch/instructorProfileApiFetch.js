@@ -60,14 +60,14 @@ export const instructorProfileAPIFetch = {
 
   reqInstructorRole: async () => {
     try {
-      const res = await fetch(`${baseURL}/get-instructor-profile`, {
+      const res = await fetch(`${baseURL}/req-instructor-role`, {
         method: "GET",
         credentials: "include",
       });
 
       const data = await res.json();
       if (!res.ok) {
-        throw new Error("Failed to fetch instructor profile");
+        throw new Error("Failed to request instructor role");
       }
       return { success: true, data };
     } catch (error) {
