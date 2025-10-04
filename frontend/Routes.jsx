@@ -31,6 +31,7 @@ import VerifyStudent from "./src/pages/Profile/Profile/StudentProfile/SubStudent
 import StudentVerificationSent from "./src/components/StudentVerificationSent";
 import InstructorDashboard from "./src/Instructor/InstructorDashboard";
 import CreateCourseForm from "./src/Instructor/CreateCourseForm";
+import InstructorVerification from "./src/pages/Profile/Profile/InstructorProfile/InstructorProfileComponents/InstructorVerification";
 
 export const Routes = createBrowserRouter([
   {
@@ -150,8 +151,22 @@ export const Routes = createBrowserRouter([
         ),
       },
       {
+        path: "/instructor-verification",
+        element: (
+          <ProtectedRoute>
+            <InstructorVerification />
+          </ProtectedRoute>
+        ),
+      },
+      {
         path: "/instructor-dashboard",
-        element: <InstructorDashboard />,
+        element: (
+          <ProtectedRoute>
+            <ProtectedInstructorProfile>
+              <InstructorDashboard />
+            </ProtectedInstructorProfile>
+          </ProtectedRoute>
+        ),
       },
       {
         path: "/create-course",

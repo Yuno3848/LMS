@@ -11,6 +11,8 @@ import {
   Edit3,
   Award,
   Star,
+  BadgeCheck,
+  ShieldCheck,
 } from "lucide-react";
 import Loading from "../../../../../components/Loading";
 
@@ -24,7 +26,7 @@ const InstructorProfileCard = () => {
   const avatar = userDetails?.data?.avatar?.url;
 
   if (loading) return <Loading />;
-
+  const instructorVerified = profile?.isVerifiedInstructor;
   const socialPlatforms = [
     { name: "linkedin", icon: Linkedin, color: "text-blue-600" },
     { name: "twitter", icon: Twitter, color: "text-sky-500" },
@@ -66,7 +68,7 @@ const InstructorProfileCard = () => {
                       <span className="text-5xl">👨‍🏫</span>
                     )}
                   </div>
-                  {profile?.isVerifiedInstructor && (
+                  {profile?.isVerifiedInstructor === "verified" && (
                     <div className="absolute bottom-1 right-1 w-8 h-8 bg-blue-500 rounded-full border-4 border-white flex items-center justify-center">
                       <Award className="w-4 h-4 text-white" />
                     </div>
@@ -178,21 +180,31 @@ const InstructorProfileCard = () => {
                         </span>
                       </div>
                     </div>
+
                     <div className="flex items-center justify-between">
                       <span className="text-xs font-semibold text-[#6b4226]/60 uppercase tracking-wide">
                         Verification
                       </span>
-                      {profile?.isVerifiedInstructor ? (
+                      {profile?.isVerifiedInstructor === "verified" ? (
                         <span className="inline-flex items-center gap-1 px-2 py-1 bg-green-100 text-green-700 rounded-full text-xs font-medium">
                           <Award className="w-3 h-3" />
                           Verified
                         </span>
+                      ) : profile?.isVerifiedInstructor === "pending" ? (
+                        <span className="inline-flex items-center gap-1 px-2 py-1 bg-yellow-100 text-yellow-700 rounded-full text-xs font-medium">
+                          Pending
+                        </span>
+                      ) : profile?.isVerifiedInstructor === "rejected" ? (
+                        <span className="inline-flex items-center gap-1 px-2 py-1 bg-red-100 text-red-700 rounded-full text-xs font-medium">
+                          Rejected
+                        </span>
                       ) : (
                         <span className="inline-flex items-center gap-1 px-2 py-1 bg-gray-100 text-gray-600 rounded-full text-xs font-medium">
-                          Pending
+                          Not Requested
                         </span>
                       )}
                     </div>
+
                     {profile?.expertise && (
                       <div className="pt-2 border-t border-[#e0c9a6]">
                         <span className="text-xs font-semibold text-[#6b4226]/60 uppercase tracking-wide block mb-1">
@@ -218,6 +230,29 @@ const InstructorProfileCard = () => {
                     <Edit3 className="w-4 h-4" />
                     Update Profile
                   </Link>
+                  {instructorVerified == "verified" ? (
+                    <Link
+                      to="/instructor-dashboard"
+                      className="flex items-center mt-1.5 gap-2 px-3 py-2 rounded-lg bg-white/50 hover:bg-white border border-[#e0c9a6]/50 text-[#6b4226] text-sm font-medium transition w-full"
+                    >
+                      <ShieldCheck className="w-4 h-4" />
+                      Instructor Dashboard
+                    </Link>
+                  ) : (
+                    <Link
+                      to="/instructor-verification"
+                      className="flex items-center mt-1.5 gap-2 px-3 py-2 rounded-lg bg-white/50 hover:bg-white border border-[#e0c9a6]/50 text-[#6b4226] text-sm font-medium transition w-full"
+                    >
+                      <BadgeCheck className="w-4 h-4" />
+                      {profile?.isVerifiedInstructor === "not_requested"
+                        ? "Request Instructor Role"
+                        : profile?.isVerifiedInstructor === "pending"
+                        ? "Verification Pending"
+                        : profile?.isVerifiedInstructor === "verified"
+                        ? "Verified Instructor"
+                        : "Request Again"}
+                    </Link>
+                  )}
                 </div>
               </div>
             </div>

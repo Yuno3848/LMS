@@ -12,11 +12,12 @@ const ProtectedInstructorProfile = ({ children }) => {
   if (loading) {
     return <Loading />;
   }
-  return !instructorProfile ? (
-    children
-  ) : (
-    <Navigate to="/update-instructor-profile" />
-  );
+
+  if (!instructorProfile) {
+    return <Navigate to="/update-instructor-profile" />;
+  }
+
+  return children;
 };
 
 export default ProtectedInstructorProfile;
