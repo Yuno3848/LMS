@@ -52,10 +52,15 @@ export const validateCreateCourse = () => {
 
     body('tags')
       .optional()
-      .isArray()
-      .withMessage('tags must be an array')
-      .custom((tags) => tags.every((tag) => typeof tag === 'string'))
-      .withMessage('each tag must be a string'),
+      .custom((course) => {
+        if (typeof course === 'string') {
+          return true;
+        }
+        if (Array.isArray(course) && course.every((e) => typeof e === 'string')) {
+          return true;
+        }
+      })
+      .withMessage('Each expertise must be an string'),
 
     body('category')
       .notEmpty()

@@ -1,15 +1,13 @@
-BaseURL = "http://localhost:8080/api/v1/course";
+const BaseURL = "http://localhost:8080/api/v1/course";
 
-export const course = {
-  createCourse: async () => {
+export const courseApiFetch = {
+  createCourse: async (credential) => {
     try {
-      const res = await fetch(`${baseURL}/create-course`, {
+      const res = await fetch(`${BaseURL}/create-course`, {
         method: "POST",
         credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(credential),
+
+        body: credential,
       });
       const data = await res.json();
       if (!res.ok) {

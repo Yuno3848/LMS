@@ -154,9 +154,15 @@ export const Routes = createBrowserRouter([
         element: <InstructorDashboard />,
       },
       {
-        path:"/create-course",
-        element: <CreateCourseForm/>
-      }
+        path: "/create-course",
+        element: (
+          <ProtectedRoute>
+            <ProtectedInstructorProfile>
+              <CreateCourseForm />
+            </ProtectedInstructorProfile>
+          </ProtectedRoute>
+        ),
+      },
     ],
   },
 

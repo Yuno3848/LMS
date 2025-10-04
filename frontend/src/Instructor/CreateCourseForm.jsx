@@ -8,27 +8,72 @@ import {
   Upload,
   AlertCircle,
 } from "lucide-react";
+import { courseApiFetch } from "../ApiFetch/courseApiFetch";
+import toast from "react-hot-toast";
 
 const CreateCourseForm = () => {
-  const [tags, setTags] = useState(["JavaScript", "React", "Frontend"]);
-  const [newTag, setNewTag] = useState("");
-  const [thumbnail, setThumbnail] = useState(null);
+  const [formData, setFormData] = useState({
+    title: "",
+    description: "",
+    base: 0,
+    final: 0,
+    currency: "",
+    courseExpiry: "",
+    difficulty: "",
+    tags: [],
+    category: "",
+    thumbnail: "",
+    isPublished: false,
+  });
+
+  const [tagInput, setTagInput] = useState("");
 
   const handleAddTag = () => {
-    if (newTag.trim() && !tags.includes(newTag.trim())) {
-      setTags([...tags, newTag.trim()]);
-      setNewTag("");
+    const newTag = tagInput.trim();
+    if (newTag && !formData.tags.includes(newTag)) {
+      setFormData({ ...formData, tags: [...formData.tags, newTag] });
+      setTagInput("");
     }
   };
 
   const handleRemoveTag = (tagToRemove) => {
-    setTags(tags.filter((tag) => tag !== tagToRemove));
+    setFormData({
+      ...formData,
+      tags: formData.tags.filter((tag) => tag !== tagToRemove),
+    });
   };
 
-  const handleThumbnailChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      setThumbnail(URL.createObjectURL(file));
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    const form = new FormData();
+    form.append("title", formData.title);
+    form.append("description", formData.description);
+    form.append("base", formData.base);
+    form.append("final", formData.final);
+    form.append("currency", formData.currency);
+    form.append("courseExpiry", formData.courseExpiry);
+    form.append("difficulty", formData.difficulty.toLowerCase());
+    form.append("category", formData.category);
+    form.append("isPublished", formData.isPublished === "on" ? true : false);
+
+    formData.tags.forEach((tag) => {
+      form.append("tags", tag);
+    });
+
+    if (formData.thumbnail) {
+      form.append("thumbnail", formData.thumbnail);
+    }
+    console.log("form data :", formData);
+    try {
+      const res = await courseApiFetch.createCourse(form);
+      if (res.success) {
+        toast.success(res?.data?.message || "course created successfully");
+      } else {
+        toast.error(res.error);
+      }
+    } catch (error) {
+      toast.error(error.message);
     }
   };
 
@@ -60,7 +105,7 @@ const CreateCourseForm = () => {
 
       {/* Main Content */}
       <main className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="space-y-6">
+        <form onSubmit={handleSubmit} className="space-y-6">
           {/* Basic Information Section */}
           <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-[#e0c9a6] p-6">
             <div className="flex items-center gap-3 mb-6 pb-4 border-b border-[#e0c9a6]/50">
@@ -79,7 +124,11 @@ const CreateCourseForm = () => {
                 </label>
                 <input
                   type="text"
-                  className="w-full px-4 py-3 bg-[#fdfaf7] border border-[#e0c9a6] rounded-lg text-[#6b4226] placeholder-[#6b4226]/40 focus:outline-none focus:ring-2 focus:ring-[#b08968]/20 focus:border-[#b08968] transition"
+                  value={formData.title}
+                  onChange={(e) => {
+                    setFormData({ ...formData, title: e.target.value });
+                  }}
+                  className="w-full px-4 py-3 bg-[#fdfaf7] border border-[#e0c9a6] rounded-lg text-[#6b4226] placeholder-[#6b4226]/40 focus:outline-none transition"
                   placeholder="Enter course title"
                 />
               </div>
@@ -90,7 +139,11 @@ const CreateCourseForm = () => {
                 </label>
                 <textarea
                   rows="5"
-                  className="w-full px-4 py-3 bg-[#fdfaf7] border border-[#e0c9a6] rounded-lg text-[#6b4226] placeholder-[#6b4226]/40 focus:outline-none focus:ring-2 focus:ring-[#b08968]/20 focus:border-[#b08968] transition resize-none"
+                  value={formData.description}
+                  onChange={(e) => {
+                    setFormData({ ...formData, description: e.target.value });
+                  }}
+                  className="w-full px-4 py-3 bg-[#fdfaf7] border border-[#e0c9a6] rounded-lg text-[#6b4226] placeholder-[#6b4226]/40 focus:outline-none transition resize-none"
                   placeholder="Describe your course in detail..."
                 />
               </div>
@@ -100,31 +153,21 @@ const CreateCourseForm = () => {
                   Course Thumbnail <span className="text-red-500">*</span>
                 </label>
                 <div className="flex items-start gap-4">
-                  <label className="w-32 h-32 flex flex-col items-center justify-center border-2 border-dashed border-[#e0c9a6] rounded-lg bg-[#fdfaf7] cursor-pointer hover:border-[#b08968] hover:bg-[#f9f3ec] transition group relative overflow-hidden">
-                    {thumbnail ? (
-                      <>
-                        <img
-                          src={thumbnail}
-                          alt="Thumbnail"
-                          className="w-full h-full object-cover"
-                        />
-                        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition flex items-center justify-center">
-                          <Upload className="w-6 h-6 text-white" />
-                        </div>
-                      </>
-                    ) : (
-                      <>
-                        <Image className="w-8 h-8 text-[#6b4226]/40 mb-2 group-hover:text-[#b08968] transition" />
-                        <span className="text-xs font-medium text-[#6b4226]/60">
-                          Upload
-                        </span>
-                      </>
-                    )}
+                  <label className="w-32 h-32 flex flex-col items-center justify-center border-2 border-dashed border-[#e0c9a6] rounded-lg bg-[#fdfaf7] cursor-pointer hover:border-[#b08968] hover:bg-[#f9f3ec] transition">
+                    <Image className="w-8 h-8 text-[#6b4226]/40 mb-2 transition" />
+                    <span className="text-xs font-medium text-[#6b4226]/60">
+                      {formData.thumbnail ? formData.thumbnail.name : "Upload"}
+                    </span>
                     <input
                       type="file"
                       accept="image/*"
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          thumbnail: e.target.files[0],
+                        })
+                      }
                       className="hidden"
-                      onChange={handleThumbnailChange}
                     />
                   </label>
                   <div className="flex-1 bg-[#fdfaf7] rounded-lg p-4 border border-[#e0c9a6]">
@@ -150,7 +193,13 @@ const CreateCourseForm = () => {
                   <label className="block text-sm font-semibold text-[#6b4226] mb-2">
                     Category <span className="text-red-500">*</span>
                   </label>
-                  <select className="w-full px-4 py-3 bg-[#fdfaf7] border border-[#e0c9a6] rounded-lg text-[#6b4226] focus:outline-none focus:ring-2 focus:ring-[#b08968]/20 focus:border-[#b08968] transition appearance-none cursor-pointer">
+                  <select
+                    value={formData.category}
+                    onChange={(e) =>
+                      setFormData({ ...formData, category: e.target.value })
+                    }
+                    className="w-full px-4 py-3 bg-[#fdfaf7] border border-[#e0c9a6] rounded-lg text-[#6b4226] cursor-pointer"
+                  >
                     <option>Select category</option>
                     <option>Web Development</option>
                     <option>Mobile Development</option>
@@ -165,7 +214,13 @@ const CreateCourseForm = () => {
                   <label className="block text-sm font-semibold text-[#6b4226] mb-2">
                     Difficulty Level
                   </label>
-                  <select className="w-full px-4 py-3 bg-[#fdfaf7] border border-[#e0c9a6] rounded-lg text-[#6b4226] focus:outline-none focus:ring-2 focus:ring-[#b08968]/20 focus:border-[#b08968] transition appearance-none cursor-pointer">
+                  <select
+                    value={formData.difficulty}
+                    onChange={(e) =>
+                      setFormData({ ...formData, difficulty: e.target.value })
+                    }
+                    className="w-full px-4 py-3 bg-[#fdfaf7] border border-[#e0c9a6] rounded-lg text-[#6b4226] cursor-pointer"
+                  >
                     <option>Select difficulty</option>
                     <option>Beginner</option>
                     <option>Intermediate</option>
@@ -193,7 +248,11 @@ const CreateCourseForm = () => {
                   </label>
                   <input
                     type="number"
-                    className="w-full px-4 py-3 bg-[#fdfaf7] border border-[#e0c9a6] rounded-lg text-[#6b4226] placeholder-[#6b4226]/40 focus:outline-none focus:ring-2 focus:ring-[#b08968]/20 focus:border-[#b08968] transition"
+                    value={formData.base}
+                    onChange={(e) =>
+                      setFormData({ ...formData, base: e.target.value })
+                    }
+                    className="w-full px-4 py-3 bg-[#fdfaf7] border border-[#e0c9a6] rounded-lg text-[#6b4226]"
                     placeholder="0.00"
                   />
                 </div>
@@ -204,7 +263,11 @@ const CreateCourseForm = () => {
                   </label>
                   <input
                     type="number"
-                    className="w-full px-4 py-3 bg-[#fdfaf7] border border-[#e0c9a6] rounded-lg text-[#6b4226] placeholder-[#6b4226]/40 focus:outline-none focus:ring-2 focus:ring-[#b08968]/20 focus:border-[#b08968] transition"
+                    value={formData.final}
+                    onChange={(e) =>
+                      setFormData({ ...formData, final: e.target.value })
+                    }
+                    className="w-full px-4 py-3 bg-[#fdfaf7] border border-[#e0c9a6] rounded-lg text-[#6b4226]"
                     placeholder="0.00"
                   />
                 </div>
@@ -213,11 +276,15 @@ const CreateCourseForm = () => {
                   <label className="block text-sm font-semibold text-[#6b4226] mb-2">
                     Currency <span className="text-red-500">*</span>
                   </label>
-                  <select className="w-full px-4 py-3 bg-[#fdfaf7] border border-[#e0c9a6] rounded-lg text-[#6b4226] focus:outline-none focus:ring-2 focus:ring-[#b08968]/20 focus:border-[#b08968] transition appearance-none cursor-pointer">
-                    <option>INR (₹)</option>
-                    <option>USD ($)</option>
-                    <option>EUR (€)</option>
-                    <option>GBP (£)</option>
+                  <select
+                    value={formData.currency}
+                    onChange={(e) =>
+                      setFormData({ ...formData, currency: e.target.value })
+                    }
+                    className="w-full px-4 py-3 bg-[#fdfaf7] border border-[#e0c9a6] rounded-lg text-[#6b4226] cursor-pointer"
+                  >
+                    <option>INR</option>
+                    <option>USD</option>
                   </select>
                 </div>
               </div>
@@ -228,7 +295,11 @@ const CreateCourseForm = () => {
                 </label>
                 <input
                   type="date"
-                  className="w-full px-4 py-3 bg-[#fdfaf7] border border-[#e0c9a6] rounded-lg text-[#6b4226] focus:outline-none focus:ring-2 focus:ring-[#b08968]/20 focus:border-[#b08968] transition"
+                  value={formData.courseExpiry}
+                  onChange={(e) =>
+                    setFormData({ ...formData, courseExpiry: e.target.value })
+                  }
+                  className="w-full px-4 py-3 bg-[#fdfaf7] border border-[#e0c9a6] rounded-lg text-[#6b4226]"
                 />
               </div>
 
@@ -258,36 +329,34 @@ const CreateCourseForm = () => {
               <div className="flex gap-3">
                 <input
                   type="text"
-                  value={newTag}
-                  onChange={(e) => setNewTag(e.target.value)}
-                  onKeyPress={(e) => e.key === "Enter" && handleAddTag()}
-                  className="flex-1 px-4 py-3 bg-[#fdfaf7] border border-[#e0c9a6] rounded-lg text-[#6b4226] placeholder-[#6b4226]/40 focus:outline-none focus:ring-2 focus:ring-[#b08968]/20 focus:border-[#b08968] transition"
+                  value={tagInput}
+                  onChange={(e) => setTagInput(e.target.value)}
+                  className="flex-1 px-4 py-3 bg-[#fdfaf7] border border-[#e0c9a6] rounded-lg text-[#6b4226]"
                   placeholder="Add a tag (e.g., JavaScript, React)"
                 />
                 <button
+                  type="button"
                   onClick={handleAddTag}
-                  className="px-6 py-3 bg-gradient-to-r from-[#b08968] to-[#8c5e3c] text-white font-semibold rounded-lg hover:shadow-lg transition transform hover:-translate-y-0.5"
+                  className="px-6 py-3 bg-gradient-to-r from-[#b08968] to-[#8c5e3c] text-white font-semibold rounded-lg"
                 >
                   Add Tag
                 </button>
               </div>
 
-              {tags.length > 0 && (
-                <div className="flex flex-wrap gap-2">
-                  {tags.map((tag, index) => (
-                    <span
-                      key={index}
-                      className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-[#b08968] to-[#8c5e3c] text-white text-sm font-medium rounded-full shadow-sm"
-                    >
-                      {tag}
-                      <X
-                        className="w-4 h-4 cursor-pointer hover:bg-white/20 rounded-full transition"
-                        onClick={() => handleRemoveTag(tag)}
-                      />
-                    </span>
-                  ))}
-                </div>
-              )}
+              <div className="flex flex-wrap gap-2">
+                {formData.tags.map((tag, index) => (
+                  <span
+                    key={tag}
+                    className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-[#b08968] to-[#8c5e3c] text-white text-sm font-medium rounded-full shadow-sm"
+                  >
+                    {tag}
+                    <X
+                      onClick={() => handleRemoveTag(tag)}
+                      className="w-4 h-4 cursor-pointer"
+                    />
+                  </span>
+                ))}
+              </div>
 
               <div className="bg-[#fdfaf7] rounded-lg p-4 border border-[#e0c9a6]">
                 <p className="text-xs text-[#6b4226]/70 flex items-start gap-2">
@@ -313,22 +382,35 @@ const CreateCourseForm = () => {
                 </p>
               </div>
               <label className="relative inline-flex items-center cursor-pointer">
-                <input type="checkbox" className="sr-only peer" />
-                <div className="w-14 h-7 bg-[#e0c9a6] peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-[#b08968]/20 rounded-full peer peer-checked:after:translate-x-7 peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:bg-white after:border-[#e0c9a6] after:border after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-gradient-to-r peer-checked:from-[#b08968] peer-checked:to-[#8c5e3c]"></div>
+                <input
+                  value={formData.isPublished}
+                  onChange={(e) =>
+                    setFormData({ ...formData, isPublished: e.target.checked })
+                  }
+                  type="checkbox"
+                  className="sr-only peer"
+                />
+                <div className="w-14 h-7 bg-[#e0c9a6] rounded-full peer-checked:bg-gradient-to-r peer-checked:from-[#b08968] peer-checked:to-[#8c5e3c] after:absolute after:top-0.5 after:left-0.5 after:bg-white after:border after:rounded-full after:h-6 after:w-6 after:transition-all"></div>
               </label>
             </div>
           </div>
 
           {/* Action Buttons */}
           <div className="flex gap-4">
-            <button className="flex-1 px-6 py-4 bg-gradient-to-r from-[#b08968] to-[#8c5e3c] text-white font-semibold text-base rounded-xl hover:shadow-xl transition transform hover:-translate-y-0.5">
+            <button
+              type="submit"
+              className="flex-1 px-6 py-4 bg-gradient-to-r from-[#b08968] to-[#8c5e3c] text-white font-semibold text-base rounded-xl"
+            >
               Create Course
             </button>
-            <button className="px-6 py-4 bg-white text-[#6b4226] font-semibold text-base rounded-xl border border-[#e0c9a6] hover:bg-[#fdfaf7] transition shadow-sm hover:shadow-md">
+            <button
+              type="button"
+              className="px-6 py-4 bg-white text-[#6b4226] font-semibold text-base rounded-xl border border-[#e0c9a6]"
+            >
               Save as Draft
             </button>
           </div>
-        </div>
+        </form>
       </main>
 
       {/* Footer */}
