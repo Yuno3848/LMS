@@ -223,36 +223,38 @@ const InstructorProfileCard = () => {
                   <h3 className="text-sm font-bold text-[#6b4226] mb-3 flex items-center gap-2">
                     <span>⚡</span> Quick Actions
                   </h3>
-                  <Link
-                    to="/update-instructor-profile"
-                    className="flex items-center gap-2 px-3 py-2 rounded-lg bg-white/50 hover:bg-white border border-[#e0c9a6]/50 text-[#6b4226] text-sm font-medium transition w-full"
-                  >
-                    <Edit3 className="w-4 h-4" />
-                    Update Profile
-                  </Link>
-                  {instructorVerified == "verified" ? (
+                  <div className="space-y-2">
                     <Link
-                      to="/instructor-dashboard"
-                      className="flex items-center mt-1.5 gap-2 px-3 py-2 rounded-lg bg-white/50 hover:bg-white border border-[#e0c9a6]/50 text-[#6b4226] text-sm font-medium transition w-full"
+                      to="/update-instructor-profile"
+                      className="flex items-center gap-2 px-3 py-2 rounded-lg bg-white/50 hover:bg-white border border-[#e0c9a6]/50 text-[#6b4226] text-sm font-medium transition w-full"
                     >
-                      <ShieldCheck className="w-4 h-4" />
-                      Instructor Dashboard
+                      <Edit3 className="w-4 h-4" />
+                      Update Profile
                     </Link>
-                  ) : (
-                    <Link
-                      to="/instructor-verification"
-                      className="flex items-center mt-1.5 gap-2 px-3 py-2 rounded-lg bg-white/50 hover:bg-white border border-[#e0c9a6]/50 text-[#6b4226] text-sm font-medium transition w-full"
-                    >
-                      <BadgeCheck className="w-4 h-4" />
-                      {profile?.isVerifiedInstructor === "not_requested"
-                        ? "Request Instructor Role"
-                        : profile?.isVerifiedInstructor === "pending"
-                        ? "Verification Pending"
-                        : profile?.isVerifiedInstructor === "verified"
-                        ? "Verified Instructor"
-                        : "Request Again"}
-                    </Link>
-                  )}
+                    {instructorVerified === "verified" ? (
+                      <Link
+                        to="/instructor-dashboard"
+                        className="flex items-center gap-2 px-3 py-2 rounded-lg bg-gradient-to-r from-[#b08968] to-[#8c5e3c] hover:from-[#8c5e3c] hover:to-[#6b4226] text-white text-sm font-medium transition w-full shadow-md hover:shadow-lg"
+                      >
+                        <ShieldCheck className="w-4 h-4" />
+                        Instructor Dashboard
+                      </Link>
+                    ) : (
+                      <Link
+                        to="/instructor-verification"
+                        className="flex items-center gap-2 px-3 py-2 rounded-lg bg-white/50 hover:bg-white border border-[#e0c9a6]/50 text-[#6b4226] text-sm font-medium transition w-full"
+                      >
+                        <BadgeCheck className="w-4 h-4" />
+                        {profile?.isVerifiedInstructor === "not_requested"
+                          ? "Request Instructor Role"
+                          : profile?.isVerifiedInstructor === "pending"
+                          ? "Verification Pending"
+                          : profile?.isVerifiedInstructor === "verified"
+                          ? "Verified Instructor"
+                          : "Request Again"}
+                      </Link>
+                    )}
+                  </div>
                 </div>
               </div>
             </div>

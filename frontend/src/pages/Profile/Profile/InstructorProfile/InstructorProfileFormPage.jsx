@@ -105,7 +105,6 @@ const InstructorProfileForm = ({
             </div>
           </div>
 
-          {/* Form Content */}
           <form onSubmit={handleSubmit} className="relative p-8">
             <div className="space-y-6">
               {/* About Section */}
@@ -129,7 +128,6 @@ const InstructorProfileForm = ({
                 />
               </div>
 
-              {/* Expertise & Rating */}
               <div className="bg-gradient-to-br from-[#fdfaf7] to-[#f9f3ec] p-6 rounded-2xl border border-[#e0c9a6] shadow-sm">
                 <div className="flex items-center gap-3 mb-4">
                   <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#b08968] to-[#8c5e3c] flex items-center justify-center">

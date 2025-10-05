@@ -10,6 +10,7 @@ import { setClearStudentProfile } from "../redux/slicers/studentProfileSlicer";
 import { setClearInstructorProfile } from "../redux/slicers/instructorProfileSlicer";
 const Header = () => {
   const user = useSelector((state) => state.auth.user);
+
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const navLink = [

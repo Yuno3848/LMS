@@ -13,7 +13,7 @@ const ProtectedInstructorProfile = ({ children }) => {
     return <Loading />;
   }
 
-  if (!instructorProfile) {
+  if (instructorProfile?.data) {
     return <Navigate to="/update-instructor-profile" />;
   }
 
