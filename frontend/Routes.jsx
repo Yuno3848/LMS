@@ -29,9 +29,10 @@ import ShowInstructorProfile from "./src/pages/Profile/Profile/InstructorProfile
 import VerifyStudentProfile from "./src/pages/Profile/Profile/ProfileComponents/VerifyStudentProfile";
 import VerifyStudent from "./src/pages/Profile/Profile/StudentProfile/SubStudentProfilePages/VerifyStudent";
 import StudentVerificationSent from "./src/components/StudentVerificationSent";
-import InstructorDashboard from "./src/Instructor/InstructorDashboard";
-import CreateCourseForm from "./src/Instructor/CreateCourseForm";
+import InstructorDashboard from "./src/InstructorCourse/InstructorDashboard";
+import CreateCourseForm from "./src/InstructorCourse/CreateCourseForm";
 import InstructorVerification from "./src/pages/Profile/Profile/InstructorProfile/InstructorProfileComponents/InstructorVerification";
+import CourseManager from "./src/InstructorCourse/CourseManager";
 
 export const Routes = createBrowserRouter([
   {
@@ -178,6 +179,10 @@ export const Routes = createBrowserRouter([
           </ProtectedRoute>
         ),
       },
+      {
+        path:"/course-manager",
+        element: <CourseManager/>
+      }
     ],
   },
 
