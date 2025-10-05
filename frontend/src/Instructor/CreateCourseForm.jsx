@@ -7,6 +7,7 @@ import {
   X,
   Upload,
   AlertCircle,
+  Loader2,
 } from "lucide-react";
 import { courseApiFetch } from "../ApiFetch/courseApiFetch";
 import toast from "react-hot-toast";
@@ -25,6 +26,7 @@ const CreateCourseForm = () => {
     thumbnail: "",
     isPublished: false,
   });
+  const [isLoading, setIsLoading] = useState(false);
 
   const [tagInput, setTagInput] = useState("");
 
@@ -45,7 +47,7 @@ const CreateCourseForm = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+    setIsLoading(true);
     const form = new FormData();
     form.append("title", formData.title);
     form.append("description", formData.description);
@@ -74,6 +76,8 @@ const CreateCourseForm = () => {
       }
     } catch (error) {
       toast.error(error.message);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -399,15 +403,22 @@ const CreateCourseForm = () => {
           <div className="flex gap-4">
             <button
               type="submit"
-              className="flex-1 px-6 py-4 bg-gradient-to-r from-[#b08968] to-[#8c5e3c] text-white font-semibold text-base rounded-xl"
+              disabled={isLoading}
+              className={`flex-1 px-6 py-4 font-semibold text-base rounded-xl transition 
+    ${
+      isLoading
+        ? "bg-[#d1bfa7] cursor-not-allowed text-white"
+        : "bg-gradient-to-r from-[#b08968] to-[#8c5e3c] text-white hover:opacity-90"
+    }`}
             >
-              Create Course
-            </button>
-            <button
-              type="button"
-              className="px-6 py-4 bg-white text-[#6b4226] font-semibold text-base rounded-xl border border-[#e0c9a6]"
-            >
-              Save as Draft
+              {isLoading ? (
+                <span className="flex items-center justify-center gap-2">
+                  <Loader2 className="w-5 h-5 animate-spin" />
+                  Brewing your course...
+                </span>
+              ) : (
+                "Create Course"
+              )}
             </button>
           </div>
         </form>

@@ -19,6 +19,7 @@ import {
   CheckCircle,
   AlertCircle,
 } from "lucide-react";
+import { Link } from "react-router";
 
 const InstructorDashboard = () => {
   const [activeTab, setActiveTab] = useState("overview");
@@ -104,10 +105,13 @@ const InstructorDashboard = () => {
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Quick Actions */}
         <div className="mb-8 flex flex-wrap gap-3">
-          <button className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-[#b08968] to-[#8c5e3c] text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition transform hover:-translate-y-0.5">
+          <Link
+            to="/create-course"
+            className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-[#b08968] to-[#8c5e3c] text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition transform hover:-translate-y-0.5"
+          >
             <Plus className="w-5 h-5" />
             Create Course
-          </button>
+          </Link>
         </div>
 
         {/* Stats Grid */}
