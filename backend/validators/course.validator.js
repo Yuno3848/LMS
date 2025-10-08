@@ -22,7 +22,14 @@ export const validateCreateCourse = () => {
       .trim(),
 
     body('isPublished').optional().isBoolean().withMessage('It can be either true or false'),
-
+    body('requirements')
+      .trim()
+      .notEmpty()
+      .withMessage('Requirements is required')
+      .isString()
+      .withMessage('Requirements must be a string')
+      .isLength({ min: 5, max: 500 })
+      .withMessage('Requirements must be between 5 and 500 characters'),
     body('courseSection')
       .optional()
       .isArray()

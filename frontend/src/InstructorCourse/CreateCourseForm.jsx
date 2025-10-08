@@ -12,6 +12,12 @@ import {
 import { courseApiFetch } from "../ApiFetch/courseApiFetch";
 import toast from "react-hot-toast";
 
+import { useDispatch, useSelector } from "react-redux";
+import {
+  addInstructorCourse,
+  setInstructorProfile,
+} from "../redux/slicers/instructorProfileSlicer";
+
 const CreateCourseForm = () => {
   const [formData, setFormData] = useState({
     title: "",
@@ -25,10 +31,18 @@ const CreateCourseForm = () => {
     category: "",
     thumbnail: "",
     isPublished: false,
+    requirements: "",
   });
+
   const [isLoading, setIsLoading] = useState(false);
 
   const [tagInput, setTagInput] = useState("");
+
+  const dispatch = useDispatch();
+
+  const instructorProfile = useSelector(
+    (state) => state.instructorProfile.profile
+  );
 
   const handleAddTag = () => {
     const newTag = tagInput.trim();
@@ -44,7 +58,7 @@ const CreateCourseForm = () => {
       tags: formData.tags.filter((tag) => tag !== tagToRemove),
     });
   };
-
+  console.log("instructor profile :", instructorProfile);
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
@@ -58,7 +72,7 @@ const CreateCourseForm = () => {
     form.append("difficulty", formData.difficulty.toLowerCase());
     form.append("category", formData.category);
     form.append("isPublished", formData.isPublished === "on" ? true : false);
-
+    form.append("requirements", formData.requirements);
     formData.tags.forEach((tag) => {
       form.append("tags", tag);
     });
@@ -66,11 +80,12 @@ const CreateCourseForm = () => {
     if (formData.thumbnail) {
       form.append("thumbnail", formData.thumbnail);
     }
-    console.log("form data :", formData);
+
     try {
       const res = await courseApiFetch.createCourse(form);
       if (res.success) {
         toast.success(res?.data?.message || "course created successfully");
+        dispatch(addInstructorCourse(res?.data?.data));
       } else {
         toast.error(res.error);
       }
@@ -149,6 +164,20 @@ const CreateCourseForm = () => {
                   }}
                   className="w-full px-4 py-3 bg-[#fdfaf7] border border-[#e0c9a6] rounded-lg text-[#6b4226] placeholder-[#6b4226]/40 focus:outline-none transition resize-none"
                   placeholder="Describe your course in detail..."
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-semibold text-[#6b4226] mb-2">
+                  Requirements <span className="text-red-500">*</span>
+                </label>
+                <textarea
+                  rows="4"
+                  value={formData.requirements}
+                  onChange={(e) =>
+                    setFormData({ ...formData, requirements: e.target.value })
+                  }
+                  className="w-full px-4 py-3 bg-[#fdfaf7] border border-[#e0c9a6] rounded-lg text-[#6b4226] placeholder-[#6b4226]/40 focus:outline-none transition resize-none"
+                  placeholder="What are the prerequisites or requirements for this course?"
                 />
               </div>
 

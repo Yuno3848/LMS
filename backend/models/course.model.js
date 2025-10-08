@@ -82,12 +82,22 @@ const courseSchema = new Schema(
       type: Schema.Types.ObjectId,
       ref: 'Coupon',
     },
-
+    requirements: {
+      type: String,
+      trim: true,
+      required: true,
+    },
     instructor: {
       type: Schema.Types.ObjectId,
       ref: 'User',
       required: true,
     },
+    itemSection: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: 'ItemSection',
+      },
+    ],
   },
   { timestamps: true },
 );

@@ -8,6 +8,7 @@ import toast from "react-hot-toast";
 import { logout } from "../redux/slicers/authSlicer";
 import { setClearStudentProfile } from "../redux/slicers/studentProfileSlicer";
 import { setClearInstructorProfile } from "../redux/slicers/instructorProfileSlicer";
+import { setCourses } from "../redux/slicers/courseSlicer";
 const Header = () => {
   const user = useSelector((state) => state.auth.user);
 
@@ -26,6 +27,7 @@ const Header = () => {
         dispatch(logout());
         dispatch(setClearStudentProfile());
         dispatch(setClearInstructorProfile());
+        dispatch(setCourses());
 
         toast.success(result?.data?.message || "Logout successful");
         navigate("/");

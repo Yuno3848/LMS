@@ -33,6 +33,7 @@ import InstructorDashboard from "./src/InstructorCourse/InstructorDashboard";
 import CreateCourseForm from "./src/InstructorCourse/CreateCourseForm";
 import InstructorVerification from "./src/pages/Profile/Profile/InstructorProfile/InstructorProfileComponents/InstructorVerification";
 import CourseManager from "./src/InstructorCourse/CourseManager";
+import CourseSectionPage from "./src/InstructorCourse/CourseSectionPage";
 
 export const Routes = createBrowserRouter([
   {
@@ -180,9 +181,9 @@ export const Routes = createBrowserRouter([
         ),
       },
       {
-        path:"/course-manager",
-        element: <CourseManager/>
-      }
+        path: "/course-section/:courseId",
+        element: <CourseSectionPage />,
+      },
     ],
   },
 

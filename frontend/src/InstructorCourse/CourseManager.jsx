@@ -9,7 +9,11 @@ import {
 import { Link, useParams } from "react-router";
 
 const CourseManager = () => {
-  const { id } = useParams(); // courseId
+  const { id } = useParams();
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+  };
 
   return (
     <div className="min-h-screen bg-[#f9f4ef] flex">
@@ -55,47 +59,49 @@ const CourseManager = () => {
 
       {/* Main Content */}
       <main className="flex-1 p-8 overflow-y-auto">
-        {/* Header */}
-        <header className="flex items-center justify-between mb-8">
-          <div>
-            <h2 className="text-2xl font-bold text-[#6b4226]">
-              Course Builder
-            </h2>
-            <p className="text-[#6b4226]/70 text-sm">
-              Manage your course content, sections, and structure.
-            </p>
-          </div>
-
-          <button className="flex items-center gap-2 bg-gradient-to-r from-[#b08968] to-[#8c5e3c] text-white px-4 py-2 rounded-lg shadow-md hover:scale-[1.02] transition-all">
-            <PlusCircle className="w-5 h-5" />
-            <span>Add Section</span>
-          </button>
-        </header>
-
-        {/* Section List Placeholder */}
-        <div className="space-y-4">
-          {[1, 2, 3].map((section) => (
-            <div
-              key={section}
-              className="bg-white border border-[#e0c9a6] rounded-xl p-5 shadow-sm hover:shadow-md transition-all"
-            >
-              <div className="flex items-center justify-between">
-                <div>
-                  <h3 className="text-lg font-semibold text-[#6b4226]">
-                    Section {section}: Title Placeholder
-                  </h3>
-                  <p className="text-sm text-[#6b4226]/70 mt-1">
-                    Description for this section goes here.
-                  </p>
-                </div>
-
-                <button className="flex items-center text-[#8c5e3c] hover:underline">
-                  Manage <ChevronRight className="w-4 h-4 ml-1" />
-                </button>
-              </div>
+        <form onSubmit={handleSubmit}>
+          {/* Header */}
+          <header className="flex items-center justify-between mb-8">
+            <div>
+              <h2 className="text-2xl font-bold text-[#6b4226]">
+                Course Builder
+              </h2>
+              <p className="text-[#6b4226]/70 text-sm">
+                Manage your course content, sections, and structure.
+              </p>
             </div>
-          ))}
-        </div>
+
+            <button className="flex items-center gap-2 bg-gradient-to-r from-[#b08968] to-[#8c5e3c] text-white px-4 py-2 rounded-lg shadow-md hover:scale-[1.02] transition-all">
+              <PlusCircle className="w-5 h-5" />
+              <span>Add Section</span>
+            </button>
+          </header>
+
+          {/* Section List Placeholder */}
+          <div className="space-y-4">
+            {[1, 2, 3].map((section) => (
+              <div
+                key={section}
+                className="bg-white border border-[#e0c9a6] rounded-xl p-5 shadow-sm hover:shadow-md transition-all"
+              >
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h3 className="text-lg font-semibold text-[#6b4226]">
+                      Section {section}: Title Placeholder
+                    </h3>
+                    <p className="text-sm text-[#6b4226]/70 mt-1">
+                      Description for this section goes here.
+                    </p>
+                  </div>
+
+                  <button className="flex items-center text-[#8c5e3c] hover:underline">
+                    Manage <ChevronRight className="w-4 h-4 ml-1" />
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </form>
       </main>
     </div>
   );

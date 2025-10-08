@@ -5,227 +5,205 @@ import { uploadOnCloudinary } from '../utils/cloudinary.js';
 import User from '../models/auth.models.js';
 import { Course } from '../models/course.model.js';
 import ApiResponse from '../utils/ApiResponse.js';
-import { instructorProfile } from '../models/instructorProfile.model.js';
-import { Coupon } from '../models/coupon.model.js';
-import { calculateDiscountPrice } from '../utils/calculateCouponDiscount.js';
 
-export const createCourse = asyncHandler(async (req, res) => {
-  const userId = req.user.id;
+
+const validateInstructor = async (userId) => {
   if (!userId || !mongoose.Types.ObjectId.isValid(userId.toString())) {
-    throw new ApiError(401, 'User not Authorized');
+    throw new ApiError(401, 'User not authorized');
   }
 
   const user = await User.findById(userId).populate('instructorProfile');
   if (!user || user.role.toLowerCase() !== 'instructor') {
     throw new ApiError(403, 'Access denied | Instructor only!');
   }
-
   if (!user.instructorProfile) {
     throw new ApiError(400, 'Instructor profile not found');
   }
-  const { title, description, base, currency, courseExpiry, difficulty, tags, category } = req.body;
 
-  const thumbnailAvatarPath = req.file?.path || null;
+  return user;
+};
 
-  if (!thumbnailAvatarPath) {
-    throw new ApiError(400, 'thumbnail avatar required');
+export const createCourse = asyncHandler(async (req, res) => {
+  const userId = req.user.id;
+  const user = await validateInstructor(userId);
+
+  // Validate required fields
+  const requiredFields = ['title', 'description', 'base', 'currency', 'category', 'requirements'];
+  const missingFields = requiredFields.filter((field) => !req.body[field]);
+  if (missingFields.length > 0) {
+    throw new ApiError(400, `Missing required fields: ${missingFields.join(', ')}`);
   }
 
-  const avatar = await uploadOnCloudinary(thumbnailAvatarPath);
-  console.log('Avatar', avatar);
-  if (!avatar) {
-    throw new ApiError(500, 'Failed to upload avatar');
-  }
-
-  const newCourse = await Course.create({
+  const {
     title,
     description,
-    price: {
-      base: base,
-      final: base,
-      currency: currency,
-    },
+    base,
+    currency,
     courseExpiry,
     difficulty,
     tags,
     category,
+    requirements,
+  } = req.body;
+
+  // Validate thumbnail
+  if (!req.file?.path) {
+    throw new ApiError(400, 'Course thumbnail is required');
+  }
+
+  const thumbnail = await uploadOnCloudinary(req.file.path);
+  if (!thumbnail?.url) {
+    throw new ApiError(500, 'Failed to upload thumbnail');
+  }
+
+  const courseData = {
+    title,
+    description,
+    price: {
+      base: Number(base),
+      final: Number(base),
+      currency,
+    },
+    courseExpiry: courseExpiry ? new Date(courseExpiry) : undefined,
+    difficulty,
+    tags: Array.isArray(tags) ? tags : tags?.split(',').map((tag) => tag.trim()),
+    category,
+    requirements,
     thumbnail: {
-      url: avatar.url,
-      localPath: thumbnailAvatarPath,
+      url: thumbnail.url,
+      localPath: req.file.path,
     },
     instructor: userId,
-  });
-  console.log('new course', newCourse);
+  };
+
+  const newCourse = await Course.create(courseData);
+
+  // Update instructor profile
   user.instructorProfile.courses.push(newCourse._id);
   await user.instructorProfile.save();
 
-  return res
-    .status(201)
-    .json(new ApiResponse(201, 'course created and added to the instructor profile', newCourse));
+  return res.status(201).json(new ApiResponse(201, 'Course created successfully', newCourse));
 });
 
 export const getAllCourses = asyncHandler(async (req, res) => {
   const userId = req.user.id;
+  await validateInstructor(userId);
 
-  if (!userId || !mongoose.Types.ObjectId.isValid(userId.toString())) {
-    throw new ApiError(401, 'User not authorized');
-  }
-
-  const user = await User.findById(userId).populate('instructorProfile');
-  if (!user || user.role.toLowerCase() !== 'instructor') {
-    throw new ApiError(403, 'Access denied | Instructor only!');
-  }
-  if (!user.instructorProfile) {
-    throw new ApiError(400, 'Instructor Profile not found');
-  }
-
-  const course = await User.aggregate([
+  const courses = await Course.aggregate([
     {
       $match: {
-        _id: new mongoose.Types.ObjectId(userId),
+        instructor: new mongoose.Types.ObjectId(userId),
       },
     },
     {
       $lookup: {
-        from: 'instructorprofiles',
-        localField: 'instructorProfile',
+        from: 'users',
+        localField: 'instructor',
         foreignField: '_id',
-        as: 'instructorProfile',
+        as: 'instructor',
       },
     },
     {
-      $unwind: '$instructorProfile',
-    },
-    {
-      $lookup: {
-        from: 'courses',
-        localField: 'instructorProfile.courses',
-        foreignField: '_id',
-        as: 'courses',
-      },
+      $unwind: '$instructor',
     },
     {
       $project: {
-        _id: 0,
-        username: 1,
-        courses: '$courses.title',
+        title: 1,
+        description: 1,
+        price: 1,
+        isPublished: 1,
+        category: 1,
+        thumbnail: 1,
+        'instructor.username': 1,
       },
     },
   ]);
 
-  return res.status(200).json(new ApiResponse(200, 'fetched all courses', course));
+  return res.status(200).json(new ApiResponse(200, 'Courses fetched successfully', courses));
 });
 
 export const getCourseById = asyncHandler(async (req, res) => {
-  const userId = req.user.id;
   const { courseId } = req.params;
+  const userId = req.user.id;
 
-  if (!userId || !mongoose.Types.ObjectId.isValid(userId.toString())) {
-    throw new ApiError(401, 'User not authorized');
-  }
-  const user = await User.findById(userId);
-  if (!user || user.role.toLowerCase() !== 'instructor') {
-    throw new ApiError(403, 'Access denied | Instructor only!');
+  await validateInstructor(userId);
+
+  if (!mongoose.Types.ObjectId.isValid(courseId)) {
+    throw new ApiError(400, 'Invalid course ID');
   }
 
-  const course = await Course.findById(courseId);
+  const course = await Course.findById(courseId).populate('instructor', 'username email').lean();
+
   if (!course) {
     throw new ApiError(404, 'Course not found');
   }
 
-  const instructor = await User.findOne({
-    role: 'instructor',
-  });
-
-  if (!instructor) {
-    throw new ApiError(404, 'instructor not found');
+  // Verify course ownership
+  if (course.instructor._id.toString() !== userId) {
+    throw new ApiError(403, 'Access denied: You do not own this course');
   }
 
   return res.status(200).json(new ApiResponse(200, 'Course fetched successfully', course));
 });
 
 export const isPublish = asyncHandler(async (req, res) => {
+  const { courseId } = req.params;
   const userId = req.user.id;
 
-  const { courseId } = req.params;
-
-  if (!courseId) {
-    throw new ApiError(404, 'Invalid course id');
-  }
-  if (!userId || !mongoose.Types.ObjectId.isValid(userId.toString())) {
-    throw new ApiError(401, 'User not authorized');
+  if (!mongoose.Types.ObjectId.isValid(courseId)) {
+    throw new ApiError(400, 'Invalid course ID');
   }
 
-  const user = await User.findById(userId).select('role instructorProfile');
-  if (!user || user.role.toLowerCase() !== 'instructor') {
-    throw new ApiError(403, 'Access Denied | Instructor Only');
-  }
-
-  if (!user.instructorProfile) {
-    throw new ApiError(400, 'Instructor profile not found');
-  }
-
-  await user.populate({
-    path: 'instructorProfile',
-    populate: {
-      path: 'courses',
-      model: 'Course',
-    },
-  });
+  const user = await validateInstructor(userId);
 
   const course = await Course.findById(courseId);
   if (!course) {
     throw new ApiError(404, 'Course not found');
   }
 
-  const ownsCourse = user.instructorProfile.courses.some((id) => id._id.toString() === courseId);
-
-  if (!ownsCourse) {
+  // Verify course ownership
+  if (course.instructor.toString() !== userId) {
     throw new ApiError(403, 'You do not have permission to publish this course');
   }
 
   const updatedCourse = await Course.findByIdAndUpdate(
     courseId,
+    { isPublished: true },
     {
-      isPublished: true,
+      new: true,
+      select: 'title description isPublished category',
     },
-    { new: true },
-  ).select('-_id -courseSection -tags -price -thumbnail');
-  // fetch username
+  );
 
-  if (!updatedCourse) {
-    throw new ApiError(404, 'Course not found');
-  }
-
-  return res.status(200).json(new ApiResponse(200, 'course published successfully', updatedCourse));
+  return res.status(200).json(new ApiResponse(200, 'Course published successfully', updatedCourse));
 });
 
 export const deleteCourse = asyncHandler(async (req, res) => {
-  const userId = req.user.id;
   const { courseId } = req.params;
+  const userId = req.user.id;
 
-  if (!userId || !mongoose.Types.ObjectId.isValid(userId.toString())) {
-    throw new ApiError(401, 'User not authorized');
+  if (!mongoose.Types.ObjectId.isValid(courseId)) {
+    throw new ApiError(400, 'Invalid course ID');
   }
 
-  const user = await User.findById(userId).populate('instructorProfile');
-  if (!user || user.role.toLowerCase() !== 'instructor') {
-    throw new ApiError(403, 'Access denied | Instructor only!');
-  }
-  if (!user.instructorProfile) {
-    throw new ApiError(400, 'Instructor profile not found');
-  }
+  const user = await validateInstructor(userId);
 
-  //delete course from course model
-  const course = await Course.findByIdAndDelete(courseId);
+  const course = await Course.findById(courseId);
   if (!course) {
-    throw new ApiError(400, 'course not found', course);
+    throw new ApiError(404, 'Course not found');
   }
 
-  //delete course id from the instructor Profile
+  // Verify course ownership
+  if (course.instructor.toString() !== userId) {
+    throw new ApiError(403, 'You do not have permission to delete this course');
+  }
+
+  // Delete course and update instructor profile
+  await Course.findByIdAndDelete(courseId);
   user.instructorProfile.courses = user.instructorProfile.courses.filter(
     (id) => id.toString() !== courseId,
   );
   await user.instructorProfile.save();
-  return res.status(200).json(new ApiResponse(200, 'deleted successfully'));
+
+  return res.status(200).json(new ApiResponse(200, 'Course deleted successfully'));
 });

@@ -18,6 +18,14 @@ const instructorProfileSlice = createSlice({
     },
 
     setClearInstructorProfile: () => ({ ...initialState }),
+    addInstructorCourse: (state, action) => {
+      if (state.profile) {
+        if (!state.profile.courses) {
+          state.profile.courses = [];
+        }
+        state.profile.courses.push(action.payload);
+      }
+    },
   },
 });
 
@@ -25,6 +33,7 @@ export const {
   setInstructorProfile,
   setInstructorLoading,
   setClearInstructorProfile,
+  addInstructorCourse,
 } = instructorProfileSlice.actions;
 
 export default instructorProfileSlice.reducer;
