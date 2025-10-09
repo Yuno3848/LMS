@@ -232,18 +232,6 @@ const StudentProfilePage = () => {
                 </div>
               </div>
             </div>
-
-            {/* Action Button */}
-            <div className="flex justify-center">
-              <Link
-                to="/update-student-profile"
-                className="group relative inline-flex items-center gap-2 bg-gradient-to-r from-[#b08968] to-[#8c5e3c] text-white px-8 py-4 rounded-xl font-semibold shadow-lg hover:shadow-xl transition transform hover:-translate-y-1 overflow-hidden"
-              >
-                <span className="absolute inset-0 bg-gradient-to-r from-[#8c5e3c] to-[#6b4226] opacity-0 group-hover:opacity-100 transition"></span>
-                <Edit3 className="w-5 h-5 relative" />
-                <span className="relative">Complete Your Profile</span>
-              </Link>
-            </div>
           </div>
         </div>
       </div>
