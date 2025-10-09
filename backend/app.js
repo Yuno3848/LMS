@@ -18,15 +18,15 @@ app.use(morgan('dev'));
 app.use(cookie());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-const allowedOrigin = ['http://localhost:5173', 'http://127.0.0.1:5500'];
+const allowedOrigin = [process.env.FRONTEND_URL, 'http://127.0.0.1:5500'];
 app.use(
   cors({
     origin: allowedOrigin,
     credentials: true,
-    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+    // methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
-    preflightContinue: false,
-    optionsSuccessStatus: 204,
+    // preflightContinue: false,
+    // optionsSuccessStatus: 204,
   }),
 );
 app.use('/api/v1/auth', auth);

@@ -1,6 +1,6 @@
 import { createNextState } from "@reduxjs/toolkit";
 
-const baseAuthURL = VITE_API_URL || "/api/v1/auth";
+const baseAuthURL = import.meta.env.VITE_API_URL || "/api/v1/auth";
 export const authApi = {
   signup: async (credential) => {
     try {
