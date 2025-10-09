@@ -258,15 +258,16 @@ export const getSubItemSectionById = asyncHandler(async (req, res) => {
 export const getAllSubItemSections = asyncHandler(async (req, res) => {
   const userId = req.user.id;
   await validateInstructor(userId);
-
-  const { itemSectionId } = req.params;
-  if (!mongoose.Types.ObjectId.isValid(itemSectionId)) {
+  console.log('user id :', userId);
+  const { courseId } = req.params;
+  console.log('course id :', courseId);
+  if (!mongoose.Types.ObjectId.isValid(courseId)) {
     throw new ApiError(400, 'Invalid item section ID');
   }
 
-  const { itemSection } = await validateCourseOwnership(itemSectionId, userId);
+  const { itemSection } = await validateCourseOwnership(courseId, userId);
 
-  const populatedItemSection = await ItemSection.findById(itemSectionId)
+  const populatedItemSection = await ItemSection.findById(courseId)
     .populate({
       path: 'subItemSection',
       select: 'itemType title content duration contentUrl orderIndex maxScore',

@@ -105,15 +105,15 @@ export const deleteItemSection = asyncHandler(async (req, res) => {
     throw new ApiError(401, 'Access Denied || Instructor Only');
   }
 
-  const { itemSectionId } = req.params;
-  const itemSection = await ItemSection.findById(itemSectionId);
+  const { courseId } = req.params;
+  const itemSection = await ItemSection.findById(courseId);
 
   if (!itemSection) {
     throw new ApiError(404, 'Invalid item section id');
   }
 
   const course = await Course.findOne({
-    itemSection: itemSectionId,
+    itemSection: itemSection._id,
     instructor: userId,
   });
 
@@ -121,8 +121,8 @@ export const deleteItemSection = asyncHandler(async (req, res) => {
     throw new ApiError(403, 'You are not authorized to delete this item section');
   }
 
-  await ItemSection.findByIdAndDelete(itemSectionId);
-  course.itemSection = course.itemSection.filter((item) => item.toString() !== itemSectionId);
+  await ItemSection.findByIdAndDelete(courseId);
+  course.itemSection = course.itemSection.filter((item) => item.toString() !== courseId);
   await course.save();
 
   res.status(200).json(new ApiResponse(200, 'Item section deleted successfully', {}));

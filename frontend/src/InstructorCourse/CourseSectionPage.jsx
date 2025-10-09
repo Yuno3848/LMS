@@ -32,7 +32,6 @@ const CourseSectionPage = () => {
   const { courseId } = useParams();
   const navigate = useNavigate();
 
-  // Fetch existing sections when component mounts
   useEffect(() => {
     const fetchSections = async () => {
       if (!courseId) {
@@ -44,11 +43,9 @@ const CourseSectionPage = () => {
       setIsFetchingData(true);
       try {
         const res = await itemSectionApiFetch.getAllItemSection(courseId);
-        console.log("API Response:", res);
 
         if (res.success && res.data) {
-          
-          const formattedSections = (res.data.itemSection || []).map(
+          const formattedSections = (res.data.sections || []).map(
             (section) => ({
               id: section._id,
               _id: section._id,
@@ -59,7 +56,6 @@ const CourseSectionPage = () => {
             })
           );
 
-          console.log("Formatted sections:", formattedSections);
           setSections(formattedSections);
         }
       } catch (error) {
@@ -96,7 +92,6 @@ const CourseSectionPage = () => {
       console.log("Create section response:", res);
 
       if (res.success && res.data) {
-        // Format the new section to match frontend structure
         const formattedSection = {
           id: res.data._id,
           _id: res.data._id,
@@ -215,7 +210,7 @@ const CourseSectionPage = () => {
     <div className="min-h-screen bg-gradient-to-br from-[#f5e6ca] via-[#fefaf5] to-[#e7d3b5]">
       <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Stats Bar */}
-        <div className="mb-6 grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="mb-6 grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="bg-white/80 backdrop-blur-sm rounded-xl shadow-md border border-[#e0c9a6] p-4">
             <div className="flex items-center justify-between">
               <div>
@@ -242,21 +237,8 @@ const CourseSectionPage = () => {
               <Video className="w-8 h-8 text-[#b08968]" />
             </div>
           </div>
-
-          <div className="bg-white/80 backdrop-blur-sm rounded-xl shadow-md border border-[#e0c9a6] p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-[#6b4226]/60 mb-1">Completion</p>
-                <p className="text-2xl font-bold text-[#6b4226]">
-                  {sections.length > 0 ? "100%" : "0%"}
-                </p>
-              </div>
-              <CheckCircle className="w-8 h-8 text-[#b08968]" />
-            </div>
-          </div>
         </div>
 
-        {/* Add Section Button */}
         <div className="mb-6">
           <button
             onClick={() => setIsAddingSection(!isAddingSection)}
@@ -347,7 +329,6 @@ const CourseSectionPage = () => {
                 key={section.id}
                 className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-[#e0c9a6] overflow-hidden"
               >
-                {/* Section Header */}
                 <div className="p-6">
                   <div className="flex items-start justify-between gap-4">
                     <div className="flex items-start gap-3 flex-1">

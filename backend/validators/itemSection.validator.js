@@ -19,7 +19,7 @@ export const validateCreateItemSection = () => {
 
 export const validateUpdateItemSection = () => {
   return [
-    param('itemSectionId')
+    param('courseId')
       .notEmpty()
       .withMessage('course section id is required')
       .isString()
@@ -37,7 +37,7 @@ export const validateUpdateItemSection = () => {
 
 export const validateItemSection = () => {
   return [
-    param('itemSectionId')
+    param('courseId')
       .notEmpty()
       .withMessage('course section id is required')
       .isString()
@@ -47,7 +47,7 @@ export const validateItemSection = () => {
 
 export const validateGetAllItemSection = () => {
   return [
-    param('courseSectionId')
+    param('courseId')
       .notEmpty()
       .withMessage('course section id is required')
       .isString()
