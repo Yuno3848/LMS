@@ -1,4 +1,4 @@
-const BaseURL = "http://localhost:8080/api/v1/course";
+const BaseURL = VITE_API_URL || "http://localhost:8080/api/v1/course";
 
 export const courseApiFetch = {
   createCourse: async (credential) => {

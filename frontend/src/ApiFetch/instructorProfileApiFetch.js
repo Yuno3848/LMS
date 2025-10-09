@@ -1,4 +1,4 @@
-const baseURL = "http://localhost:8080/api/v1/instructorProfile";
+const baseURL =  VITE_API_URL||"http://localhost:8080/api/v1/instructorProfile";
 
 export const instructorProfileAPIFetch = {
   createInstructorProfile: async (credential) => {
