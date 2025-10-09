@@ -18,7 +18,7 @@ import {
 const itemSection = Router();
 
 itemSection.post(
-  '/create-item-section/:courseSectionId',
+  '/create-item-section/:courseId',
   validateCreateItemSection(),
   validatorError,
   isLogged,
@@ -26,7 +26,7 @@ itemSection.post(
 );
 
 itemSection.patch(
-  '/update-item-section/:itemSectionId',
+  '/update-item-section/:courseId',
   validateUpdateItemSection(),
   validatorError,
   isLogged,
@@ -34,14 +34,14 @@ itemSection.patch(
 );
 
 itemSection.delete(
-  '/delete-item-section/:itemSectionId',
+  '/delete-item-section/:courseId',
   validateItemSection(),
   validatorError,
   isLogged,
   deleteItemSection,
 );
 itemSection.get(
-  '/get-item-section-by-id/:itemSectionId',
+  '/get-item-section-by-id/:courseId',
   validateItemSection(),
   validatorError,
   isLogged,
@@ -49,7 +49,7 @@ itemSection.get(
 );
 
 itemSection.get(
-  '/get-all-item-section/:courseSectionId',
+  '/get-all-item-section/:courseId',
   validateGetAllItemSection(),
   validatorError,
   isLogged,

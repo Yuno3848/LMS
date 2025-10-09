@@ -9,7 +9,7 @@ const useInitAuth = () => {
     const fetchUser = async () => {
       try {
         const result = await authApi.me();
-        console.log("app jsx", result.data.data);
+        "app jsx", result.data.data;
         if (result.success) {
           dispatch(loginSuccess(result.data));
         }

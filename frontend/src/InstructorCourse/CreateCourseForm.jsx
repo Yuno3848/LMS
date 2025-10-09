@@ -58,7 +58,7 @@ const CreateCourseForm = () => {
       tags: formData.tags.filter((tag) => tag !== tagToRemove),
     });
   };
-  console.log("instructor profile :", instructorProfile);
+  "instructor profile :", instructorProfile;
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);

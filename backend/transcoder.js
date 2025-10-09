@@ -13,7 +13,7 @@ export const transcodeVideo = async (event, context) => {
   // Output folder (transcoded)
   const outputUri = `gs://analog-reef-468911-j1-transcoded/${object.name}/`;
 
-  console.log(`New file uploaded: ${inputUri}`);
+  `New file uploaded: ${inputUri}`;
 
   // Parent path (project + region)
   const parent = `projects/analog-reef-468911-j1/locations/asia-south1`;
@@ -30,5 +30,5 @@ export const transcodeVideo = async (event, context) => {
 
   // Send job to Transcoder API
   const [response] = await client.createJob(request);
-  console.log(`Transcoder job created: ${response.name}`);
+  `Transcoder job created: ${response.name}`;
 };

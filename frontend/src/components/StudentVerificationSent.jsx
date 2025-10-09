@@ -5,7 +5,7 @@ import { useSelector } from "react-redux";
 
 export default function StudentVerificationSent() {
   const user = useSelector((state) => state.auth.user);
-  console.log(user);
+  user;
 
   const accent = "#A27857";
 

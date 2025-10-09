@@ -4,7 +4,6 @@ export const itemSectionApiFetch = {
   createItemSection: async (courseId, sectionData) => {
     try {
       if (!courseId) {
-        console.error("No courseId provided to createItemSection");
         throw new Error("Course ID is required");
       }
       const res = await fetch(`${baseURL}/create-item-section/${courseId}`, {
@@ -22,7 +21,6 @@ export const itemSectionApiFetch = {
       }
       return { success: true, data: data.data };
     } catch (error) {
-      console.error("Create item section error:", error);
       return { success: false, error: error.message };
     }
   },
@@ -43,7 +41,6 @@ export const itemSectionApiFetch = {
       }
       return { success: true, data: data.data };
     } catch (error) {
-      console.error("Update item section error:", error);
       return { success: false, error: error.message };
     }
   },
@@ -63,7 +60,6 @@ export const itemSectionApiFetch = {
       }
       return { success: true, data: data.data };
     } catch (error) {
-      console.error("Delete item section error:", error);
       return { success: false, error: error.message };
     }
   },
@@ -86,7 +82,6 @@ export const itemSectionApiFetch = {
       }
       return { success: true, data: data.data };
     } catch (error) {
-      console.error("Get item section error:", error);
       return { success: false, error: error.message };
     }
   },
@@ -109,7 +104,6 @@ export const itemSectionApiFetch = {
       }
       return { success: true, data: data.data };
     } catch (error) {
-      console.error("Get all item sections error:", error);
       return { success: false, error: error.message };
     }
   },

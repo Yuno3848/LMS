@@ -33,7 +33,7 @@ export const studentProfileApiFetch = {
       });
 
       const data = await res.json();
-      console.log("create updateprofile data:", data);
+
       if (!res.ok) {
         throw new Error("Failed to update student profile");
       }

@@ -63,7 +63,7 @@ export const registeredUser = asyncHandler(async (req, res) => {
 
   const verificationUrl = `${process.env.FRONTEND_URL}/verify-email/${unhashedToken}`;
 
-  console.log('🔗 Generated verification URL:', verificationUrl);
+
   await sendMail({
     username: newUser.username,
     email: newUser.email,
@@ -92,16 +92,16 @@ export const registeredUser = asyncHandler(async (req, res) => {
 export const verifyMail = asyncHandler(async (req, res) => {
   // Extract token from query parameters
   const { token } = req.params;
-  console.log('token from params :', token);
+
   //create a hash of the token to match with the stored token
   const emailVerifiedToken = crypto.createHash('sha256').update(token).digest('hex');
-  console.log('🔍 Hashed token for DB lookup:', emailVerifiedToken);
+
   // Find user by email verification token
   const user = await User.findOne({
     emailVerifiedToken,
     emailVerificationTokenExpiry: { $gt: Date.now() },
   }).select('-password -forgotPasswordExpiry  -createdAt -updatedAt');
-  console.log('🔍 User found:', user);
+
 
   // If user not found, throw an error
   if (!user) {
@@ -267,7 +267,7 @@ export const forgotPassword = asyncHandler(async (req, res) => {
 });
 export const resetPassword = asyncHandler(async (req, res) => {
   // Extract token and password from request
-  console.log('Reset password request received');
+ 
   const { token } = req.params;
   const { newPassword, confirmPassword } = req.body;
 
@@ -394,7 +394,7 @@ export const refreshAccessToken = asyncHandler(async (req, res) => {
 export const updateProfile = asyncHandler(async (req, res) => {
   //get id from cookies
   const userId = req.user.id;
-  console.log('userId', userId);
+
   const { username, fullname } = req.body;
   // If user id is not found, throw an error
   if (!userId) {

@@ -9,7 +9,7 @@ import { asyncHandler } from '../utils/asyncHandler.js';
 export const createItemSection = asyncHandler(async (req, res) => {
   const userId = req.user.id;
   const { courseId } = req.params;
-  console.log('course id :', courseId);
+
   if (!courseId || !mongoose.Types.ObjectId.isValid(courseId)) {
     throw new ApiError(400, 'Invalid course ID');
   }
@@ -179,37 +179,52 @@ export const getItemSectionById = asyncHandler(async (req, res) => {
 
 export const getAllItemSection = asyncHandler(async (req, res) => {
   const userId = req.user.id;
-
-  if (!userId || !mongoose.Types.ObjectId.isValid(userId.toString())) {
-    throw new ApiError(401, 'User not authorized');
-  }
-
-  const instructor = await User.findById(userId);
-  if (!instructor) {
-    throw new ApiError(404, 'Instructor not found');
-  }
-
-  if (instructor.role !== 'instructor') {
-    throw new ApiError(401, 'Access Denied || Instructor Only');
-  }
-
   const { courseId } = req.params;
 
+  // Validate courseId
+  if (!courseId || !mongoose.Types.ObjectId.isValid(courseId)) {
+    throw new ApiError(400, 'Invalid course ID');
+  }
+
+  // Validate user and instructor role
+  const instructor = await User.findById(userId);
+  if (!instructor || instructor.role !== 'instructor') {
+    throw new ApiError(403, 'Access Denied | Instructor Only');
+  }
+
+  // Find course with populated sections and sub-items
   const course = await Course.findOne({
     _id: courseId,
     instructor: userId,
-  })
-    .populate({
-      path: 'itemSection',
-      select: 'title orderIndex subItemSection totalLectures',
-    })
-    .select('title itemSection');
+  }).populate({
+    path: 'itemSection',
+    select: 'title orderIndex subItemSection totalLectures',
+    populate: {
+      path: 'subItemSection',
+      select: 'title itemType duration contentUrl',
+      options: { sort: { orderIndex: 1 } },
+    },
+    options: { sort: { orderIndex: 1 } },
+  });
 
   if (!course) {
-    throw new ApiError(403, 'You are not authorized to fetch item sections from this course');
+    throw new ApiError(404, 'Course not found or you are not authorized');
   }
 
-  res
+  // Transform response data
+  const formattedCourse = {
+    _id: course._id,
+    title: course.title,
+    sections: course.itemSection.map((section) => ({
+      _id: section._id,
+      title: section.title,
+      orderIndex: section.orderIndex,
+      totalLectures: section.totalLectures,
+      subItems: section.subItemSection || [],
+    })),
+  };
+
+  return res
     .status(200)
-    .json(new ApiResponse(200, 'All item sections for this course fetched successfully', course));
+    .json(new ApiResponse(200, 'Course sections fetched successfully', formattedCourse));
 });

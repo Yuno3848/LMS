@@ -17,7 +17,7 @@ const useInitStudentProfile = () => {
         const result = await studentProfileApiFetch.getStudentProfile();
 
         if (result.success) {
-          console.log("useInitStudentProfile :", result);
+          "useInitStudentProfile :", result;
           dispatch(setStudentProfile(result?.data?.data));
         } else {
           dispatch(setStudentProfile(null));

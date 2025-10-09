@@ -45,7 +45,7 @@ export const createStudentProfile = async (req, res) => {
 
 export const updatedStudentProfile = asyncHandler(async (req, res) => {
   const userId = req.user.id;
-  console.log('user id', userId);
+
   if (!userId) {
     throw new ApiError(401, 'User not authorized');
   }
@@ -61,7 +61,7 @@ export const updatedStudentProfile = asyncHandler(async (req, res) => {
 
   const { bio, skills, socialLinks, education, interests } = req.body;
 
-  console.log(req.body);
+ 
   const updatedProfile = await studentProfile.findByIdAndUpdate(
     user.studentProfile._id,
     { $set: { bio, skills, socialLinks, education, interests } },

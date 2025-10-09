@@ -123,7 +123,6 @@ export const authApi = {
       const data = await res.json();
 
       if (!res.ok) {
-        console.log(res);
         throw new Error(`Email verification failed`);
       }
       return { success: true, data };

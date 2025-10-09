@@ -19,7 +19,7 @@ const ResetPassword = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
-    console.log("submitted the form");
+    ("submitted the form");
     if (!password || !confirmPassword) {
       toast.error("Please fill in all fields");
       setIsLoading(false);
@@ -35,7 +35,7 @@ const ResetPassword = () => {
       setIsLoading(false);
       return;
     }
-    console.log("token", token);
+    "token", token;
     try {
       const result = await authApi.resetPassword({
         token,

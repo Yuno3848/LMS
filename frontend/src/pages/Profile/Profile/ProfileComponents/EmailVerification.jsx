@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 const EmailVerification = () => {
   const user = useSelector((state) => state.auth.user);
 
-  console.log(user);
+  user;
   return (
     <div className="border-t border-[#e0c9a6] pt-4">
       <div className="flex items-center justify-between mb-3">

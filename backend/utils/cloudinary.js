@@ -13,7 +13,7 @@ export const uploadOnCloudinary = async (localFilePath) => {
     });
     return uploadResult;
   } catch (error) {
-    console.log(`Error while uploading image : ${error}`);
+    `Error while uploading image : ${error}`;
     fs.unlink(localFilePath);
     return null;
   }

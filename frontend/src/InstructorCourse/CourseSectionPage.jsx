@@ -44,9 +44,10 @@ const CourseSectionPage = () => {
       setIsFetchingData(true);
       try {
         const res = await itemSectionApiFetch.getAllItemSection(courseId);
+        console.log("API Response:", res);
 
         if (res.success && res.data) {
-          // Map backend data to frontend format
+          
           const formattedSections = (res.data.itemSection || []).map(
             (section) => ({
               id: section._id,
@@ -58,6 +59,7 @@ const CourseSectionPage = () => {
             })
           );
 
+          console.log("Formatted sections:", formattedSections);
           setSections(formattedSections);
         }
       } catch (error) {
@@ -77,16 +79,21 @@ const CourseSectionPage = () => {
       return;
     }
 
-    if (!newSection.title.trim()) {
+    const trimmedTitle = newSection.title?.trim();
+    if (!trimmedTitle) {
       toast.error("Section title is required");
       return;
     }
 
+    console.log("Creating section with title:", trimmedTitle);
+
     setIsLoading(true);
     try {
       const res = await itemSectionApiFetch.createItemSection(courseId, {
-        title: newSection.title,
+        title: trimmedTitle,
       });
+
+      console.log("Create section response:", res);
 
       if (res.success && res.data) {
         // Format the new section to match frontend structure

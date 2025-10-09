@@ -74,7 +74,6 @@ export const createOrder = asyncHandler(async (req, res) => {
     throw new ApiError(400, 'failed to create transaction');
   }
 
-  console.log(transaction);
 
   return res.status(201).json(new ApiResponse(201, 'created order successfully', transaction));
 });

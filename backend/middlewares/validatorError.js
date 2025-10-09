@@ -7,7 +7,7 @@ export const validatorError = (req, res, next) => {
     return next();
   }
 
-  console.log('user verification error:', errors);
+  ('user verification error:', errors);
 
   return res.status(409).json({
     statusCode: 409,

@@ -39,7 +39,7 @@ const VerifyStudent = () => {
   const student = studentProfile?.[0];
   const username = studentProfile?.username;
   const email = student?.email;
-  console.log(user);
+  user;
   const handleVerify = async () => {
     dispatch(setStudentLoading(true));
     try {
