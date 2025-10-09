@@ -182,7 +182,13 @@ export const Routes = createBrowserRouter([
       },
       {
         path: "/course-section/:courseId",
-        element: <CourseSectionPage />,
+        element: (
+          <ProtectedRoute>
+            <ProtectedInstructorProfile>
+              <CourseSectionPage />
+            </ProtectedInstructorProfile>
+          </ProtectedRoute>
+        ),
       },
     ],
   },

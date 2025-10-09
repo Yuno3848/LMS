@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   BookOpen,
   Plus,
@@ -9,54 +9,128 @@ import {
   Video,
   CheckCircle,
   Loader2,
-  List,
   GripVertical,
 } from "lucide-react";
+import { itemSectionApiFetch } from "../ApiFetch/itemSectionApiFetch";
+import toast from "react-hot-toast";
+import { useNavigate, useParams } from "react-router";
 
 const CourseSectionPage = () => {
   const [sections, setSections] = useState([]);
   const [isAddingSection, setIsAddingSection] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [isFetchingData, setIsFetchingData] = useState(true);
   const [expandedSection, setExpandedSection] = useState(null);
 
-  const [newSection, setNewSection] = useState({
-    title: "",
-    totalLectures: 0,
-    orderIndex: 0,
-  });
+  const [newSection, setNewSection] = useState({ title: "" });
 
   const [newSubItem, setNewSubItem] = useState({
     title: "",
     type: "lecture",
     duration: "",
   });
+  const { courseId } = useParams();
+  const navigate = useNavigate();
 
-  const handleAddSection = () => {
-    if (!newSection.title.trim()) return;
+  // Fetch existing sections when component mounts
+  useEffect(() => {
+    const fetchSections = async () => {
+      if (!courseId) {
+        toast.error("Invalid course ID");
+        navigate("/instructor-dashboard");
+        return;
+      }
+
+      setIsFetchingData(true);
+      try {
+        const res = await itemSectionApiFetch.getAllItemSection(courseId);
+
+        if (res.success && res.data) {
+          // Map backend data to frontend format
+          const formattedSections = (res.data.itemSection || []).map(
+            (section) => ({
+              id: section._id,
+              _id: section._id,
+              title: section.title,
+              orderIndex: section.orderIndex,
+              totalLectures: section.totalLectures || 0,
+              subItemSection: section.subItemSection || [],
+            })
+          );
+
+          setSections(formattedSections);
+        }
+      } catch (error) {
+        console.error("Failed to fetch sections:", error);
+        toast.error("Failed to load sections");
+      } finally {
+        setIsFetchingData(false);
+      }
+    };
+
+    fetchSections();
+  }, [courseId, navigate]);
+
+  const handleAddSection = async () => {
+    if (!courseId) {
+      toast.error("Course ID is missing");
+      return;
+    }
+
+    if (!newSection.title.trim()) {
+      toast.error("Section title is required");
+      return;
+    }
 
     setIsLoading(true);
-    setTimeout(() => {
-      const section = {
-        id: Date.now(),
+    try {
+      const res = await itemSectionApiFetch.createItemSection(courseId, {
         title: newSection.title,
-        totalLectures: 0,
-        orderIndex: sections.length,
-        subItemSection: [],
-        createdAt: new Date().toISOString(),
-      };
+      });
 
-      setSections([...sections, section]);
-      setNewSection({ title: "", totalLectures: 0, orderIndex: 0 });
-      setIsAddingSection(false);
+      if (res.success && res.data) {
+        // Format the new section to match frontend structure
+        const formattedSection = {
+          id: res.data._id,
+          _id: res.data._id,
+          title: res.data.title,
+          orderIndex: res.data.orderIndex,
+          totalLectures: res.data.totalLectures || 0,
+          subItemSection: [],
+        };
+
+        setSections([...sections, formattedSection]);
+        toast.success("Section created successfully");
+        setNewSection({ title: "" });
+        setIsAddingSection(false);
+      } else {
+        toast.error(res.error || "Failed to create section");
+      }
+    } catch (error) {
+      console.error("Section creation error:", error);
+      toast.error(error.message || "Failed to create section");
+    } finally {
       setIsLoading(false);
-    }, 500);
+    }
   };
 
-  const handleDeleteSection = (sectionId) => {
-    setSections(sections.filter((section) => section.id !== sectionId));
+  const handleDeleteSection = async (sectionId) => {
+    try {
+      const res = await itemSectionApiFetch.deleteItemSection(sectionId);
+
+      if (res.success) {
+        setSections(sections.filter((section) => section.id !== sectionId));
+        toast.success("Section deleted successfully");
+      } else {
+        toast.error(res.error || "Failed to delete section");
+      }
+    } catch (error) {
+      console.error("Delete section error:", error);
+      toast.error("Failed to delete section");
+    }
   };
 
-  const handleAddSubItem = (sectionId) => {
+  const handleAddSubItem = async (sectionId) => {
     if (!newSubItem.title.trim()) return;
 
     setSections(
@@ -119,33 +193,19 @@ const CourseSectionPage = () => {
     setSections(newSections);
   };
 
+  if (isFetchingData) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-[#f5e6ca] via-[#fefaf5] to-[#e7d3b5] flex items-center justify-center">
+        <div className="text-center">
+          <Loader2 className="w-12 h-12 text-[#b08968] animate-spin mx-auto mb-4" />
+          <p className="text-[#6b4226] font-semibold">Loading sections...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#f5e6ca] via-[#fefaf5] to-[#e7d3b5]">
-      {/* Header */}
-      <header className="bg-white/80 backdrop-blur-sm border-b border-[#e0c9a6] sticky top-0 z-50">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#b08968] to-[#8c5e3c] flex items-center justify-center shadow-md">
-                <List className="w-6 h-6 text-white" />
-              </div>
-              <div>
-                <h1 className="text-xl font-bold text-[#6b4226]">
-                  Course Sections
-                </h1>
-                <p className="text-xs text-[#6b4226]/60">
-                  Manage your course curriculum
-                </p>
-              </div>
-            </div>
-            <button className="text-sm text-[#6b4226]/60 hover:text-[#b08968] transition font-medium">
-              Back to Course
-            </button>
-          </div>
-        </div>
-      </header>
-
-   
       <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Stats Bar */}
         <div className="mb-6 grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -167,7 +227,7 @@ const CourseSectionPage = () => {
                 <p className="text-sm text-[#6b4226]/60 mb-1">Total Lectures</p>
                 <p className="text-2xl font-bold text-[#6b4226]">
                   {sections.reduce(
-                    (acc, section) => acc + section.totalLectures,
+                    (acc, section) => acc + (section.totalLectures || 0),
                     0
                   )}
                 </p>
@@ -221,7 +281,6 @@ const CourseSectionPage = () => {
                   value={newSection.title}
                   onChange={(e) =>
                     setNewSection({
-                      ...newSection,
                       title: e.target.value,
                     })
                   }
@@ -252,11 +311,7 @@ const CourseSectionPage = () => {
                 <button
                   onClick={() => {
                     setIsAddingSection(false);
-                    setNewSection({
-                      title: "",
-                      totalLectures: 0,
-                      orderIndex: 0,
-                    });
+                    setNewSection({ title: "" });
                   }}
                   className="px-6 py-3 bg-[#e0c9a6] text-[#6b4226] font-semibold rounded-lg hover:bg-[#d1bfa7] transition"
                 >
@@ -318,7 +373,7 @@ const CourseSectionPage = () => {
                       <div className="flex-1">
                         <div className="flex items-center gap-3 mb-2">
                           <span className="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-gradient-to-br from-[#b08968] to-[#8c5e3c] text-white text-sm font-bold">
-                            {section.orderIndex + 1}
+                            {index + 1}
                           </span>
                           <h3 className="text-base font-bold text-[#6b4226]">
                             {section.title}
@@ -476,15 +531,6 @@ const CourseSectionPage = () => {
           )}
         </div>
       </main>
-
-      {/* Footer */}
-      <footer className="mt-12 py-6 border-t border-[#e0c9a6] bg-white/50 backdrop-blur-sm">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          <p className="text-sm text-center text-[#6b4226]/60">
-            © 2025 Instructor Dashboard. All rights reserved.
-          </p>
-        </div>
-      </footer>
     </div>
   );
 };

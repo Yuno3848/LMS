@@ -8,13 +8,13 @@ export const validateCreateItemSection = () => {
       .isString()
       .withMessage('course section id must be a string'),
 
-    body('title')
-      .notEmpty()
-      .withMessage('course section id is required')
-      .isString()
-      .withMessage('title must be a string')
-      .isLength({ max: 150 })
-      .withMessage("title can't be more than 150 characters"),
+    // body('title')
+    //   .notEmpty()
+    //   .withMessage('course section title is required')
+    //   .isString()
+    //   .withMessage('title must be a string')
+    //   .isLength({ max: 150 })
+    //   .withMessage("title can't be more than 150 characters"),
   ];
 };
 

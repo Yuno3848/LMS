@@ -54,13 +54,6 @@ const courseSchema = new Schema(
       default: false,
     },
 
-    courseSection: [
-      {
-        type: Schema.Types.ObjectId,
-        ref: 'courseSection',
-      },
-    ],
-
     difficulty: {
       type: String,
       enum: ['beginner', 'intermediate', 'advance'],

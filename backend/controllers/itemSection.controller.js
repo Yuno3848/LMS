@@ -1,58 +1,51 @@
 import mongoose from 'mongoose';
-import ApiError from '../utils/ApiError.js';
-import { asyncHandler } from '../utils/asyncHandler.js';
-import ApiResponse from '../utils/ApiResponse.js';
-import { courseSection } from '../models/courseSection.model.js';
-import { ItemSection } from '../models/itemSection.model.js';
-import { Course } from '../models/course.model.js';
 import User from '../models/auth.models.js';
+import { Course } from '../models/course.model.js';
+import { ItemSection } from '../models/itemSection.model.js';
+import ApiError from '../utils/ApiError.js';
+import ApiResponse from '../utils/ApiResponse.js';
+import { asyncHandler } from '../utils/asyncHandler.js';
 
 export const createItemSection = asyncHandler(async (req, res) => {
   const userId = req.user.id;
-
-  if (!userId || !mongoose.Types.ObjectId.isValid(userId.toString())) {
-    throw new ApiError(401, 'User not authorized');
+  const { courseId } = req.params;
+  console.log('course id :', courseId);
+  if (!courseId || !mongoose.Types.ObjectId.isValid(courseId)) {
+    throw new ApiError(400, 'Invalid course ID');
   }
 
   const instructor = await User.findById(userId);
-  if (!instructor) {
-    throw new ApiError(404, 'Instructor not found');
+  if (!instructor || instructor.role !== 'instructor') {
+    throw new ApiError(403, 'Access Denied | Instructor Only');
   }
 
-  if (instructor.role !== 'instructor') {
-    throw new ApiError(401, 'Access Denied || Instructor Only');
-  }
-
-  const { courseSectionId } = req.params;
   const course = await Course.findOne({
-    courseSection: courseSectionId,
+    _id: courseId,
     instructor: userId,
   });
-  if (!course) {
-    throw new ApiError(403, 'You are not authorized to modify this course section');
-  }
 
-  const section = await courseSection.findById(courseSectionId);
-  if (!section) {
-    throw new ApiError(404, 'Course section not found.');
+  if (!course) {
+    throw new ApiError(404, 'Course not found or you are not authorized');
   }
 
   const { title } = req.body;
+  if (!title?.trim()) {
+    throw new ApiError(400, 'Section title is required');
+  }
 
-  const orderIndex = section.itemSection.length;
-
-  const newSubItemSection = await ItemSection.create({
-    title,
+  const orderIndex = course.itemSection.length;
+  const newItemSection = await ItemSection.create({
+    title: title.trim(),
     totalLectures: 0,
     orderIndex,
   });
 
-  section.itemSection.push(newSubItemSection._id);
-  await section.save();
+  course.itemSection.push(newItemSection._id);
+  await course.save();
 
   return res
     .status(201)
-    .json(new ApiResponse(201, 'Item section created successfully', newSubItemSection));
+    .json(new ApiResponse(201, 'Item section created successfully', newItemSection));
 });
 
 export const updateItemSection = asyncHandler(async (req, res) => {
@@ -78,21 +71,13 @@ export const updateItemSection = asyncHandler(async (req, res) => {
     throw new ApiError(404, 'Invalid item section id');
   }
 
-  const section = await courseSection.findOne({
-    itemSection: itemSectionId,
-  });
-
-  if (!section) {
-    throw new ApiError(404, 'item section not found');
-  }
-
   const course = await Course.findOne({
-    courseSection: section._id,
+    itemSection: itemSectionId,
     instructor: userId,
   });
 
   if (!course) {
-    throw new ApiError(403, 'you are not authorized to update this item section');
+    throw new ApiError(403, 'You are not authorized to update this item section');
   }
 
   const { title } = req.body;
@@ -127,27 +112,20 @@ export const deleteItemSection = asyncHandler(async (req, res) => {
     throw new ApiError(404, 'Invalid item section id');
   }
 
-  const section = await courseSection.findOne({
-    itemSection: itemSectionId,
-  });
-
-  if (!section) {
-    throw new ApiError(404, 'item section not found');
-  }
-
   const course = await Course.findOne({
-    courseSection: section._id,
+    itemSection: itemSectionId,
     instructor: userId,
   });
 
   if (!course) {
-    throw new ApiError(403, 'you are not authorized to delete this item section');
+    throw new ApiError(403, 'You are not authorized to delete this item section');
   }
 
   await ItemSection.findByIdAndDelete(itemSectionId);
-  section.itemSection = section.itemSection.filter((item) => item._id.toString() !== itemSectionId);
-  await section.save();
-  res.status(200).json(new ApiResponse(200, {}, 'Item section deleted successfully'));
+  course.itemSection = course.itemSection.filter((item) => item.toString() !== itemSectionId);
+  await course.save();
+
+  res.status(200).json(new ApiResponse(200, 'Item section deleted successfully', {}));
 });
 
 export const getItemSectionById = asyncHandler(async (req, res) => {
@@ -175,7 +153,7 @@ export const getItemSectionById = asyncHandler(async (req, res) => {
     },
     {
       $lookup: {
-        from: 'subitemsections', // collection name
+        from: 'subitemsections',
         localField: 'subItemSection',
         foreignField: '_id',
         as: 'subItemSectionDetails',
@@ -183,29 +161,22 @@ export const getItemSectionById = asyncHandler(async (req, res) => {
     },
   ]);
 
-  if (!itemSection) {
+  if (!itemSection || itemSection.length === 0) {
     throw new ApiError(404, 'Invalid item section id');
   }
 
-  const section = await courseSection.findOne({
-    itemSection: itemSectionId,
-  });
-
-  if (!section) {
-    throw new ApiError(404, 'item section not found');
-  }
-
   const course = await Course.findOne({
-    courseSection: section._id,
+    itemSection: itemSectionId,
     instructor: userId,
   });
 
   if (!course) {
-    throw new ApiError(403, 'you are not authorized to fetched this item section');
+    throw new ApiError(403, 'You are not authorized to fetch this item section');
   }
 
-  res.status(200).json(new ApiResponse(200, 'Item section fetched successfully', itemSection));
+  res.status(200).json(new ApiResponse(200, 'Item section fetched successfully', itemSection[0]));
 });
+
 export const getAllItemSection = asyncHandler(async (req, res) => {
   const userId = req.user.id;
 
@@ -222,39 +193,23 @@ export const getAllItemSection = asyncHandler(async (req, res) => {
     throw new ApiError(401, 'Access Denied || Instructor Only');
   }
 
-  const { courseSectionId } = req.params;
+  const { courseId } = req.params;
 
   const course = await Course.findOne({
-    courseSection: courseSectionId,
+    _id: courseId,
     instructor: userId,
-  });
-
-  if (!course) {
-    throw new ApiError(
-      403,
-      'You are not authorized to fetch item sections from this course section',
-    );
-  }
-
-  const itemSection = await courseSection
-    .findById(courseSectionId)
+  })
     .populate({
       path: 'itemSection',
-      select: 'title orderIndex subItemSection',
+      select: 'title orderIndex subItemSection totalLectures',
     })
-    .select('title orderIndex itemSection');
+    .select('title itemSection');
 
-  if (!itemSection) {
-    throw new ApiError(404, 'Course section not found');
+  if (!course) {
+    throw new ApiError(403, 'You are not authorized to fetch item sections from this course');
   }
 
   res
     .status(200)
-    .json(
-      new ApiResponse(
-        200,
-        'All item sections for this course section fetched successfully',
-        itemSection,
-      ),
-    );
+    .json(new ApiResponse(200, 'All item sections for this course fetched successfully', course));
 });
