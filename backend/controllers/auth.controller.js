@@ -21,21 +21,17 @@ export const registeredUser = asyncHandler(async (req, res) => {
     throw new ApiError(400, 'Username or Email already exists');
   }
 
-  //fetch the path of the uploaded avatar file
-  const avatarLocalPath = req?.file?.path || null;
   // if avatar is not provided, throw an error
   let avatarData = {
     url: '',
     localPath: '',
   };
-  if (avatarLocalPath) {
-    const avatar = await uploadOnCloudinary(avatarLocalPath);
-    if (!avatar) {
-      throw new ApiError(500, 'Failed to upload avatar');
-    }
+
+  if (req.file) {
+    const uploadResult = await uploadOnCloudinary(req.file.buffer);
     avatarData = {
-      url: avatar.url,
-      localPath: avatarLocalPath,
+      url: uploadResult.secure_url,
+      localPath: uploadResult.public_id,
     };
   }
 
@@ -62,7 +58,6 @@ export const registeredUser = asyncHandler(async (req, res) => {
   //send email verification link to the user
 
   const verificationUrl = `${process.env.FRONTEND_URL}/verify-email/${unhashedToken}`;
-
 
   await sendMail({
     username: newUser.username,
@@ -101,7 +96,6 @@ export const verifyMail = asyncHandler(async (req, res) => {
     emailVerifiedToken,
     emailVerificationTokenExpiry: { $gt: Date.now() },
   }).select('-password -forgotPasswordExpiry  -createdAt -updatedAt');
-
 
   // If user not found, throw an error
   if (!user) {
@@ -267,7 +261,7 @@ export const forgotPassword = asyncHandler(async (req, res) => {
 });
 export const resetPassword = asyncHandler(async (req, res) => {
   // Extract token and password from request
- 
+
   const { token } = req.params;
   const { newPassword, confirmPassword } = req.body;
 
@@ -422,40 +416,33 @@ export const updateProfile = asyncHandler(async (req, res) => {
 });
 
 export const updateProfileAvatar = asyncHandler(async (req, res) => {
-  //extract user id from cookies
-  const userId = req.user.id;
-
+  const userId = req.user?.id;
   if (!userId) {
     throw new ApiError(401, 'User not authenticated');
   }
-  // find user by id
+
   const user = await User.findById(userId).select(
     '-password -emailVerifiedToken -emailVerificationTokenExpiry -forgotPasswordExpiry -forgotPasswordToken -refreshToken -createdAt -updatedAt',
   );
-  //if user not found, throw an error
   if (!user) {
     throw new ApiError(404, 'User not found');
   }
-  //fetch avatar local path
-  const avatarLocalPath = req.file?.path || null;
 
-  // if avatar is not provided, throw an error
-  if (!avatarLocalPath) {
-    throw new ApiError(404, 'Avatar is required');
+  if (!req.file || !req.file.buffer) {
+    throw new ApiError(400, 'Avatar file is required');
   }
-  // upload avatar to cloudinary
-  const avatar = await uploadOnCloudinary(avatarLocalPath);
+
+  const avatar = await uploadOnCloudinary(req.file.buffer);
   if (!avatar) {
-    throw new ApiError(500, 'failed to upload avatar');
+    throw new ApiError(500, 'Failed to upload avatar');
   }
-  // update user avatar
-  user.avatar.url = avatar.url;
-  // update user avatar local path
-  user.avatar.localPath = avatarLocalPath;
-  // save the user document
+
+  user.avatar.url = avatar.secure_url;
+  user.avatar.localPath = avatar.public_id;
+
   await user.save();
-  // send the response with the updated user data
-  return res.status(200).json(new ApiResponse(200, 'avatar updated successfully', user));
+
+  return res.status(200).json(new ApiResponse(200, 'Avatar updated successfully', user));
 });
 
 export const me = asyncHandler(async (req, res) => {

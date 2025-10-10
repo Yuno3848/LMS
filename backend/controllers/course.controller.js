@@ -6,7 +6,6 @@ import User from '../models/auth.models.js';
 import { Course } from '../models/course.model.js';
 import ApiResponse from '../utils/ApiResponse.js';
 
-
 const validateInstructor = async (userId) => {
   if (!userId || !mongoose.Types.ObjectId.isValid(userId.toString())) {
     throw new ApiError(401, 'User not authorized');
@@ -47,12 +46,12 @@ export const createCourse = asyncHandler(async (req, res) => {
   } = req.body;
 
   // Validate thumbnail
-  if (!req.file?.path) {
+  if (!req.file || !req.file.buffer) {
     throw new ApiError(400, 'Course thumbnail is required');
   }
 
-  const thumbnail = await uploadOnCloudinary(req.file.path);
-  if (!thumbnail?.url) {
+  const thumbnail = await uploadOnCloudinary(req.file.buffer);
+  if (!thumbnail?.secure_url) {
     throw new ApiError(500, 'Failed to upload thumbnail');
   }
 
@@ -70,8 +69,8 @@ export const createCourse = asyncHandler(async (req, res) => {
     category,
     requirements,
     thumbnail: {
-      url: thumbnail.url,
-      localPath: req.file.path,
+      url: thumbnail.secure_url,
+      localPath: req.file.public_id,
     },
     instructor: userId,
   };

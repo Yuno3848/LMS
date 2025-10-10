@@ -1,20 +1,26 @@
 import { v2 as cloudinary } from 'cloudinary';
-import fs from 'fs';
+import streamifier from 'streamifier';
+
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_NAME,
   api_key: process.env.CLOUDINARY_API_KEY,
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
-export const uploadOnCloudinary = async (localFilePath) => {
+export const uploadOnCloudinary = async (fileBuffer) => {
   try {
-    const uploadResult = await cloudinary.uploader.upload(localFilePath, {
-      resource_type: 'image',
+    return new Promise((resolve, reject) => {
+      const stream = cloudinary.uploader.upload_stream(
+        { resource_type: 'image' },
+        (error, result) => {
+          if (error) reject(error);
+          else resolve(result);
+        },
+      );
+      streamifier.createReadStream(fileBuffer).pipe(stream);
     });
-    return uploadResult;
   } catch (error) {
-    `Error while uploading image : ${error}`;
-    fs.unlink(localFilePath);
+    console.error('Error while uploading image:', error);
     return null;
   }
 };

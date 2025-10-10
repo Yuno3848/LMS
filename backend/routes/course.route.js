@@ -14,13 +14,13 @@ import {
   getCourseById,
   isPublish,
 } from '../controllers/course.controller.js';
-import multerPath from '../middlewares/multer.middleware.js';
+import upload from '../middlewares/multer.middleware.js';
 
 const course = Router();
 
 course.post(
   '/create-course',
-  multerPath('./public/thumbnail').single('thumbnail'),
+  upload.single('thumbnail'),
   validateCreateCourse(),
   validatorError,
   isLogged,
