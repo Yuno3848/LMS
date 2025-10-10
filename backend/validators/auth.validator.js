@@ -24,7 +24,7 @@ export const validateRegistration = () => {
       .withMessage('Password is required')
       .isLength({ min: 6 })
       .withMessage('Password must be at least 6 characters long'),
-    body('confirmpassword')
+    body('confirmPassword')
       .notEmpty()
       .withMessage('Confirm password is required')
       .custom((value, { req }) => {
