@@ -1,7 +1,7 @@
 import db from './db/db.js';
 import app from './app.js';
 import swaggerDocs from './swagger/swagger.js';
-const port = 8080 || process.env.PORT;
+const port = process.env.PORT || 3000;
 
 db()
   .then(() => {
