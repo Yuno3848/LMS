@@ -1,12 +1,16 @@
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
+console.log('inside sign up');
 dotenv.config();
 const db = async () => {
   try {
-    await mongoose.connect(process.env.MONGO_URI);
+    await mongoose.connect(process.env.MONGO_URI, {
+      serverSelectionTimeoutMS: 10000,
+    });
   } catch (error) {
-    ('error while connecting db :', error);
-    ('Error while connecting database...');
+    console.log('error while connecting db :', error);
+    console.log('Error while connecting database...');
+    process.exit(1);
   }
 };
 export default db;
