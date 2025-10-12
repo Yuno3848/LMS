@@ -1,5 +1,4 @@
-const baseURL =
-  import.meta.env.VITE_API_URL || "http://localhost:8080/api/v1/itemSection";
+const baseURL = `${import.meta.env.VITE_API_URL}/api/v1/itemSection`;
 
 export const itemSectionApiFetch = {
   createItemSection: async (courseId, sectionData) => {
