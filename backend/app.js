@@ -18,7 +18,11 @@ app.use(morgan('dev'));
 app.use(cookie());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-const allowedOrigin = [process.env.FRONTEND_URL, 'http://127.0.0.1:5500'];
+const allowedOrigin = [
+  process.env.FRONTEND_URL,
+  'http://127.0.0.1:5500',
+  'https://lms-e8yj.vercel.app',
+];
 app.use(
   cors({
     origin: allowedOrigin,
