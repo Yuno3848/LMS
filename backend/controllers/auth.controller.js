@@ -12,6 +12,11 @@ export const registeredUser = asyncHandler(async (req, res) => {
   const { username, fullname, email, password, confirmPassword } = req.body;
   //validate required fields in validator.js
 
+
+ if(password != confirmPassword){
+  throw new ApiError(400, "Password doesn't match")
+ }
+
   //check whether user exists in the database
   const user = await User.findOne({
     $or: [{ username }, { email }],
