@@ -3,33 +3,31 @@ import toast from "react-hot-toast";
 import { Link, useNavigate } from "react-router";
 import { authApi } from "../../ApiFetch/authApiFetch";
 
-
 const SignUp = () => {
   const [formData, setFormData] = useState({
     username: "",
     fullname: "",
     email: "",
     password: "",
-    confirmpassword: "",
+    confirmPassword: "",
     avatar: "",
   });
 
   const [loading, setLoading] = useState(false);
-
 
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const { username, fullname, email, password, confirmpassword } = formData;
+    const { username, fullname, email, password, confirmPassword } = formData;
 
-    if (password !== confirmpassword) {
+    if (password !== confirmPassword) {
       toast.error("Password do not match!");
 
       return;
     }
-    if (!username || !fullname || !email || !password || !confirmpassword) {
+    if (!username || !fullname || !email || !password || !confirmPassword) {
       toast.error("All fields are required");
 
       return;
@@ -41,7 +39,7 @@ const SignUp = () => {
       submitData.append("fullname", formData.fullname);
       submitData.append("email", formData.email);
       submitData.append("password", formData.password);
-      submitData.append("confirmpassword", formData.confirmpassword);
+      submitData.append("confirmpassword", formData.confirmPassword);
 
       if (formData.avatar) {
         submitData.append("avatar", formData.avatar);
@@ -130,9 +128,9 @@ const SignUp = () => {
           <input
             type="password"
             placeholder="Confirm Password"
-            value={formData.confirmpassword}
+            value={formData.confirmPassword}
             onChange={(e) => {
-              setFormData({ ...formData, confirmpassword: e.target.value });
+              setFormData({ ...formData, confirmPassword: e.target.value });
             }}
             className="w-full px-4 py-3 border rounded-lg border-[#d4b996] bg-[#fdfaf7] focus:ring-2 focus:ring-[#c19a6b] focus:outline-none transition"
           />
