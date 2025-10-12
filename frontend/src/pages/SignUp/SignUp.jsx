@@ -39,7 +39,7 @@ const SignUp = () => {
       submitData.append("fullname", formData.fullname);
       submitData.append("email", formData.email);
       submitData.append("password", formData.password);
-      submitData.append("confirmpassword", formData.confirmPassword);
+      submitData.append("confirmPassword", formData.confirmPassword);
 
       if (formData.avatar) {
         submitData.append("avatar", formData.avatar);
