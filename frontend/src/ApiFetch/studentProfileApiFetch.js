@@ -1,4 +1,4 @@
-const baseUrl = `${import.meta.env.VITE_API_URL}/api/v1/studentProfile`;
+const baseUrl = `${import.meta.env.VITE_API_URL}studentProfile`;
 export const studentProfileApiFetch = {
   createStudentProfile: async (credentials) => {
     try {

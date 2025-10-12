@@ -1,4 +1,4 @@
-const BaseURL = `${import.meta.env.VITE_API_URL}/api/v1/course`;
+const BaseURL = `${import.meta.env.VITE_API_URL}/course`;
 
 export const courseApiFetch = {
   createCourse: async (credential) => {
