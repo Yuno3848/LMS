@@ -13,7 +13,6 @@ function App() {
   useInitInstructorCourses();
   useInitStudentProfile();
   useInitInstructorProfile();
-
   const authLoading = useSelector((state) => state.auth.loading);
   const user = useSelector((state) => state.auth.user);
   const studentLoading = useSelector((state) => state.studentProfile.loading);

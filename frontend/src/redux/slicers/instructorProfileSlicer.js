@@ -1,7 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 const initialState = {
   profile: null,
-  loading: false,
+  loading: true,
 };
 
 const instructorProfileSlice = createSlice({
@@ -15,6 +15,7 @@ const instructorProfileSlice = createSlice({
 
     setInstructorLoading: (state, action) => {
       state.loading = action.payload;
+      state.loading = false;
     },
 
     setClearInstructorProfile: () => ({ ...initialState }),

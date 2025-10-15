@@ -8,10 +8,6 @@ const ProtectedInstructorProfile = ({ children }) => {
   const { profile: instructorProfile, loading: instructorLoading } =
     useSelector((state) => state.instructorProfile);
 
-
-
-
-
   if (authLoading || instructorLoading) {
     return <Loading text="Loading your instructor profile..." />;
   }
