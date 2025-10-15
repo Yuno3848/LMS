@@ -17,6 +17,7 @@ import {
   addInstructorCourse,
   setInstructorProfile,
 } from "../redux/slicers/instructorProfileSlicer";
+import { addCourse } from "../redux/slicers/courseSlicer";
 
 const CreateCourseForm = () => {
   const [formData, setFormData] = useState({
@@ -86,11 +87,13 @@ const CreateCourseForm = () => {
       if (res.success) {
         toast.success(res?.data?.message || "course created successfully");
         dispatch(addInstructorCourse(res?.data?.data));
+        dispatch(addCourse(res?.data?.data));
       } else {
-        toast.error(res.error);
+        toast.error(res.error || 'failed to create course');
+
       }
     } catch (error) {
-      toast.error(error.message);
+      toast.error(error.message || "something went wrong!");
     } finally {
       setIsLoading(false);
     }

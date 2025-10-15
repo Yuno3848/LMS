@@ -25,7 +25,8 @@ const StudentProfileForm = ({
   const user = useSelector((state) => state.auth.user);
   const studentProfile = useSelector((state) => state.studentProfile.profile);
   const isLoading = useSelector((state) => state.studentProfile.loading);
-
+  console.log("user in student profile :", user);
+  console.log("student in student profile :", studentProfile);
   if (isLoading || !studentProfile) return <Loading />;
 
   const socialPlatforms = [

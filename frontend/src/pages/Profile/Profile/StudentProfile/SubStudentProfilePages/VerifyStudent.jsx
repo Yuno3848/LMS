@@ -16,9 +16,9 @@ const VerifyStudent = () => {
   const studentProfile = useSelector((state) => state.studentProfile.profile);
   const user = useSelector((state) => state.auth.user);
 
-  // Fetch student profile on mount
   useEffect(() => {
     const fetchProfile = async () => {
+      if (studentProfile && Object.keys(studentProfile).length > 0) return;
       dispatch(setStudentLoading(true));
       try {
         const result = await studentProfileApiFetch.getStudentProfile();
@@ -34,7 +34,7 @@ const VerifyStudent = () => {
     fetchProfile();
   }, [dispatch]);
 
-  if (!studentProfile) return <Loading />;
+  if (!studentProfile) return <Loading text="loading verification..." />;
 
   const student = studentProfile?.[0];
   const username = studentProfile?.username;

@@ -1,23 +1,30 @@
 import React from "react";
+import { Navigate } from "react-router";
 import { useSelector } from "react-redux";
 import Loading from "../components/Loading";
-import { Navigate } from "react-router";
 
 const ProtectedInstructorProfile = ({ children }) => {
-  const instructorProfile = useSelector(
-    (state) => state.instructorProfile.profile
-  );
-  const loading = useSelector((state) => state.instructorProfile.loading);
+  const { user, loading: authLoading } = useSelector((state) => state.auth);
+  const { profile: instructorProfile, loading: instructorLoading } =
+    useSelector((state) => state.instructorProfile);
 
-  if (loading) {
-    return <Loading />;
+
+
+
+
+  if (authLoading || instructorLoading) {
+    return <Loading text="Loading your instructor profile..." />;
   }
 
-  if (instructorProfile?.data) {
-    return <Navigate to="/update-instructor-profile" />;
+  if (!user) {
+    return <Navigate to="/login" replace />;
   }
 
-  return children;
+  if (!instructorProfile) {
+    return <Navigate to="/create-instructor-profile" replace />;
+  }
+
+  return <>{children}</>;
 };
 
 export default ProtectedInstructorProfile;

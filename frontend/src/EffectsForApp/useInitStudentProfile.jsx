@@ -1,36 +1,45 @@
-import React, { useEffect } from "react";
-import { useDispatch } from "react-redux";
+import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
 
 import {
   setStudentLoading,
   setStudentProfile,
 } from "../redux/slicers/studentProfileSlicer";
-import { logout } from "../redux/slicers/authSlicer";
 import { studentProfileApiFetch } from "../ApiFetch/studentProfileApiFetch";
 
 const useInitStudentProfile = () => {
   const dispatch = useDispatch();
+  const user = useSelector((state) => state.auth.user);
 
   useEffect(() => {
-    const fetchUser = async () => {
+    if (!user) {
+      dispatch(setStudentProfile(null));
+      dispatch(setStudentLoading(false));
+      return;
+    }
+
+    const fetchStudentProfile = async () => {
+      dispatch(setStudentLoading(true));
+
       try {
         const result = await studentProfileApiFetch.getStudentProfile();
 
         if (result.success) {
-          "useInitStudentProfile :", result;
+          console.log("useInitStudentProfile:", result);
           dispatch(setStudentProfile(result?.data?.data));
         } else {
           dispatch(setStudentProfile(null));
         }
       } catch (error) {
-        dispatch(logout());
+        console.error("Error fetching student profile:", error);
         dispatch(setStudentProfile(null));
       } finally {
         dispatch(setStudentLoading(false));
       }
     };
-    fetchUser();
-  }, [dispatch]);
+
+    fetchStudentProfile();
+  }, [dispatch, user]);
 };
 
 export default useInitStudentProfile;

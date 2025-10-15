@@ -1,24 +1,33 @@
 import React from "react";
+import { Navigate } from "react-router";
 import { useSelector } from "react-redux";
 import Loading from "../components/Loading";
-import { Navigate } from "react-router";
 
 const ProtectedStudentProfile = ({ children }) => {
+  const user = useSelector((state) => state.auth.user);
+  const authLoading = useSelector((state) => state.auth.loading);
   const studentProfile = useSelector((state) => state.studentProfile.profile);
   const studentLoading = useSelector((state) => state.studentProfile.loading);
 
-  if (studentLoading) {
-    return <Loading />;
+  if (authLoading || studentLoading) {
+    return <Loading text="Loading your student profile..." />;
   }
 
-  if (
-    !studentProfile ||
-    !studentProfile.data ||
-    studentProfile.data.length === 0
-  ) {
-    return children;
+  if (!user) {
+    return <Navigate to="/login" replace />;
   }
-  return !studentProfile ? children : <Navigate to="/update-student-profile" />;
+
+  const hasStudentProfile =
+    studentProfile &&
+    (Array.isArray(studentProfile.data)
+      ? studentProfile.data.length > 0
+      : studentProfile.data);
+
+  if (hasStudentProfile) {
+    return <Navigate to="/student-profile" replace />;
+  }
+
+  return <>{children}</>;
 };
 
 export default ProtectedStudentProfile;

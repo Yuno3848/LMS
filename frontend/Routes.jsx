@@ -130,9 +130,7 @@ export const Routes = createBrowserRouter([
         path: "/create-instructor-profile",
         element: (
           <ProtectedRoute>
-            <ProtectedInstructorProfile>
-              <CreateInstructorProfile />
-            </ProtectedInstructorProfile>
+            <CreateInstructorProfile />
           </ProtectedRoute>
         ),
       },
@@ -140,7 +138,9 @@ export const Routes = createBrowserRouter([
         path: "/update-instructor-profile",
         element: (
           <ProtectedRoute>
-            <UpdateInstructorProfile />
+            <ProtectedInstructorProfile>
+              <UpdateInstructorProfile />
+            </ProtectedInstructorProfile>
           </ProtectedRoute>
         ),
       },

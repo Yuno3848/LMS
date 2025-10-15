@@ -4,12 +4,7 @@ console.log('inside sign up');
 dotenv.config();
 const db = async () => {
   try {
-    await mongoose.connect(process.env.MONGO_URI, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-      serverSelectionTimeoutMS: 20000,
-    });
-    console.log(process.env.MONGO_URI);
+    await mongoose.connect(process.env.MONGO_URI);
   } catch (error) {
     console.log('error while connecting db :', error.message);
     console.log('Error while connecting database...');

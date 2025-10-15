@@ -1,14 +1,21 @@
+import React from "react";
+import { Navigate } from "react-router";
 import { useSelector } from "react-redux";
 import Loading from "../components/Loading";
-import { Navigate } from "react-router";
 
 const ProtectedRoute = ({ children }) => {
   const user = useSelector((state) => state.auth.user);
   const loading = useSelector((state) => state.auth.loading);
+
   if (loading) {
-    return <Loading />;
+    return <Loading text="Verifying your session..." />;
   }
-  return user ? children : <Navigate to="/login" />;
+
+  if (!user) {
+    return <Navigate to="/login" replace />;
+  }
+
+  return <>{children}</>;
 };
 
 export default ProtectedRoute;

@@ -13,6 +13,9 @@ import {
   Edit3,
   PlusCircle,
   CheckCircle,
+  CheckCircle2,
+  Edit3Icon,
+  Clock,
 } from "lucide-react";
 import Loading from "../../../../../components/Loading";
 import ShowStudentProfile from "../../../../../components/ShowStudentProfile";
@@ -36,7 +39,9 @@ const StudentProfilePage = () => {
     studentProfile ||
     {};
 
-  const { bio, skills, interests, education, socialLinks } = studentData;
+  const { bio, skills, interests, education, socialLinks, verificationStatus } =
+    studentData;
+  console.log("student verification :", verificationStatus);
 
   return instructorProfile ? (
     <ShowStudentProfile type="instructor" />
@@ -218,16 +223,32 @@ const StudentProfilePage = () => {
                       to="/update-student-profile"
                       className="flex items-center gap-2 px-3 py-2 rounded-lg bg-white/50 hover:bg-white border border-[#e0c9a6]/50 text-[#6b4226] text-sm font-medium transition"
                     >
-                      <Edit3 className="w-4 h-4" />
+                      <Edit3Icon className="w-4 h-4" />
                       Update Profile
                     </Link>
-                    <Link
-                      to="/verify-student-profile"
-                      className="flex items-center gap-2 px-3 py-2 rounded-lg bg-white/50 hover:bg-white border border-[#e0c9a6]/50 text-[#6b4226] text-sm font-medium transition"
-                    >
-                      <CheckCircle className="w-4 h-4" />
-                      Verify Student
-                    </Link>
+                    {verificationStatus === "not_requested" && (
+                      <Link
+                        to="/verify-student-profile"
+                        className="flex items-center gap-2 px-3 py-2 rounded-lg bg-white/50 hover:bg-white border border-[#e0c9a6]/50 text-[#6b4226] text-sm font-medium transition"
+                      >
+                        <CheckCircle2 className="w-4 h-4" />
+                        Verify Student
+                      </Link>
+                    )}
+
+                    {verificationStatus === "pending" && (
+                      <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-yellow-100 border border-yellow-300 text-yellow-800 text-sm font-medium">
+                        <Clock className="w-4 h-4" />
+                        Verification Pending
+                      </div>
+                    )}
+
+                    {verificationStatus === "verified" && (
+                      <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-green-100 border border-green-300 text-green-800 text-sm font-medium">
+                        <CheckCircle className="w-4 h-4" />
+                        Verified
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>
