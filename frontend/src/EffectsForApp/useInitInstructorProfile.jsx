@@ -14,9 +14,14 @@ const useInitInstructorProfile = () => {
   const user = useSelector((state) => state.auth.user);
 
   useEffect(() => {
-    if (!user) return;
+    if (!user) {
+      dispatch(setClearInstructorProfile());
+      dispatch(setInstructorLoading(false));
+      return;
+    }
 
     const fetchInstructorProfile = async () => {
+      dispatch(setInstructorLoading(true));
       try {
         const result = await instructorProfileAPIFetch.getInstructorProfile();
 

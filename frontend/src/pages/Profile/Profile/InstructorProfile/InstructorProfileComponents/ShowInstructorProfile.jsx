@@ -30,7 +30,7 @@ const InstructorProfileCard = () => {
   const username = userDetails?.data?.username;
   const fullname = userDetails?.data?.fullname;
   const avatar = userDetails?.data?.avatar?.url;
-
+  console.log("user details in instructor profile :", userDetails);
   if (loading) return <Loading />;
   const instructorVerified = profile?.isVerifiedInstructor;
   const socialPlatforms = [
@@ -41,19 +41,27 @@ const InstructorProfileCard = () => {
   ];
 
   useEffect(() => {
-    const fetchProfile = async () => {
-      dispatch(setInstructorLoading(true));
-      const res = await instructorProfileAPIFetch.getInstructorProfile();
-      if (res.success) {
-        dispatch(setInstructorProfile(res?.data?.data));
-      } else {
-        console.error("Failed to fetch instructor profile:", res.message);
-      }
-      dispatch(setInstructorLoading(false));
-    };
+    if (!profile) {
+      const fetchProfile = async () => {
+        try {
+          dispatch(setInstructorLoading(true));
+          const res = await instructorProfileAPIFetch.getInstructorProfile();
 
-    fetchProfile();
-  }, [dispatch]);
+          if (res.success) {
+            dispatch(setInstructorProfile(res?.data?.data));
+          } else {
+            toast.error("Failed to fetch instructor profile");
+          }
+        } catch (error) {
+          toast.error(error.message || "something went wrong!");
+        } finally {
+          dispatch(setInstructorLoading(false));
+        }
+      };
+
+      fetchProfile();
+    }
+  }, [dispatch, profile]);
 
   if (loading) return <Loading />;
 

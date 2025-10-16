@@ -7,7 +7,11 @@ import {
   setInstructorLoading,
 } from "../../../../../redux/slicers/instructorProfileSlicer";
 import toast from "react-hot-toast";
-import { setClearStudentProfile } from "../../../../../redux/slicers/studentProfileSlicer";
+import {
+  setClearStudentProfile,
+  setStudentLoading,
+} from "../../../../../redux/slicers/studentProfileSlicer";
+import { useNavigate } from "react-router";
 const CreateInstructorProfile = () => {
   const [formData, setFormData] = useState({
     bio: "",
@@ -22,10 +26,11 @@ const CreateInstructorProfile = () => {
   });
 
   const dispatch = useDispatch();
-
+  const navigate = useNavigate()
   const handleSubmit = async (e) => {
     e.preventDefault();
     dispatch(setInstructorLoading(true));
+    dispatch(setStudentLoading(true));
     try {
       const result = await instructorProfileAPIFetch.createInstructorProfile(
         formData
@@ -35,6 +40,12 @@ const CreateInstructorProfile = () => {
         toast.success(result?.data?.message || "Instructor profile created");
         dispatch(setClearStudentProfile());
         dispatch(setInstructorProfile(result?.data?.data));
+
+ 
+        dispatch(setInstructorLoading(false));
+        dispatch(setStudentLoading(false));
+
+        navigate("/instructor-profile");
       } else {
         toast.error(result?.error || "Instructor Profile already exist");
       }
@@ -42,6 +53,7 @@ const CreateInstructorProfile = () => {
       toast.error(error.message || "something went wrong");
     } finally {
       dispatch(setInstructorLoading(false));
+      dispatch(setStudentLoading(false));
     }
   };
 

@@ -7,7 +7,7 @@ import EmailVerification from "./ProfileComponents/EmailVerification";
 const Profile = () => {
   const user = useSelector((state) => state.auth.user);
   const avatar = useSelector((state) => state.auth.avatar);
-
+  console.log("my profile user :", user);
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#f5e6ca] via-[#fefaf5] to-[#e7d3b5] p-4">
       <div className="w-full max-w-5xl">
