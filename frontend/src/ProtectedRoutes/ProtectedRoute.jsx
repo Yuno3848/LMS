@@ -6,7 +6,7 @@ import Loading from "../components/Loading";
 const ProtectedRoute = ({ children }) => {
   const user = useSelector((state) => state.auth.user);
   const loading = useSelector((state) => state.auth.loading);
-
+  console.log("loading student :", user);
   if (loading) {
     return <Loading text="Verifying your session..." />;
   }

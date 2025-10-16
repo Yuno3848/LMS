@@ -2,7 +2,7 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
   profile: null,
-  loading: false, // <-- start as false so it doesn’t show loading by default
+  loading: false, 
 };
 
 const studentProfileSlice = createSlice({

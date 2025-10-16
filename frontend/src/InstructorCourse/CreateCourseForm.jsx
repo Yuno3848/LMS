@@ -69,10 +69,8 @@ const CreateCourseForm = () => {
     form.append("base", formData.base);
     form.append("final", formData.final);
     form.append("currency", formData.currency);
-    form.append("courseExpiry", formData.courseExpiry);
     form.append("difficulty", formData.difficulty.toLowerCase());
     form.append("category", formData.category);
-    form.append("isPublished", formData.isPublished === "on" ? true : false);
     form.append("requirements", formData.requirements);
     formData.tags.forEach((tag) => {
       form.append("tags", tag);
@@ -89,8 +87,7 @@ const CreateCourseForm = () => {
         dispatch(addInstructorCourse(res?.data?.data));
         dispatch(addCourse(res?.data?.data));
       } else {
-        toast.error(res.error || 'failed to create course');
-
+        toast.error(res.error || "failed to create course");
       }
     } catch (error) {
       toast.error(error.message || "something went wrong!");
@@ -325,20 +322,6 @@ const CreateCourseForm = () => {
                 </div>
               </div>
 
-              <div>
-                <label className="block text-sm font-semibold text-[#6b4226] mb-2">
-                  Course Expiry Date
-                </label>
-                <input
-                  type="date"
-                  value={formData.courseExpiry}
-                  onChange={(e) =>
-                    setFormData({ ...formData, courseExpiry: e.target.value })
-                  }
-                  className="w-full px-4 py-3 bg-[#fdfaf7] border border-[#e0c9a6] rounded-lg text-[#6b4226]"
-                />
-              </div>
-
               <div className="bg-gradient-to-r from-[#fdfaf7] to-[#f9f3ec] rounded-lg p-4 border border-[#e0c9a6]/50">
                 <p className="text-sm text-[#6b4226] flex items-start gap-2">
                   <AlertCircle className="w-4 h-4 mt-0.5 flex-shrink-0 text-[#b08968]" />
@@ -403,31 +386,6 @@ const CreateCourseForm = () => {
                   </span>
                 </p>
               </div>
-            </div>
-          </div>
-
-          {/* Publishing Section */}
-          <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-[#e0c9a6] p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <h3 className="text-base font-bold text-[#6b4226] mb-1">
-                  Publish Course
-                </h3>
-                <p className="text-sm text-[#6b4226]/60">
-                  Make this course available to students
-                </p>
-              </div>
-              <label className="relative inline-flex items-center cursor-pointer">
-                <input
-                  value={formData.isPublished}
-                  onChange={(e) =>
-                    setFormData({ ...formData, isPublished: e.target.checked })
-                  }
-                  type="checkbox"
-                  className="sr-only peer"
-                />
-                <div className="w-14 h-7 bg-[#e0c9a6] rounded-full peer-checked:bg-gradient-to-r peer-checked:from-[#b08968] peer-checked:to-[#8c5e3c] after:absolute after:top-0.5 after:left-0.5 after:bg-white after:border after:rounded-full after:h-6 after:w-6 after:transition-all"></div>
-              </label>
             </div>
           </div>
 

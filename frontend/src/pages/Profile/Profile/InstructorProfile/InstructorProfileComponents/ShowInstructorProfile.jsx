@@ -1,5 +1,5 @@
 import React from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import {
   Linkedin,
@@ -15,12 +15,18 @@ import {
   ShieldCheck,
 } from "lucide-react";
 import Loading from "../../../../../components/Loading";
+import { useEffect } from "react";
+import {
+  setInstructorLoading,
+  setInstructorProfile,
+} from "../../../../../redux/slicers/instructorProfileSlicer";
+import { instructorProfileAPIFetch } from "../../../../../ApiFetch/instructorProfileApiFetch";
 
 const InstructorProfileCard = () => {
   const profile = useSelector((state) => state.instructorProfile.profile);
   const userDetails = useSelector((state) => state.auth.user);
   const loading = useSelector((state) => state.instructorProfile.loading);
-
+  const dispatch = useDispatch();
   const username = userDetails?.data?.username;
   const fullname = userDetails?.data?.fullname;
   const avatar = userDetails?.data?.avatar?.url;
@@ -33,6 +39,23 @@ const InstructorProfileCard = () => {
     { name: "facebook", icon: Facebook, color: "text-blue-700" },
     { name: "instagram", icon: Instagram, color: "text-pink-600" },
   ];
+
+  useEffect(() => {
+    const fetchProfile = async () => {
+      dispatch(setInstructorLoading(true));
+      const res = await instructorProfileAPIFetch.getInstructorProfile();
+      if (res.success) {
+        dispatch(setInstructorProfile(res?.data?.data));
+      } else {
+        console.error("Failed to fetch instructor profile:", res.message);
+      }
+      dispatch(setInstructorLoading(false));
+    };
+
+    fetchProfile();
+  }, [dispatch]);
+
+  if (loading) return <Loading />;
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#f5e6ca] via-[#fefaf5] to-[#e7d3b5] p-4">
@@ -257,18 +280,6 @@ const InstructorProfileCard = () => {
                   </div>
                 </div>
               </div>
-            </div>
-
-            {/* Action Button */}
-            <div className="flex justify-center">
-              <Link
-                to="/update-instructor-profile"
-                className="group relative inline-flex items-center gap-2 bg-gradient-to-r from-[#b08968] to-[#8c5e3c] text-white px-8 py-4 rounded-xl font-semibold shadow-lg hover:shadow-xl transition transform hover:-translate-y-1 overflow-hidden"
-              >
-                <span className="absolute inset-0 bg-gradient-to-r from-[#8c5e3c] to-[#6b4226] opacity-0 group-hover:opacity-100 transition"></span>
-                <Edit3 className="w-5 h-5 relative" />
-                <span className="relative">Update Your Profile</span>
-              </Link>
             </div>
           </div>
         </div>

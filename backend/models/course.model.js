@@ -45,10 +45,6 @@ const courseSchema = new Schema(
       required: true,
     },
 
-    courseExpiry: {
-      type: Date,
-    },
-
     isPublished: {
       type: Boolean,
       default: false,

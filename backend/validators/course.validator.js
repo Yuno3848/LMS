@@ -45,13 +45,6 @@ export const validateCreateCourse = () => {
 
     body('currency').optional().isIn(['INR', 'USD']).withMessage('Currency must be INR or USD'),
 
-    body('courseExpiry')
-      .notEmpty()
-      .withMessage('course expiry field can not be empty')
-      .isISO8601()
-      .toDate()
-      .withMessage('Course expiry must be a valid date'),
-
     body('difficulty')
       .optional()
       .isIn(['beginner', 'intermediate', 'advance'])
