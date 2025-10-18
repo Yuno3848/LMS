@@ -2,6 +2,18 @@ import multer from 'multer';
 
 const storage = multer.memoryStorage();
 
-const upload = multer({ storage });
+export const upload = multer({
+  storage: storage,
+  limits: {
+    fileSize: 5 * 1024 * 1024,
 
-export default upload;
+    files: 5, // Max number of files per request
+  },
+});
+
+export const gcsUploader = multer({
+  storage: storage,
+  limits: {
+    fileSize: 20 * 1024 * 1024,
+  },
+});

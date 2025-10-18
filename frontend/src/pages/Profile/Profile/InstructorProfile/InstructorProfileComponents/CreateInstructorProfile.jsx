@@ -26,7 +26,7 @@ const CreateInstructorProfile = () => {
   });
 
   const dispatch = useDispatch();
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   const handleSubmit = async (e) => {
     e.preventDefault();
     dispatch(setInstructorLoading(true));
@@ -38,11 +38,9 @@ const CreateInstructorProfile = () => {
 
       if (result.success) {
         toast.success(result?.data?.message || "Instructor profile created");
-        dispatch(setClearStudentProfile());
+
         dispatch(setInstructorProfile(result?.data?.data));
 
- 
-        dispatch(setInstructorLoading(false));
         dispatch(setStudentLoading(false));
 
         navigate("/instructor-profile");

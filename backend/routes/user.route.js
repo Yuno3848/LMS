@@ -26,7 +26,7 @@ import {
 } from '../controllers/auth.controller.js';
 
 import { isLogged } from '../middlewares/isLogged.middleware.js';
-import upload from '../middlewares/multer.middleware.js';
+import { upload } from '../middlewares/multer.middleware.js';
 const auth = Router();
 
 auth.post(

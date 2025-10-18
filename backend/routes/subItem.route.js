@@ -11,13 +11,13 @@ import {
   deleteSubItemSection,
   updateSubItemSection,
 } from '../controllers/subItemSection.controller.js';
-import gcsUploader from '../middlewares/gcsMulter.middleware.js';
+import { gcsUploader } from '../middlewares/multer.middleware.js';
 
 const subItem = Router();
 
 subItem.post(
   '/create-subItemSection/:itemSectionId',
-  gcsUploader(),
+  gcsUploader.single('assignment'),
   validateCreateSubItemSection(),
   validatorError,
   isLogged,
@@ -34,7 +34,6 @@ subItem.delete(
 
 subItem.patch(
   '/update-subItemSection/:subItemId',
-  gcsUploader(),
   validateUpdateSubItemSection(),
   validatorError,
   isLogged,

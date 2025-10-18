@@ -14,7 +14,7 @@ import {
   getCourseById,
   isPublish,
 } from '../controllers/course.controller.js';
-import upload from '../middlewares/multer.middleware.js';
+import { upload } from '../middlewares/multer.middleware.js';
 
 const course = Router();
 

@@ -141,3 +141,7 @@ dist
 !.yarn/versions
 
 
+
+backend/utils/*.json
+*.json
+

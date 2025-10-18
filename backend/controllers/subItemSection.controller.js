@@ -6,6 +6,7 @@ import ApiError from '../utils/ApiError.js';
 import ApiResponse from '../utils/ApiResponse.js';
 import { asyncHandler } from '../utils/asyncHandler.js';
 import mongoose from 'mongoose';
+import { uploadToGCS } from '../utils/gcsUploader.js';
 
 const validateInstructor = async (userId) => {
   if (!userId || !mongoose.Types.ObjectId.isValid(userId.toString())) {
@@ -48,54 +49,28 @@ export const createSubItemSection = asyncHandler(async (req, res) => {
 
   const { itemSection } = await validateCourseOwnership(itemSectionId, userId);
 
-  const {
-    itemType,
-    title,
-    content,
-    duration,
-    orderIndex,
-    question,
-    options,
-    correctAnswer,
-    explanation,
-    maxScore,
-  } = req.body;
+  const { itemType, title, orderIndex, content } = req.body;
 
-  // Validate required fields
-  if (!itemType || !title) {
-    throw new ApiError(400, 'Item type and title are required');
+  let contentUrl = null;
+
+  if (itemType === 'assignment') {
+    if (!req.file) {
+      throw new ApiError(400, 'PDF file is required for assignment items');
+    }
+
+    try {
+      contentUrl = await uploadToGCS(req.file, 'assignments');
+    } catch (error) {
+      throw new ApiError(500, `Failed to upload assignment: ${error.message}`);
+    }
   }
-
-  let contentUrl = req.body.contentUrl;
-  if (req.file && itemType === 'video') {
-    contentUrl = req.file.cloudStoragePublicUrl;
-  }
-
-  if (itemType === 'video' && !contentUrl) {
-    throw new ApiError(400, 'Content URL is required for video items');
-  }
-
-  const questions =
-    question && options
-      ? [
-          {
-            question,
-            options: Array.isArray(options) ? options : options.split(',').map((opt) => opt.trim()),
-            correctAnswer,
-            explanation,
-          },
-        ]
-      : [];
 
   const subItem = await subItemSection.create({
     itemType,
     title,
     content,
-    duration,
     contentUrl,
     orderIndex: orderIndex ?? itemSection.subItemSection.length,
-    questions,
-    maxScore,
   });
 
   itemSection.subItemSection.push(subItem._id);
@@ -180,7 +155,6 @@ export const updateSubItemSection = asyncHandler(async (req, res) => {
     options,
     correctAnswer,
     explanation,
-    maxScore,
   } = req.body;
 
   let contentUrl = req.body.contentUrl;
@@ -192,18 +166,6 @@ export const updateSubItemSection = asyncHandler(async (req, res) => {
     throw new ApiError(400, 'Content URL is required for video items');
   }
 
-  const questions =
-    question && options
-      ? [
-          {
-            question,
-            options: Array.isArray(options) ? options : options.split(',').map((opt) => opt.trim()),
-            correctAnswer,
-            explanation,
-          },
-        ]
-      : subItem.questions;
-
   const updateData = {
     ...(itemType && { itemType }),
     ...(title && { title }),
@@ -211,8 +173,6 @@ export const updateSubItemSection = asyncHandler(async (req, res) => {
     ...(duration !== undefined && { duration }),
     ...(contentUrl && { contentUrl }),
     ...(orderIndex !== undefined && { orderIndex }),
-    ...(questions && { questions }),
-    ...(maxScore !== undefined && { maxScore }),
   };
 
   const updatedSubItem = await subItemSection.findByIdAndUpdate(subItemId, updateData, {
@@ -270,7 +230,7 @@ export const getAllSubItemSections = asyncHandler(async (req, res) => {
   const populatedItemSection = await ItemSection.findById(courseId)
     .populate({
       path: 'subItemSection',
-      select: 'itemType title content duration contentUrl orderIndex maxScore',
+      select: 'itemType title content duration contentUrl orderIndex ',
     })
     .select('title subItemSection totalLectures');
 

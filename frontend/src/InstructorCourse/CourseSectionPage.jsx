@@ -7,13 +7,13 @@ import {
   ChevronUp,
   FileText,
   Video,
-  CheckCircle,
   Loader2,
   GripVertical,
 } from "lucide-react";
-import { itemSectionApiFetch } from "../ApiFetch/itemSectionApiFetch";
 import toast from "react-hot-toast";
 import { useNavigate, useParams } from "react-router";
+import { itemSectionApiFetch } from "../ApiFetch/itemSectionApiFetch";
+import { subItemApiFetch } from "../ApiFetch/subItemApiFetch";
 
 const CourseSectionPage = () => {
   const [sections, setSections] = useState([]);
@@ -26,9 +26,11 @@ const CourseSectionPage = () => {
 
   const [newSubItem, setNewSubItem] = useState({
     title: "",
-    type: "lecture",
-    duration: "",
+    type: "",
+    content: "",
+    contentUrl: "",
   });
+
   const { courseId } = useParams();
   const navigate = useNavigate();
 
@@ -43,20 +45,20 @@ const CourseSectionPage = () => {
       setIsFetchingData(true);
       try {
         const res = await itemSectionApiFetch.getAllItemSection(courseId);
-
         if (res.success && res.data) {
           const formattedSections = (res.data.sections || []).map(
             (section) => ({
               id: section._id,
-              _id: section._id,
+              _id: section._id, // perhaps you meant section._id
               title: section.title,
               orderIndex: section.orderIndex,
               totalLectures: section.totalLectures || 0,
               subItemSection: section.subItemSection || [],
             })
           );
-
           setSections(formattedSections);
+        } else {
+          toast.error("Failed to load sections");
         }
       } catch (error) {
         console.error("Failed to fetch sections:", error);
@@ -81,15 +83,11 @@ const CourseSectionPage = () => {
       return;
     }
 
-    console.log("Creating section with title:", trimmedTitle);
-
     setIsLoading(true);
     try {
       const res = await itemSectionApiFetch.createItemSection(courseId, {
         title: trimmedTitle,
       });
-
-      console.log("Create section response:", res);
 
       if (res.success && res.data) {
         const formattedSection = {
@@ -100,8 +98,7 @@ const CourseSectionPage = () => {
           totalLectures: res.data.totalLectures || 0,
           subItemSection: [],
         };
-
-        setSections([...sections, formattedSection]);
+        setSections((prev) => [...prev, formattedSection]);
         toast.success("Section created successfully");
         setNewSection({ title: "" });
         setIsAddingSection(false);
@@ -119,9 +116,10 @@ const CourseSectionPage = () => {
   const handleDeleteSection = async (sectionId) => {
     try {
       const res = await itemSectionApiFetch.deleteItemSection(sectionId);
-
       if (res.success) {
-        setSections(sections.filter((section) => section.id !== sectionId));
+        setSections((prev) =>
+          prev.filter((section) => section.id !== sectionId)
+        );
         toast.success("Section deleted successfully");
       } else {
         toast.error(res.error || "Failed to delete section");
@@ -133,31 +131,64 @@ const CourseSectionPage = () => {
   };
 
   const handleAddSubItem = async (sectionId) => {
-    if (!newSubItem.title.trim()) return;
+    const trimmedTitle = newSubItem.title.trim();
 
-    setSections(
-      sections.map((section) => {
-        if (section.id === sectionId) {
-          const updatedSubItems = [
-            ...section.subItemSection,
-            { ...newSubItem, id: Date.now() },
-          ];
-          return {
-            ...section,
-            subItemSection: updatedSubItems,
-            totalLectures: updatedSubItems.length,
-          };
-        }
-        return section;
-      })
-    );
+    if (!trimmedTitle) {
+      toast.error("Title is required");
+      return;
+    }
 
-    setNewSubItem({ title: "", type: "lecture", duration: "" });
+    try {
+      const payload = {
+        sectionId,
+        title: trimmedTitle,
+        type: newSubItem.type,
+        content: newSubItem.content,
+        contentUrl: newSubItem.contentUrl,
+      };
+
+      const res = await subItemApiFetch.createSubItem(payload);
+      if (res.success) {
+        const createdItem = res.data?.data;
+
+        setSections((prevSections) =>
+          prevSections.map((section) => {
+            if (section.id === sectionId) {
+              const updatedSubItems = [
+                ...section.subItemSection,
+                {
+                  id: createdItem._id,
+                  title: createdItem.title,
+                  type: createdItem.type,
+                  content: createdItem.content,
+                  contentUrl: createdItem.contentUrl,
+                },
+              ];
+
+              return {
+                ...section,
+                subItemSection: updatedSubItems,
+                totalLectures: updatedSubItems.length,
+              };
+            }
+            return section;
+          })
+        );
+
+        toast.success("Item added successfully");
+        setNewSubItem({ title: "", type: "", content: "", contentUrl: "" });
+      } else {
+        toast.error(res.message || "Failed to add sub item");
+      }
+    } catch (error) {
+      console.error("Error adding sub item :", error);
+      toast.error("An error occurred while adding sub item");
+    }
   };
 
   const handleDeleteSubItem = (sectionId, itemId) => {
-    setSections(
-      sections.map((section) => {
+    setSections((prevSections) =>
+      prevSections.map((section) => {
         if (section.id === sectionId) {
           const updatedSubItems = section.subItemSection.filter(
             (item) => item.id !== itemId
@@ -171,28 +202,28 @@ const CourseSectionPage = () => {
         return section;
       })
     );
+    toast.success("Lecture / content removed");
   };
 
   const toggleSection = (sectionId) => {
-    setExpandedSection(expandedSection === sectionId ? null : sectionId);
+    setExpandedSection((prev) => (prev === sectionId ? null : sectionId));
   };
 
   const moveSection = (index, direction) => {
-    const newSections = [...sections];
-    const newIndex = direction === "up" ? index - 1 : index + 1;
+    setSections((prevSections) => {
+      const newSections = [...prevSections];
+      const newIndex = direction === "up" ? index - 1 : index + 1;
+      if (newIndex < 0 || newIndex >= newSections.length) return prevSections;
 
-    if (newIndex < 0 || newIndex >= sections.length) return;
-
-    [newSections[index], newSections[newIndex]] = [
-      newSections[newIndex],
-      newSections[index],
-    ];
-
-    newSections.forEach((section, idx) => {
-      section.orderIndex = idx;
+      [newSections[index], newSections[newIndex]] = [
+        newSections[newIndex],
+        newSections[index],
+      ];
+      return newSections.map((section, idx) => ({
+        ...section,
+        orderIndex: idx,
+      }));
     });
-
-    setSections(newSections);
   };
 
   if (isFetchingData) {
@@ -241,7 +272,7 @@ const CourseSectionPage = () => {
 
         <div className="mb-6">
           <button
-            onClick={() => setIsAddingSection(!isAddingSection)}
+            onClick={() => setIsAddingSection((prev) => !prev)}
             className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-[#b08968] to-[#8c5e3c] text-white font-semibold rounded-xl hover:opacity-90 transition shadow-md"
           >
             <Plus className="w-5 h-5" />
@@ -268,11 +299,7 @@ const CourseSectionPage = () => {
                 <input
                   type="text"
                   value={newSection.title}
-                  onChange={(e) =>
-                    setNewSection({
-                      title: e.target.value,
-                    })
-                  }
+                  onChange={(e) => setNewSection({ title: e.target.value })}
                   className="w-full px-4 py-3 bg-[#fdfaf7] border border-[#e0c9a6] rounded-lg text-[#6b4226] placeholder-[#6b4226]/40 focus:outline-none focus:border-[#b08968] transition"
                   placeholder="e.g., Introduction to React Hooks"
                 />
@@ -336,7 +363,7 @@ const CourseSectionPage = () => {
                         <button
                           onClick={() => moveSection(index, "up")}
                           disabled={index === 0}
-                          className={`p-1 rounded ${
+                          className={`p‑1 rounded ${
                             index === 0
                               ? "text-[#6b4226]/20 cursor-not-allowed"
                               : "text-[#6b4226]/60 hover:bg-[#fdfaf7]"
@@ -348,7 +375,7 @@ const CourseSectionPage = () => {
                         <button
                           onClick={() => moveSection(index, "down")}
                           disabled={index === sections.length - 1}
-                          className={`p-1 rounded ${
+                          className={`p‑1 rounded ${
                             index === sections.length - 1
                               ? "text-[#6b4226]/20 cursor-not-allowed"
                               : "text-[#6b4226]/60 hover:bg-[#fdfaf7]"
@@ -367,7 +394,7 @@ const CourseSectionPage = () => {
                             {section.title}
                           </h3>
                           <span className="text-xs text-[#6b4226]/60 bg-[#fdfaf7] px-3 py-1 rounded-full border border-[#e0c9a6]">
-                            {section.totalLectures}{" "}
+                            {section.totalLectures} 
                             {section.totalLectures === 1
                               ? "lecture"
                               : "lectures"}
@@ -384,7 +411,7 @@ const CourseSectionPage = () => {
                         {expandedSection === section.id ? (
                           <ChevronUp className="w-5 h-5" />
                         ) : (
-                          <ChevronDown className="w-5 h-5" />
+                          <ChevronDown classClassName="w-5 h-5" />
                         )}
                       </button>
                       <button
@@ -401,7 +428,7 @@ const CourseSectionPage = () => {
                 {expandedSection === section.id && (
                   <div className="border-t border-[#e0c9a6] bg-[#fdfaf7]/50">
                     <div className="p-6 space-y-4">
-                      {/* Add Sub-Item Form */}
+                      {/* Add Sub‑Item Form */}
                       <div className="bg-white rounded-lg p-4 border border-[#e0c9a6]">
                         <h4 className="text-sm font-semibold text-[#6b4226] mb-3">
                           Add Lecture/Content
@@ -411,10 +438,10 @@ const CourseSectionPage = () => {
                             type="text"
                             value={newSubItem.title}
                             onChange={(e) =>
-                              setNewSubItem({
-                                ...newSubItem,
+                              setNewSubItem((prev) => ({
+                                ...prev,
                                 title: e.target.value,
-                              })
+                              }))
                             }
                             className="px-3 py-2 bg-[#fdfaf7] border border-[#e0c9a6] rounded-lg text-sm text-[#6b4226] focus:outline-none focus:border-[#b08968]"
                             placeholder="Lecture title"
@@ -422,31 +449,75 @@ const CourseSectionPage = () => {
                           <select
                             value={newSubItem.type}
                             onChange={(e) =>
-                              setNewSubItem({
-                                ...newSubItem,
+                              setNewSubItem((prev) => ({
+                                ...prev,
                                 type: e.target.value,
-                              })
+                              }))
                             }
                             className="px-3 py-2 bg-[#fdfaf7] border border-[#e0c9a6] rounded-lg text-sm text-[#6b4226] focus:outline-none focus:border-[#b08968]"
                           >
-                            <option value="lecture">Lecture</option>
+                            <option value="">Select type</option>
                             <option value="video">Video</option>
                             <option value="quiz">Quiz</option>
                             <option value="assignment">Assignment</option>
                           </select>
+
+                          {newSubItem.type === "video" && (
+                            <div className="md:col-span-3 space-y-3">
+                              <input
+                                type="text"
+                                placeholder="Video URL (YouTube, Vimeo…)"
+                                value={newSubItem.contentUrl}
+                                onChange={(e) =>
+                                  setNewSubItem((prev) => ({
+                                    ...prev,
+                                    contentUrl: e.target.value,
+                                  }))
+                                }
+                                className="w-full px-3 py-2 bg-[#fdfaf7] border border-[#e0c9a6] rounded-lg text-sm text-[#6b4226]"
+                              />
+                            </div>
+                          )}
+
+                          {newSubItem.type === "assignment" && (
+                            <div className="md:col-span-3 space-y-3">
+                              <input
+                                type="file"
+                                onChange={(e) =>
+                                  setNewSubItem((prev) => ({
+                                    ...prev,
+                                    contentUrl: e.target.value,
+                                  }))
+                                }
+                                className="w-full px-3 py-2 bg-[#fdfaf7] border border-[#e0c9a6] rounded-lg text-sm text-[#6b4226]"
+                              />
+                            </div>
+                          )}
+
+                          {newSubItem.type === "quiz" && (
+                            <div className="md:col-span-3 space-y-3">
+                              <input
+                                type="text"
+                                readOnly
+                                placeholder="Quiz title already set above"
+                                value={newSubItem.title}
+                                className="w-full px-3 py-2 bg-[#fdfaf7] border border-[#e0c9a6] rounded-lg text-sm text-[#6b4226]"
+                              />
+                              <textarea
+                                placeholder="Enter quiz description or instructions..."
+                                value={newSubItem.content}
+                                onChange={(e) =>
+                                  setNewSubItem((prev) => ({
+                                    ...prev,
+                                    content: e.target.value,
+                                  }))
+                                }
+                                className="w-full px-3 py-2 bg-[#fdfaf7] border border-[#e0c9a6] rounded-lg text-sm text-[#6b4226]"
+                              />
+                            </div>
+                          )}
+
                           <div className="flex gap-2">
-                            <input
-                              type="text"
-                              value={newSubItem.duration}
-                              onChange={(e) =>
-                                setNewSubItem({
-                                  ...newSubItem,
-                                  duration: e.target.value,
-                                })
-                              }
-                              className="flex-1 px-3 py-2 bg-[#fdfaf7] border border-[#e0c9a6] rounded-lg text-sm text-[#6b4226] focus:outline-none focus:border-[#b08968]"
-                              placeholder="Duration (e.g., 10:30)"
-                            />
                             <button
                               onClick={() => handleAddSubItem(section.id)}
                               disabled={!newSubItem.title.trim()}
@@ -462,7 +533,7 @@ const CourseSectionPage = () => {
                         </div>
                       </div>
 
-                      {/* Sub-Items List */}
+                      {/* Sub‑Items List */}
                       {section.subItemSection.length > 0 ? (
                         <div className="space-y-2">
                           {section.subItemSection.map((item, itemIndex) => (
@@ -477,20 +548,17 @@ const CourseSectionPage = () => {
                                 {item.type === "video" ? (
                                   <Video className="w-5 h-5 text-[#b08968]" />
                                 ) : item.type === "quiz" ? (
-                                  <CheckCircle className="w-5 h-5 text-[#b08968]" />
+                                  <div className="text-sm text-[#6b4226]">
+                                    Quiz
+                                  </div>
                                 ) : (
-                                  <FileText className="w-5 h-5 text-[#b08968]" />
+                                  <div className="text-sm text-[#6b4226]">
+                                    Assignment/File
+                                  </div>
                                 )}
-                                <div>
-                                  <p className="text-sm font-semibold text-[#6b4226]">
-                                    {item.title}
-                                  </p>
-                                  <p className="text-xs text-[#6b4226]/60">
-                                    {item.type.charAt(0).toUpperCase() +
-                                      item.type.slice(1)}
-                                    {item.duration && ` • ${item.duration}`}
-                                  </p>
-                                </div>
+                                <span className="text-sm text-[#6b4226] ml-2">
+                                  {item.title}
+                                </span>
                               </div>
                               <button
                                 onClick={() =>
