@@ -49,7 +49,7 @@ export const createCourse = asyncHandler(async (req, res) => {
     throw new ApiError(400, 'Course thumbnail is required');
   }
 
-  const thumbnail = await uploadOnCloudinary(req.file.buffer);
+  const thumbnail = await uploadOnCloudinary(req.file.buffer,req.file.originalname);
   if (!thumbnail?.secure_url) {
     throw new ApiError(500, 'Failed to upload thumbnail');
   }
@@ -68,7 +68,7 @@ export const createCourse = asyncHandler(async (req, res) => {
     requirements,
     thumbnail: {
       url: thumbnail.secure_url,
-      localPath: req.file.public_id,
+      localPath: thumbnail.public_id,
     },
     instructor: userId,
   };

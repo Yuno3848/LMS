@@ -21,7 +21,6 @@ const subItemSectionSchema = new Schema({
     },
   },
   orderIndex: { type: Number },
-
 });
 
 export const subItemSection = mongoose.model('SubItemSection', subItemSectionSchema);

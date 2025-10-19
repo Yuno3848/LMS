@@ -4,23 +4,21 @@ import { isLogged } from '../middlewares/isLogged.middleware.js';
 import {
   validateCreateSubItemSection,
   validateDeleteSubItemSection,
-  validateUpdateSubItemSection,
 } from '../validators/subItem.validator.js';
 import {
   createSubItemSection,
   deleteSubItemSection,
-  updateSubItemSection,
 } from '../controllers/subItemSection.controller.js';
-import { gcsUploader } from '../middlewares/multer.middleware.js';
+import { upload } from '../middlewares/multer.middleware.js';
 
 const subItem = Router();
 
 subItem.post(
   '/create-subItemSection/:itemSectionId',
-  gcsUploader.single('assignment'),
+  isLogged,
+  upload.single('file'),
   validateCreateSubItemSection(),
   validatorError,
-  isLogged,
   createSubItemSection,
 );
 
@@ -30,14 +28,6 @@ subItem.delete(
   validatorError,
   isLogged,
   deleteSubItemSection,
-);
-
-subItem.patch(
-  '/update-subItemSection/:subItemId',
-  validateUpdateSubItemSection(),
-  validatorError,
-  isLogged,
-  updateSubItemSection,
 );
 
 export default subItem;

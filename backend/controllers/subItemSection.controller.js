@@ -6,7 +6,7 @@ import ApiError from '../utils/ApiError.js';
 import ApiResponse from '../utils/ApiResponse.js';
 import { asyncHandler } from '../utils/asyncHandler.js';
 import mongoose from 'mongoose';
-import { uploadToGCS } from '../utils/gcsUploader.js';
+import { uploadOnCloudinary } from '../utils/cloudinary.js';
 
 const validateInstructor = async (userId) => {
   if (!userId || !mongoose.Types.ObjectId.isValid(userId.toString())) {
@@ -49,28 +49,42 @@ export const createSubItemSection = asyncHandler(async (req, res) => {
 
   const { itemSection } = await validateCourseOwnership(itemSectionId, userId);
 
-  const { itemType, title, orderIndex, content } = req.body;
+  const { itemType, title, orderIndex, content, contentUrl } = req.body;
 
-  let contentUrl = null;
+  let pdfData = {
+    url: '',
+    localPath: '',
+  };
 
+  // Handle assignment file upload (PDF)
   if (itemType === 'assignment') {
     if (!req.file) {
       throw new ApiError(400, 'PDF file is required for assignment items');
     }
 
     try {
-      contentUrl = await uploadToGCS(req.file, 'assignments');
+      const pdfDataResult = await uploadOnCloudinary(req.file.buffer,req.file.originalname);
+      pdfData = {
+        url: pdfDataResult.secure_url,
+        localPath: pdfDataResult.public_id,
+      };
     } catch (error) {
       throw new ApiError(500, `Failed to upload assignment: ${error.message}`);
     }
+  } else if (itemType === 'video' && contentUrl) {
+    // Handle video URL
+    pdfData = {
+      url: contentUrl,
+      localPath: '',
+    };
   }
 
   const subItem = await subItemSection.create({
     itemType,
     title,
     content,
-    contentUrl,
-    orderIndex: orderIndex ?? itemSection.subItemSection.length,
+    contentUrl: pdfData,
+    orderIndex: orderIndex ?? itemSection.subItemSection?.length ?? 0,
   });
 
   itemSection.subItemSection.push(subItem._id);
@@ -79,7 +93,6 @@ export const createSubItemSection = asyncHandler(async (req, res) => {
 
   return res.status(201).json(new ApiResponse(201, 'SubItemSection created successfully', subItem));
 });
-
 export const deleteSubItemSection = asyncHandler(async (req, res) => {
   const userId = req.user.id;
   await validateInstructor(userId);
@@ -89,6 +102,7 @@ export const deleteSubItemSection = asyncHandler(async (req, res) => {
     throw new ApiError(400, 'Invalid subItem ID');
   }
 
+  // Find parent item section that contains this subItem
   const itemSection = await ItemSection.findOne({ subItemSection: subItemId });
   if (!itemSection) {
     throw new ApiError(404, 'Item section not found');
@@ -96,6 +110,20 @@ export const deleteSubItemSection = asyncHandler(async (req, res) => {
 
   await validateCourseOwnership(itemSection._id.toString(), userId);
 
+  // Find subitem
+  const subItem = await subItemSection.findById(subItemId);
+  if (!subItem) {
+    throw new ApiError(404, 'Sub item not found');
+  }
+
+  // Optional: Delete file from Cloudinary if contentUrl exists
+  // NOTE: You need to store `public_id` to safely delete the file from Cloudinary.
+  // if (subItem.contentUrl) {
+  //   const publicId = extractPublicId(subItem.contentUrl);
+  //   await cloudinary.uploader.destroy(publicId, { resource_type: 'raw' });
+  // }
+
+  // Remove subItem and update parent section
   const [deletedSubItem, updatedItemSection] = await Promise.all([
     subItemSection.findByIdAndDelete(subItemId),
     ItemSection.findByIdAndUpdate(
@@ -122,119 +150,4 @@ export const deleteSubItemSection = asyncHandler(async (req, res) => {
       remainingSubItems: updatedItemSection.subItemSection.length,
     }),
   );
-});
-
-export const updateSubItemSection = asyncHandler(async (req, res) => {
-  const userId = req.user.id;
-  await validateInstructor(userId);
-
-  const { subItemId } = req.params;
-  if (!mongoose.Types.ObjectId.isValid(subItemId)) {
-    throw new ApiError(400, 'Invalid subItem ID');
-  }
-
-  const subItem = await subItemSection.findById(subItemId);
-  if (!subItem) {
-    throw new ApiError(404, 'Sub item not found');
-  }
-
-  const itemSection = await ItemSection.findOne({ subItemSection: subItemId });
-  if (!itemSection) {
-    throw new ApiError(404, 'Item section not found');
-  }
-
-  await validateCourseOwnership(itemSection._id.toString(), userId);
-
-  const {
-    itemType,
-    title,
-    content,
-    duration,
-    orderIndex,
-    question,
-    options,
-    correctAnswer,
-    explanation,
-  } = req.body;
-
-  let contentUrl = req.body.contentUrl;
-  if (req.file && itemType === 'video') {
-    contentUrl = req.file.cloudStoragePublicUrl;
-  }
-
-  if (itemType === 'video' && !contentUrl && !subItem.contentUrl) {
-    throw new ApiError(400, 'Content URL is required for video items');
-  }
-
-  const updateData = {
-    ...(itemType && { itemType }),
-    ...(title && { title }),
-    ...(content !== undefined && { content }),
-    ...(duration !== undefined && { duration }),
-    ...(contentUrl && { contentUrl }),
-    ...(orderIndex !== undefined && { orderIndex }),
-  };
-
-  const updatedSubItem = await subItemSection.findByIdAndUpdate(subItemId, updateData, {
-    new: true,
-    runValidators: true,
-  });
-
-  if (!updatedSubItem) {
-    throw new ApiError(500, 'Failed to update sub item section');
-  }
-
-  return res
-    .status(200)
-    .json(new ApiResponse(200, 'Sub item section updated successfully', updatedSubItem));
-});
-
-export const getSubItemSectionById = asyncHandler(async (req, res) => {
-  const userId = req.user.id;
-  await validateInstructor(userId);
-
-  const { subItemId } = req.params;
-  if (!mongoose.Types.ObjectId.isValid(subItemId)) {
-    throw new ApiError(400, 'Invalid subItem ID');
-  }
-
-  const subItem = await subItemSection.findById(subItemId);
-  if (!subItem) {
-    throw new ApiError(404, 'Sub item not found');
-  }
-
-  const itemSection = await ItemSection.findOne({ subItemSection: subItemId });
-  if (!itemSection) {
-    throw new ApiError(404, 'Item section not found');
-  }
-
-  await validateCourseOwnership(itemSection._id.toString(), userId);
-
-  return res
-    .status(200)
-    .json(new ApiResponse(200, 'Sub item section fetched successfully', subItem));
-});
-
-export const getAllSubItemSections = asyncHandler(async (req, res) => {
-  const userId = req.user.id;
-  await validateInstructor(userId);
-  console.log('user id :', userId);
-  const { courseId } = req.params;
-  console.log('course id :', courseId);
-  if (!mongoose.Types.ObjectId.isValid(courseId)) {
-    throw new ApiError(400, 'Invalid item section ID');
-  }
-
-  const { itemSection } = await validateCourseOwnership(courseId, userId);
-
-  const populatedItemSection = await ItemSection.findById(courseId)
-    .populate({
-      path: 'subItemSection',
-      select: 'itemType title content duration contentUrl orderIndex ',
-    })
-    .select('title subItemSection totalLectures');
-
-  return res
-    .status(200)
-    .json(new ApiResponse(200, 'All sub item sections fetched successfully', populatedItemSection));
 });

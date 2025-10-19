@@ -11,9 +11,3 @@ export const upload = multer({
   },
 });
 
-export const gcsUploader = multer({
-  storage: storage,
-  limits: {
-    fileSize: 20 * 1024 * 1024,
-  },
-});

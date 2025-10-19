@@ -138,18 +138,46 @@ const CourseSectionPage = () => {
       return;
     }
 
-    try {
-      const payload = {
-        sectionId,
-        title: trimmedTitle,
-        type: newSubItem.type,
-        content: newSubItem.content,
-        contentUrl: newSubItem.contentUrl,
-      };
+    if (!newSubItem.type) {
+      toast.error("Please select a type");
+      return;
+    }
 
-      const res = await subItemApiFetch.createSubItem(payload);
+    // Validation based on type
+    if (newSubItem.type === "video" && !newSubItem.contentUrl) {
+      toast.error("Video URL is required");
+      return;
+    }
+
+    if (newSubItem.type === "assignment" && !newSubItem.file) {
+      toast.error("Please upload a file for assignment");
+      return;
+    }
+
+    try {
+      const formData = new FormData();
+      formData.append("title", trimmedTitle);
+      formData.append("itemType", newSubItem.type); // Changed from 'type' to 'itemType'
+
+      if (newSubItem.content) {
+        formData.append("content", newSubItem.content);
+      }
+
+      // Handle video URL
+      if (newSubItem.type === "video" && newSubItem.contentUrl) {
+        formData.append("contentUrl", newSubItem.contentUrl);
+      }
+
+      // Handle assignment file
+      if (newSubItem.type === "assignment" && newSubItem.file) {
+        formData.append("file", newSubItem.file);
+      }
+
+      const res = await subItemApiFetch.createSubItem(sectionId, formData);
+
       if (res.success) {
-        const createdItem = res.data?.data;
+        const createdItem = res.data;
+        console.log("create item :", createdItem);
 
         setSections((prevSections) =>
           prevSections.map((section) => {
@@ -159,7 +187,7 @@ const CourseSectionPage = () => {
                 {
                   id: createdItem._id,
                   title: createdItem.title,
-                  type: createdItem.type,
+                  type: createdItem.itemType,
                   content: createdItem.content,
                   contentUrl: createdItem.contentUrl,
                 },
@@ -176,13 +204,19 @@ const CourseSectionPage = () => {
         );
 
         toast.success("Item added successfully");
-        setNewSubItem({ title: "", type: "", content: "", contentUrl: "" });
+        setNewSubItem({
+          title: "",
+          type: "",
+          content: "",
+          contentUrl: "",
+          file: null,
+        });
       } else {
         toast.error(res.message || "Failed to add sub item");
       }
     } catch (error) {
       console.error("Error adding sub item :", error);
-      toast.error("An error occurred while adding sub item");
+      toast.error(error.message || "An error occurred while adding sub item");
     }
   };
 
@@ -486,7 +520,7 @@ const CourseSectionPage = () => {
                                 onChange={(e) =>
                                   setNewSubItem((prev) => ({
                                     ...prev,
-                                    contentUrl: e.target.value,
+                                    file: e.target.files[0],
                                   }))
                                 }
                                 className="w-full px-3 py-2 bg-[#fdfaf7] border border-[#e0c9a6] rounded-lg text-sm text-[#6b4226]"
@@ -553,11 +587,13 @@ const CourseSectionPage = () => {
                                   </div>
                                 ) : (
                                   <div className="text-sm text-[#6b4226]">
-                                    Assignment/File
+                                    Assignment
                                   </div>
                                 )}
                                 <span className="text-sm text-[#6b4226] ml-2">
-                                  {item.title}
+                                  <a href={item.contentUrl.url}>
+                                    {item.contentUrl.url}
+                                  </a>
                                 </span>
                               </div>
                               <button
