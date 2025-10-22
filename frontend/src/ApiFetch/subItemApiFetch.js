@@ -1,22 +1,30 @@
+import toast from "react-hot-toast";
+
 const baseURL = `${import.meta.env.VITE_API_URL}/subItem`;
 
 export const subItemApiFetch = {
   createSubItem: async (itemSectionId, formData) => {
     try {
-      const response = await fetch(
+      const res = await fetch(
         `${baseURL}/create-subItemSection/${itemSectionId}`,
         {
           method: "POST",
-         credentials:"include",
+          credentials: "include",
           body: formData,
         }
       );
 
-      const data = await response.json();
-      return data;
+      console.log("Response status :", res.status)
+      console.log("Response headers :", res.headers)
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.message || "Failed to create item");
+      }
+
+      return { success: true, data };
     } catch (error) {
-      console.error("Create SubItem Error:", error);
-      throw error;
+      console.error("Create SubItem Error:", error.message);
+      return { success: false, message: error.message };
     }
   },
 

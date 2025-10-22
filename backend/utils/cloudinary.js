@@ -10,11 +10,14 @@ cloudinary.config({
 
 export const uploadOnCloudinary = async (fileBuffer, originalname) => {
   try {
-    const ext = path.extname(originalname).toLowerCase(); // e.g. '.jpg', '.pdf'
+    const ext = path.extname(originalname).toLowerCase(); // e.g. '.mp4', '.pdf', '.jpg'
 
-    let resourceType = 'image';
+    let resourceType = 'image'; // default
+
     if (ext === '.pdf') {
       resourceType = 'raw';
+    } else if (['.mp4', '.mov', '.avi', '.webm', '.mkv'].includes(ext)) {
+      resourceType = 'video';
     }
 
     return new Promise((resolve, reject) => {
@@ -32,3 +35,4 @@ export const uploadOnCloudinary = async (fileBuffer, originalname) => {
     return null;
   }
 };
+

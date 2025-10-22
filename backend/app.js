@@ -18,20 +18,13 @@ app.use(morgan('dev'));
 app.use(cookie());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-// const allowedOrigin = [
-//   process.env.FRONTEND_URL,
-//   'http://127.0.0.1:5500',
-//   'https://lms-e8yj.vercel.app',
 
-// ];
 app.use(
   cors({
-    origin: '*',
+    origin: 'http://localhost:5173',
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
-    preflightContinue: false,
-    optionsSuccessStatus: 204,
   }),
 );
 app.use('/api/v1/auth', auth);

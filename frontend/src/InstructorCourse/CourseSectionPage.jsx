@@ -49,11 +49,17 @@ const CourseSectionPage = () => {
           const formattedSections = (res.data.sections || []).map(
             (section) => ({
               id: section._id,
-              _id: section._id, // perhaps you meant section._id
+              _id: section._id,
               title: section.title,
               orderIndex: section.orderIndex,
               totalLectures: section.totalLectures || 0,
-              subItemSection: section.subItemSection || [],
+              subItemSection: (section.subItemSection || []).map((item) => ({
+                id: item._id,
+                title: item.title || "",
+                type: item.itemType,
+                content: item.content || "",
+                contentUrl: item.contentUrl || { url: "", localPath: "" },
+              })),
             })
           );
           setSections(formattedSections);
@@ -143,17 +149,6 @@ const CourseSectionPage = () => {
       return;
     }
 
-    // Validation based on type
-    if (newSubItem.type === "video" && !newSubItem.contentUrl) {
-      toast.error("Video URL is required");
-      return;
-    }
-
-    if (newSubItem.type === "assignment" && !newSubItem.file) {
-      toast.error("Please upload a file for assignment");
-      return;
-    }
-
     try {
       const formData = new FormData();
       formData.append("title", trimmedTitle);
@@ -164,13 +159,9 @@ const CourseSectionPage = () => {
       }
 
       // Handle video URL
-      if (newSubItem.type === "video" && newSubItem.contentUrl) {
-        formData.append("contentUrl", newSubItem.contentUrl);
-      }
-
-      // Handle assignment file
-      if (newSubItem.type === "assignment" && newSubItem.file) {
-        formData.append("file", newSubItem.file);
+      if (newSubItem.type === "video" || newSubItem.type === "assignment") {
+        console.log("item type :", newSubItem);
+        formData.append("file", newSubItem.contentUrl);
       }
 
       const res = await subItemApiFetch.createSubItem(sectionId, formData);
@@ -212,10 +203,12 @@ const CourseSectionPage = () => {
           file: null,
         });
       } else {
-        toast.error(res.message || "Failed to add sub item");
+        // toast.error(res.message || "Failed to add sub item");
+        toast.error("Forgot to choose file?");
       }
     } catch (error) {
-      console.error("Error adding sub item :", error);
+      console.error("Error adding sub item :", error.message);
+
       toast.error(error.message || "An error occurred while adding sub item");
     }
   };
@@ -445,7 +438,7 @@ const CourseSectionPage = () => {
                         {expandedSection === section.id ? (
                           <ChevronUp className="w-5 h-5" />
                         ) : (
-                          <ChevronDown classClassName="w-5 h-5" />
+                          <ChevronDown className="w-5 h-5" />
                         )}
                       </button>
                       <button
@@ -499,13 +492,13 @@ const CourseSectionPage = () => {
                           {newSubItem.type === "video" && (
                             <div className="md:col-span-3 space-y-3">
                               <input
-                                type="text"
-                                placeholder="Video URL (YouTube, Vimeo…)"
-                                value={newSubItem.contentUrl}
+                                type="file"
+                                accept="video/*"
+                                placeholder="Video"
                                 onChange={(e) =>
                                   setNewSubItem((prev) => ({
                                     ...prev,
-                                    contentUrl: e.target.value,
+                                    contentUrl: e.target.files[0],
                                   }))
                                 }
                                 className="w-full px-3 py-2 bg-[#fdfaf7] border border-[#e0c9a6] rounded-lg text-sm text-[#6b4226]"
@@ -517,10 +510,12 @@ const CourseSectionPage = () => {
                             <div className="md:col-span-3 space-y-3">
                               <input
                                 type="file"
+                                accept=".pdf"
+                                placeholder="add assignment pdf"
                                 onChange={(e) =>
                                   setNewSubItem((prev) => ({
                                     ...prev,
-                                    file: e.target.files[0],
+                                    contentUrl: e.target.files[0],
                                   }))
                                 }
                                 className="w-full px-3 py-2 bg-[#fdfaf7] border border-[#e0c9a6] rounded-lg text-sm text-[#6b4226]"
@@ -582,19 +577,29 @@ const CourseSectionPage = () => {
                                 {item.type === "video" ? (
                                   <Video className="w-5 h-5 text-[#b08968]" />
                                 ) : item.type === "quiz" ? (
-                                  <div className="text-sm text-[#6b4226]">
-                                    Quiz
-                                  </div>
+                                  <FileText className="w-5 h-5 text-[#b08968]" />
                                 ) : (
-                                  <div className="text-sm text-[#6b4226]">
-                                    Assignment
-                                  </div>
+                                  <FileText className="w-5 h-5 text-[#b08968]" />
                                 )}
-                                <span className="text-sm text-[#6b4226] ml-2">
-                                  <a href={item.contentUrl.url}>
-                                    {item.contentUrl.url}
-                                  </a>
-                                </span>
+                                <div className="flex flex-col">
+                                  <span className="text-sm font-medium text-[#6b4226]">
+                                    {item.title}
+                                  </span>
+                                  {item.contentUrl?.url && (
+                                    <a
+                                      href={sections.contentUrl.url}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      className="text-xs text-blue-600 hover:underline"
+                                    >
+                                      {item.type === "video"
+                                        ? "Watch Video"
+                                        : item.type === "assignment"
+                                        ? "View Assignment"
+                                        : "View Content"}
+                                    </a>
+                                  )}
+                                </div>
                               </div>
                               <button
                                 onClick={() =>

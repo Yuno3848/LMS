@@ -49,9 +49,9 @@ export const createSubItemSection = asyncHandler(async (req, res) => {
 
   const { itemSection } = await validateCourseOwnership(itemSectionId, userId);
 
-  const { itemType, title, orderIndex, content, contentUrl } = req.body;
+  const { itemType, title, orderIndex, content } = req.body;
 
-  let pdfData = {
+  let contentData = {
     url: '',
     localPath: '',
   };
@@ -64,18 +64,20 @@ export const createSubItemSection = asyncHandler(async (req, res) => {
 
     try {
       const pdfDataResult = await uploadOnCloudinary(req.file.buffer,req.file.originalname);
-      pdfData = {
+      contentData = {
         url: pdfDataResult.secure_url,
         localPath: pdfDataResult.public_id,
       };
     } catch (error) {
       throw new ApiError(500, `Failed to upload assignment: ${error.message}`);
     }
-  } else if (itemType === 'video' && contentUrl) {
+  } else if (itemType === 'video') {
     // Handle video URL
-    pdfData = {
-      url: contentUrl,
-      localPath: '',
+    const lectureVideo = await uploadOnCloudinary(req.file.buffer,req.file.originalname)
+   
+    contentData = {
+      url: lectureVideo.secure_url,
+      localPath: lectureVideo.public_id,
     };
   }
 
@@ -83,7 +85,7 @@ export const createSubItemSection = asyncHandler(async (req, res) => {
     itemType,
     title,
     content,
-    contentUrl: pdfData,
+    contentUrl: contentData,
     orderIndex: orderIndex ?? itemSection.subItemSection?.length ?? 0,
   });
 
