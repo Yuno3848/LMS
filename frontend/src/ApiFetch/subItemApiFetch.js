@@ -37,6 +37,9 @@ export const subItemApiFetch = {
       const res = await fetch(`${baseURL}/delete-subItemSection/${subItemId}`, {
         method: "DELETE",
         credentials: "include",
+        headers:{
+          "Content-Type":"application/json"
+        }
       });
 
       const data = await res.json();

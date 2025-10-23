@@ -1,4 +1,6 @@
-import React, { useEffect, useState } from "react";
+"use client";
+
+import { useEffect, useState } from "react";
 import {
   BookOpen,
   Plus,
@@ -10,10 +12,13 @@ import {
   Loader2,
   GripVertical,
 } from "lucide-react";
+import { FaExternalLinkAlt } from "react-icons/fa";
 import toast from "react-hot-toast";
 import { useNavigate, useParams } from "react-router";
+import { useDispatch, useSelector } from "react-redux";
 import { itemSectionApiFetch } from "../ApiFetch/itemSectionApiFetch";
 import { subItemApiFetch } from "../ApiFetch/subItemApiFetch";
+import { deleteItemCourse, setItem } from "../redux/slicers/itemSlicer";
 
 const CourseSectionPage = () => {
   const [sections, setSections] = useState([]);
@@ -33,6 +38,9 @@ const CourseSectionPage = () => {
 
   const { courseId } = useParams();
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  const item = useSelector((state) => state.itemCourse.item);
 
   useEffect(() => {
     const fetchSections = async () => {
@@ -45,6 +53,7 @@ const CourseSectionPage = () => {
       setIsFetchingData(true);
       try {
         const res = await itemSectionApiFetch.getAllItemSection(courseId);
+        console.log("get all item section :", res);
         if (res.success && res.data) {
           const formattedSections = (res.data.sections || []).map(
             (section) => ({
@@ -53,8 +62,9 @@ const CourseSectionPage = () => {
               title: section.title,
               orderIndex: section.orderIndex,
               totalLectures: section.totalLectures || 0,
-              subItemSection: (section.subItemSection || []).map((item) => ({
+              subItemSection: (section.subItems || []).map((item) => ({
                 id: item._id,
+                _id: item._id,
                 title: item.title || "",
                 type: item.itemType,
                 content: item.content || "",
@@ -62,6 +72,8 @@ const CourseSectionPage = () => {
               })),
             })
           );
+          dispatch(setItem(res?.data?.sections));
+
           setSections(formattedSections);
         } else {
           toast.error("Failed to load sections");
@@ -75,7 +87,7 @@ const CourseSectionPage = () => {
     };
 
     fetchSections();
-  }, [courseId, navigate]);
+  }, [navigate, dispatch]);
 
   const handleAddSection = async () => {
     if (!courseId) {
@@ -94,6 +106,7 @@ const CourseSectionPage = () => {
       const res = await itemSectionApiFetch.createItemSection(courseId, {
         title: trimmedTitle,
       });
+      console.log("create item data response :", res);
 
       if (res.success && res.data) {
         const formattedSection = {
@@ -105,6 +118,7 @@ const CourseSectionPage = () => {
           subItemSection: [],
         };
         setSections((prev) => [...prev, formattedSection]);
+        dispatch(setItem(res?.data));
         toast.success("Section created successfully");
         setNewSection({ title: "" });
         setIsAddingSection(false);
@@ -126,6 +140,7 @@ const CourseSectionPage = () => {
         setSections((prev) =>
           prev.filter((section) => section.id !== sectionId)
         );
+        dispatch(deleteItemCourse(res?.data?._id));
         toast.success("Section deleted successfully");
       } else {
         toast.error(res.error || "Failed to delete section");
@@ -152,7 +167,7 @@ const CourseSectionPage = () => {
     try {
       const formData = new FormData();
       formData.append("title", trimmedTitle);
-      formData.append("itemType", newSubItem.type); // Changed from 'type' to 'itemType'
+      formData.append("itemType", newSubItem.type);
 
       if (newSubItem.content) {
         formData.append("content", newSubItem.content);
@@ -160,15 +175,13 @@ const CourseSectionPage = () => {
 
       // Handle video URL
       if (newSubItem.type === "video" || newSubItem.type === "assignment") {
-        console.log("item type :", newSubItem);
         formData.append("file", newSubItem.contentUrl);
       }
 
       const res = await subItemApiFetch.createSubItem(sectionId, formData);
-
+      console.log("create sub item data response :", res);
       if (res.success) {
         const createdItem = res.data;
-        console.log("create item :", createdItem);
 
         setSections((prevSections) =>
           prevSections.map((section) => {
@@ -177,6 +190,7 @@ const CourseSectionPage = () => {
                 ...section.subItemSection,
                 {
                   id: createdItem._id,
+                  _id: createdItem._id,
                   title: createdItem.title,
                   type: createdItem.itemType,
                   content: createdItem.content,
@@ -213,23 +227,32 @@ const CourseSectionPage = () => {
     }
   };
 
-  const handleDeleteSubItem = (sectionId, itemId) => {
-    setSections((prevSections) =>
-      prevSections.map((section) => {
-        if (section.id === sectionId) {
-          const updatedSubItems = section.subItemSection.filter(
-            (item) => item.id !== itemId
-          );
-          return {
-            ...section,
-            subItemSection: updatedSubItems,
-            totalLectures: updatedSubItems.length,
-          };
-        }
-        return section;
-      })
-    );
-    toast.success("Lecture / content removed");
+  const handleDeleteSubItem = async (sectionId, itemId) => {
+    try {
+      const response = await subItemApiFetch.deleteSubItem(itemId);
+      if (response?.success) {
+        setSections((prevSections) =>
+          prevSections.map((section) => {
+            if (section.id === sectionId) {
+              const updatedSubItems = section.subItemSection.filter(
+                (item) => item.id !== itemId
+              );
+              return {
+                ...section,
+                subItemSection: updatedSubItems,
+                totalLectures: updatedSubItems.length,
+              };
+            }
+            return section;
+          })
+        );
+        toast.success("Lecture / content removed" || response.message);
+      } else {
+        toast.error(response.error || "Failed to remove Lecture / Content ");
+      }
+    } catch (error) {
+      toast.error(error.message || "something went wrong!");
+    }
   };
 
   const toggleSection = (sectionId) => {
@@ -241,7 +264,6 @@ const CourseSectionPage = () => {
       const newSections = [...prevSections];
       const newIndex = direction === "up" ? index - 1 : index + 1;
       if (newIndex < 0 || newIndex >= newSections.length) return prevSections;
-
       [newSections[index], newSections[newIndex]] = [
         newSections[newIndex],
         newSections[index],
@@ -390,7 +412,7 @@ const CourseSectionPage = () => {
                         <button
                           onClick={() => moveSection(index, "up")}
                           disabled={index === 0}
-                          className={`p‑1 rounded ${
+                          className={`p-1 rounded ${
                             index === 0
                               ? "text-[#6b4226]/20 cursor-not-allowed"
                               : "text-[#6b4226]/60 hover:bg-[#fdfaf7]"
@@ -402,7 +424,7 @@ const CourseSectionPage = () => {
                         <button
                           onClick={() => moveSection(index, "down")}
                           disabled={index === sections.length - 1}
-                          className={`p‑1 rounded ${
+                          className={`p-1 rounded ${
                             index === sections.length - 1
                               ? "text-[#6b4226]/20 cursor-not-allowed"
                               : "text-[#6b4226]/60 hover:bg-[#fdfaf7]"
@@ -417,11 +439,11 @@ const CourseSectionPage = () => {
                           <span className="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-gradient-to-br from-[#b08968] to-[#8c5e3c] text-white text-sm font-bold">
                             {index + 1}
                           </span>
-                          <h3 className="text-base font-bold text-[#6b4226]">
+                          <h1 className="text-base font-bold text-[#6b4226]">
                             {section.title}
-                          </h3>
+                          </h1>
                           <span className="text-xs text-[#6b4226]/60 bg-[#fdfaf7] px-3 py-1 rounded-full border border-[#e0c9a6]">
-                            {section.totalLectures} 
+                            {section.totalLectures}{" "}
                             {section.totalLectures === 1
                               ? "lecture"
                               : "lectures"}
@@ -455,10 +477,10 @@ const CourseSectionPage = () => {
                 {expandedSection === section.id && (
                   <div className="border-t border-[#e0c9a6] bg-[#fdfaf7]/50">
                     <div className="p-6 space-y-4">
-                      {/* Add Sub‑Item Form */}
+                      {/* Add Sub-Item Form */}
                       <div className="bg-white rounded-lg p-4 border border-[#e0c9a6]">
                         <h4 className="text-sm font-semibold text-[#6b4226] mb-3">
-                          Add Lecture/Content
+                          Add Lecture / Content
                         </h4>
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                           <input
@@ -562,42 +584,38 @@ const CourseSectionPage = () => {
                         </div>
                       </div>
 
-                      {/* Sub‑Items List */}
+                      {/* Sub-Items List */}
                       {section.subItemSection.length > 0 ? (
                         <div className="space-y-2">
                           {section.subItemSection.map((item, itemIndex) => (
                             <div
-                              key={item.id}
+                              key={item._id}
                               className="flex items-center justify-between p-3 bg-white rounded-lg border border-[#e0c9a6] hover:border-[#b08968] transition"
                             >
                               <div className="flex items-center gap-3">
-                                <span className="text-xs font-semibold text-[#6b4226]/40 w-6">
-                                  {itemIndex + 1}
-                                </span>
-                                {item.type === "video" ? (
-                                  <Video className="w-5 h-5 text-[#b08968]" />
-                                ) : item.type === "quiz" ? (
-                                  <FileText className="w-5 h-5 text-[#b08968]" />
-                                ) : (
-                                  <FileText className="w-5 h-5 text-[#b08968]" />
-                                )}
-                                <div className="flex flex-col">
-                                  <span className="text-sm font-medium text-[#6b4226]">
-                                    {item.title}
+                                <div className="flex flex-col ">
+                                  <span className="text-2xl font-medium text-[#6b4226] mb-2">
+                                    {itemIndex + 1}. {item.title}
                                   </span>
                                   {item.contentUrl?.url && (
-                                    <a
-                                      href={sections.contentUrl.url}
-                                      target="_blank"
-                                      rel="noopener noreferrer"
-                                      className="text-xs text-blue-600 hover:underline"
-                                    >
-                                      {item.type === "video"
-                                        ? "Watch Video"
-                                        : item.type === "assignment"
-                                        ? "View Assignment"
-                                        : "View Content"}
-                                    </a>
+                                    <div>
+                                      {item.type === "video" ? (
+                                        <video
+                                          controls
+                                          src={item.contentUrl.url}
+                                          className="w-dvw rounded-2xl"
+                                        ></video>
+                                      ) : item.type === "assignment" ? (
+                                        <a
+                                          href={item.contentUrl.url}
+                                          className="flex gap-2 items-center"
+                                        >
+                                          {item.title} <FaExternalLinkAlt />
+                                        </a>
+                                      ) : (
+                                        "View Content"
+                                      )}
+                                    </div>
                                   )}
                                 </div>
                               </div>
