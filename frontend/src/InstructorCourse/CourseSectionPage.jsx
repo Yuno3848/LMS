@@ -18,10 +18,15 @@ import { useNavigate, useParams } from "react-router";
 import { useDispatch, useSelector } from "react-redux";
 import { itemSectionApiFetch } from "../ApiFetch/itemSectionApiFetch";
 import { subItemApiFetch } from "../ApiFetch/subItemApiFetch";
-import { deleteItemCourse, setItem } from "../redux/slicers/itemSlicer";
+import {
+  deleteItemCourse,
+  setItem,
+  addItemCourse,
+  addSubItemToSection,
+  removeSubItemFromSection,
+} from "../redux/slicers/itemSlicer";
 
 const CourseSectionPage = () => {
-  const [sections, setSections] = useState([]);
   const [isAddingSection, setIsAddingSection] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isFetchingData, setIsFetchingData] = useState(true);
@@ -40,7 +45,9 @@ const CourseSectionPage = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const item = useSelector((state) => state.itemCourse.item);
+  // Get sections from Redux store
+  const sections = useSelector((state) => state.itemCourse.item || []);
+  console.log("sections from redux:", sections);
 
   useEffect(() => {
     const fetchSections = async () => {
@@ -72,9 +79,7 @@ const CourseSectionPage = () => {
               })),
             })
           );
-          dispatch(setItem(res?.data?.sections));
-
-          setSections(formattedSections);
+          dispatch(setItem(formattedSections));
         } else {
           toast.error("Failed to load sections");
         }
@@ -87,7 +92,7 @@ const CourseSectionPage = () => {
     };
 
     fetchSections();
-  }, [navigate, dispatch]);
+  }, [courseId, navigate, dispatch]);
 
   const handleAddSection = async () => {
     if (!courseId) {
@@ -117,8 +122,7 @@ const CourseSectionPage = () => {
           totalLectures: res.data.totalLectures || 0,
           subItemSection: [],
         };
-        setSections((prev) => [...prev, formattedSection]);
-        dispatch(setItem(res?.data));
+        dispatch(addItemCourse(formattedSection));
         toast.success("Section created successfully");
         setNewSection({ title: "" });
         setIsAddingSection(false);
@@ -137,10 +141,7 @@ const CourseSectionPage = () => {
     try {
       const res = await itemSectionApiFetch.deleteItemSection(sectionId);
       if (res.success) {
-        setSections((prev) =>
-          prev.filter((section) => section.id !== sectionId)
-        );
-        dispatch(deleteItemCourse(res?.data?._id));
+        dispatch(deleteItemCourse(sectionId));
         toast.success("Section deleted successfully");
       } else {
         toast.error(res.error || "Failed to delete section");
@@ -183,30 +184,16 @@ const CourseSectionPage = () => {
       if (res.success) {
         const createdItem = res.data;
 
-        setSections((prevSections) =>
-          prevSections.map((section) => {
-            if (section.id === sectionId) {
-              const updatedSubItems = [
-                ...section.subItemSection,
-                {
-                  id: createdItem._id,
-                  _id: createdItem._id,
-                  title: createdItem.title,
-                  type: createdItem.itemType,
-                  content: createdItem.content,
-                  contentUrl: createdItem.contentUrl,
-                },
-              ];
+        const newSubItem = {
+          id: createdItem._id,
+          _id: createdItem._id,
+          title: createdItem.title,
+          type: createdItem.itemType,
+          content: createdItem.content,
+          contentUrl: createdItem.contentUrl,
+        };
 
-              return {
-                ...section,
-                subItemSection: updatedSubItems,
-                totalLectures: updatedSubItems.length,
-              };
-            }
-            return section;
-          })
-        );
+        dispatch(addSubItemToSection({ sectionId, subItem: newSubItem }));
 
         toast.success("Item added successfully");
         setNewSubItem({
@@ -217,12 +204,10 @@ const CourseSectionPage = () => {
           file: null,
         });
       } else {
-        // toast.error(res.message || "Failed to add sub item");
         toast.error("Forgot to choose file?");
       }
     } catch (error) {
       console.error("Error adding sub item :", error.message);
-
       toast.error(error.message || "An error occurred while adding sub item");
     }
   };
@@ -231,21 +216,7 @@ const CourseSectionPage = () => {
     try {
       const response = await subItemApiFetch.deleteSubItem(itemId);
       if (response?.success) {
-        setSections((prevSections) =>
-          prevSections.map((section) => {
-            if (section.id === sectionId) {
-              const updatedSubItems = section.subItemSection.filter(
-                (item) => item.id !== itemId
-              );
-              return {
-                ...section,
-                subItemSection: updatedSubItems,
-                totalLectures: updatedSubItems.length,
-              };
-            }
-            return section;
-          })
-        );
+        dispatch(removeSubItemFromSection({ sectionId, itemId }));
         toast.success("Lecture / content removed" || response.message);
       } else {
         toast.error(response.error || "Failed to remove Lecture / Content ");
@@ -260,19 +231,21 @@ const CourseSectionPage = () => {
   };
 
   const moveSection = (index, direction) => {
-    setSections((prevSections) => {
-      const newSections = [...prevSections];
-      const newIndex = direction === "up" ? index - 1 : index + 1;
-      if (newIndex < 0 || newIndex >= newSections.length) return prevSections;
-      [newSections[index], newSections[newIndex]] = [
-        newSections[newIndex],
-        newSections[index],
-      ];
-      return newSections.map((section, idx) => ({
-        ...section,
-        orderIndex: idx,
-      }));
-    });
+    const newSections = [...sections];
+    const newIndex = direction === "up" ? index - 1 : index + 1;
+    if (newIndex < 0 || newIndex >= newSections.length) return;
+
+    [newSections[index], newSections[newIndex]] = [
+      newSections[newIndex],
+      newSections[index],
+    ];
+
+    const updatedSections = newSections.map((section, idx) => ({
+      ...section,
+      orderIndex: idx,
+    }));
+
+    dispatch(setItem(updatedSections));
   };
 
   if (isFetchingData) {
