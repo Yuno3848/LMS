@@ -7,9 +7,12 @@ const InstructorDashboard = () => {
   const instructorCourses = useSelector(
     (state) => state.course.instructorCourses
   );
+
+  console.log("instructor dashboard courses : ", instructorCourses)
   const instructorProfile = useSelector(
     (state) => state.instructorProfile.profile
   );
+
 
   const stats = [
     {

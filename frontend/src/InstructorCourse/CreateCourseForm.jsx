@@ -84,10 +84,12 @@ const CreateCourseForm = () => {
       const res = await courseApiFetch.createCourse(form);
       if (res.success) {
         toast.success(res?.data?.message || "course created successfully");
+
         dispatch(addInstructorCourse(res?.data?.data));
         dispatch(addCourse(res?.data?.data));
       } else {
         toast.error(res.error || "failed to create course");
+        console.log("create course error api", res.error);
       }
     } catch (error) {
       toast.error(error.message || "something went wrong!");
@@ -257,7 +259,7 @@ const CreateCourseForm = () => {
                     <option>Select difficulty</option>
                     <option>Beginner</option>
                     <option>Intermediate</option>
-                    <option>Advanced</option>
+                    <option>Advance</option>
                   </select>
                 </div>
               </div>

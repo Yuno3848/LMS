@@ -1,4 +1,4 @@
-import { Coffee, LogOut } from "lucide-react";
+import { Coffee, LogOut, ShoppingCart } from "lucide-react";
 import { Link, useNavigate } from "react-router";
 import React from "react";
 import { authApi } from "../ApiFetch/authApiFetch";
@@ -74,8 +74,8 @@ const Header = () => {
 
       <div className="flex items-center space-x-3">
         {user ? (
-          <div className="flex items-center space-x-3">
-            <div className="relative group">
+          <div className="flex items-center space-x-3.5">
+            <div className="relative group ">
               <div className="w-10 h-10 bg-gradient-to-br from-[#b08968] to-[#8c5e3c] rounded-full flex items-center justify-center shadow-md">
                 <span className="text-white font-semibold text-sm">
                   {user.data.fullname.charAt(0).toUpperCase()}
@@ -89,7 +89,7 @@ const Header = () => {
                   My Profile
                 </Link>
                 <Link
-                  to="/mycourses"
+                  to="/course"
                   className="block px-4 py-2 text-[#6b4226] hover:bg-[#e0c9a6]"
                 >
                   My Courses
@@ -127,6 +127,13 @@ const Header = () => {
                   Apply for Instructor?
                 </Link>
               </div>
+            </div>
+
+            <div className="relative">
+              <ShoppingCart size={20} color="#896439" strokeWidth={3} />
+              <span className="absolute rounded-2xl bg-[#EEE0CA] w-6 h-6 inline-block -top-3.5 left-4 text-center text-[#835827] font-extrabold">
+                4
+              </span>
             </div>
 
             <button

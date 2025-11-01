@@ -12,7 +12,9 @@ import {
   deleteCourse,
   getAllCourses,
   getCourseById,
+  getCourseByInstructorId,
   isPublish,
+  showCourses,
 } from '../controllers/course.controller.js';
 import { upload } from '../middlewares/multer.middleware.js';
 
@@ -33,9 +35,11 @@ course.get(
   '/get-course-by-id/:courseId',
   validateCourseId(),
   validatorError,
-  isLogged,
+
   getCourseById,
 );
 course.get('/delete-course/:courseId', validateCourseId(), validatorError, isLogged, deleteCourse);
+course.get('/show-course', showCourses);
+course.get('/get-courses-by-instructor-id', isLogged, getCourseByInstructorId);
 
-export default course;
+export default course

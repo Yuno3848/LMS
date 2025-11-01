@@ -21,7 +21,7 @@ export const courseApiFetch = {
 
   getAllCourse: async () => {
     try {
-      const res = await fetch(`${BaseURL}/get-all-course`, {
+      const res = await fetch(`${BaseURL}/get-all-course/${courseId}`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -31,6 +31,63 @@ export const courseApiFetch = {
       const data = await res.json();
       if (!res.ok) {
         throw Error(data.message || "Failed to create course");
+      }
+      return { success: true, data };
+    } catch (error) {
+      return { success: false, message: error.message };
+    }
+  },
+
+  showCourses: async () => {
+    try {
+      const res = await fetch(`${BaseURL}/show-course`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        throw Error(data.message || "Failed to show course");
+      }
+      return { success: true, data };
+    } catch (error) {
+      return { success: false, message: error.message };
+    }
+  },
+
+  getCourseById: async (courseId) => {
+    try {
+      const res = await fetch(`${BaseURL}/get-course-by-id/${courseId}`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        throw Error(data.message || "Failed to fetch course by id");
+      }
+      return { success: true, data };
+    } catch (error) {
+      return { success: false, message: error.message };
+    }
+  },
+
+  getCourseByInstructorId: async () => {
+    try {
+      const res = await fetch(`${BaseURL}/get-courses-by-instructor-id`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        throw Error(data.message || "Failed to fetch course by  instructor id");
       }
       return { success: true, data };
     } catch (error) {

@@ -17,8 +17,6 @@ export const validateCreateCourse = () => {
       .withMessage('description field is required.')
       .isString()
       .withMessage('description must be string.')
-      .isLength({ max: 600 })
-      .withMessage('description can not be more than 600 characters')
       .trim(),
 
     body('isPublished').optional().isBoolean().withMessage('It can be either true or false'),
@@ -27,9 +25,7 @@ export const validateCreateCourse = () => {
       .notEmpty()
       .withMessage('Requirements is required')
       .isString()
-      .withMessage('Requirements must be a string')
-      .isLength({ min: 5, max: 500 })
-      .withMessage('Requirements must be between 5 and 500 characters'),
+      .withMessage('Requirements must be a string'),
     body('courseSection')
       .optional()
       .isArray()

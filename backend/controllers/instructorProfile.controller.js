@@ -37,6 +37,7 @@ export const createInstructorProfile = asyncHandler(async (req, res) => {
 
   user.instructorProfile = instructor._id;
   await user.save();
+
   return res
     .status(201)
     .json(new ApiResponse(201, 'instructor profile created successfully', instructor));

@@ -8,6 +8,9 @@ const ProtectedInstructorProfile = ({ children }) => {
   const { profile: instructorProfile, loading: instructorLoading } =
     useSelector((state) => state.instructorProfile);
 
+  const sections = useSelector((state) => state.itemCourse);
+
+
   if (authLoading || instructorLoading) {
     return <Loading text="Loading your instructor profile..." />;
   }
@@ -16,7 +19,7 @@ const ProtectedInstructorProfile = ({ children }) => {
     return <Navigate to="/login" replace />;
   }
 
-  if (!instructorProfile) {
+  if (!instructorProfile && !item ) {
     return <Navigate to="/create-instructor-profile" replace />;
   }
 

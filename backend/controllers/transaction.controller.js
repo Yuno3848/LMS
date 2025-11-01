@@ -11,71 +11,76 @@ import { Enrollment } from '../models/enrollment.model.js';
 
 export const createOrder = asyncHandler(async (req, res) => {
   const userId = req.user.id;
-
-  if (!userId || !mongoose.Types.ObjectId.isValid(userId.toString())) {
-    throw new ApiError(401, 'User not authorized');
-  }
-
-  const { couponCode } = req.body;
   const { courseId } = req.params;
-  if (!courseId || !mongoose.Types.ObjectId.isValid(courseId.toString())) {
-    throw new ApiError(404, 'Invalid course id!!!');
-  }
+  const { couponCode } = req.body;
 
-  const course = await Course.findById(courseId);
-  if (!course) {
-    throw new ApiError(404, 'Course not found!!!');
-  }
-  let finalAmount = course.price.final;
+  if (!userId || !isValidObjectId(userId)) throw new ApiError(401, 'User not authorized');
+  if (!courseId || !isValidObjectId(courseId)) throw new ApiError(404, 'Invalid course id');
+
+  const course = await Course.findById(courseId).lean();
+  if (!course) throw new ApiError(404, 'Course not found');
+
+  const alreadyOwned = await Enrollment.exists({
+    userId: new mongoose.Types.ObjectId(userId),
+    courseId: new mongoose.Types.ObjectId(courseId),
+  });
+  if (alreadyOwned) throw new ApiError(400, 'You already own this course.');
+
+  const basePrice = Number(course?.price?.final);
+  if (!Number.isFinite(basePrice)) throw new ApiError(400, 'Course price not available');
+
+  let finalAmount = basePrice;
 
   if (couponCode) {
     const coupon = await Coupon.findOne({ couponCode: couponCode.toUpperCase(), isActive: true });
-    if (!coupon) {
-      throw new ApiError(404, 'Coupon Code not found!!!');
-    }
-
-    if (coupon.maxUses && coupon.maxUses <= coupon.usedCount) {
-      throw new ApiError(400, 'Coupon limit reached!!!');
-    }
-
-    if (coupon.courses?.length > 0 && !coupon.courses.some((id) => id.equals(courseId))) {
+    if (!coupon) throw new ApiError(404, 'Coupon Code not found');
+    if (coupon.maxUses && coupon.maxUses <= coupon.usedCount)
+      throw new ApiError(400, 'Coupon limit reached');
+    if (
+      coupon.courses?.length > 0 &&
+      !coupon.courses.some((id) => id.equals(new mongoose.Types.ObjectId(courseId)))
+    ) {
       throw new ApiError(400, 'Coupon not valid for this course');
     }
-
-    if (coupon.discountType === 'percentage') {
-      finalAmount = finalAmount - (finalAmount * coupon.discountValue) / 100;
-    } else if (coupon.discountType === 'fixed') {
-      finalAmount = finalAmount - coupon.discountValue;
-    }
+    if (coupon.discountValue < 0) throw new ApiError(400, 'Bad coupon');
+    finalAmount =
+      coupon.discountType === 'percentage'
+        ? finalAmount - (finalAmount * coupon.discountValue) / 100
+        : finalAmount - coupon.discountValue;
     finalAmount = Math.max(finalAmount, 0);
   }
 
   const options = {
-    amount: Math.floor(finalAmount * 100),
+    amount: Math.round(finalAmount * 100), // paise
     currency: 'INR',
-    receipt: `rcpt_${Date.now()}`,
+    receipt: `crs_${courseId}_${Date.now()}`.slice(0, 40),
   };
 
   const order = await razorpay.orders.create(options);
 
   const transaction = await Transaction.create({
     receipt: order.receipt,
-    userId,
-    courseId,
-    amount: options.amount,
-    currency: options.currency,
+    userId: new mongoose.Types.ObjectId(userId),
+    courseId: new mongoose.Types.ObjectId(courseId),
+    amount: order.amount,
+    currency: order.currency,
     status: 'PENDING',
     razorpayId: order.id,
     paymentGateway: 'razorpay',
     rawResponse: order,
   });
 
-  if (!transaction) {
-    throw new ApiError(400, 'failed to create transaction');
-  }
+  if (!transaction) throw new ApiError(400, 'failed to create transaction');
 
-
-  return res.status(201).json(new ApiResponse(201, 'created order successfully', transaction));
+  return res.status(201).json(
+    new ApiResponse(201, 'created order successfully', {
+      transactionId: transaction._id,
+      orderId: order.id,
+      amount: order.amount,
+      currency: order.currency,
+      receipt: order.receipt,
+    }),
+  );
 });
 
 export const verifyPayment = asyncHandler(async (req, res) => {

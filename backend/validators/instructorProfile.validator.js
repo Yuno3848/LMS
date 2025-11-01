@@ -3,9 +3,8 @@ import mongoose from 'mongoose';
 export const validateInstructorProfile = () => {
   return [
     body('bio')
-      .optional()
-      .isLength({ max: 500 })
-      .withMessage("bio can't be more than 500 characters"),
+      .optional(),
+      
 
     body('expertise')
       .optional()

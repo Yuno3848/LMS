@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import toast from "react-hot-toast";
-import { Save } from "lucide-react";
 import { studentProfileApiFetch } from "../../../../../ApiFetch/studentProfileApiFetch";
 import {
   setStudentLoading,

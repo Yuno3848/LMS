@@ -1,15 +1,14 @@
 import React from "react";
 import { RouterProvider } from "react-router";
-import { useSelector } from "react-redux";
-import Routes from "../Routes";
+import { useSelector } from "react-redux";;
 import Loading from "./components/Loading";
 import useInitStudentProfile from "./EffectsForApp/useInitStudentProfile";
 import useInitInstructorProfile from "./EffectsForApp/useInitInstructorProfile";
-import useInitAuth from "./EffectsForApp/useInitAuth";
 import useInitInstructorCourses from "./EffectsForApp/useInitInstructorCourses";
+import useInitAuth from "./EffectsForApp/useInitAuth";
+import Routes from "../Routes";
 function App() {
   useInitAuth();
-
   useInitInstructorCourses();
   useInitStudentProfile();
   useInitInstructorProfile();

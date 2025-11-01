@@ -14,18 +14,15 @@ const itemSlicer = createSlice({
       state.loading = action.payload;
     },
 
-  
     setItem: (state, action) => {
       state.item = action.payload;
       state.loading = false;
     },
 
-
     addItemCourse: (state, action) => {
       state.item.push(action.payload);
       state.loading = false;
     },
-
 
     updateItemCourse: (state, action) => {
       const index = state.item.findIndex(
@@ -36,7 +33,6 @@ const itemSlicer = createSlice({
       }
       state.loading = false;
     },
-
 
     deleteItemCourse: (state, action) => {
       state.item = state.item.filter(
@@ -61,7 +57,6 @@ const itemSlicer = createSlice({
       state.loading = false;
     },
 
- 
     removeSubItemFromSection: (state, action) => {
       const { sectionId, itemId } = action.payload;
       const section = state.item.find(
@@ -76,7 +71,6 @@ const itemSlicer = createSlice({
       state.loading = false;
     },
 
-    
     updateSubItemInSection: (state, action) => {
       const { sectionId, itemId, updatedItem } = action.payload;
       const section = state.item.find(
@@ -96,7 +90,6 @@ const itemSlicer = createSlice({
       state.loading = false;
     },
 
-  
     setClearItemCourse: () => initialState,
   },
 });

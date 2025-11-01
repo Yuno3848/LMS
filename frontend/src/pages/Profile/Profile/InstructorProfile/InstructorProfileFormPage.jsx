@@ -55,7 +55,7 @@ const InstructorProfileForm = ({
       <div className="w-full max-w-5xl">
         {/* Main Card with Glass Effect */}
         <div className="relative rounded-3xl shadow-2xl bg-white/80 backdrop-blur-sm border border-[#e0c9a6] overflow-hidden">
-          {/* Decorative Background Pattern */}
+        
           <div className="absolute inset-0 opacity-5">
             <div
               className="absolute inset-0"
@@ -67,7 +67,7 @@ const InstructorProfileForm = ({
             ></div>
           </div>
 
-          {/* Hero Section with Avatar */}
+         
           <div className="relative bg-gradient-to-r from-[#b08968] via-[#9c7556] to-[#8c5e3c] p-8">
             <div className="flex flex-col md:flex-row items-center gap-6">
               <div className="relative group">
@@ -172,7 +172,7 @@ const InstructorProfileForm = ({
                 </div>
               </div>
 
-              {/* Social Links */}
+        
               <div className="bg-gradient-to-br from-[#fdfaf7] to-[#f9f3ec] p-6 rounded-2xl border border-[#e0c9a6] shadow-sm">
                 <div className="flex items-center gap-3 mb-4">
                   <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#b08968] to-[#8c5e3c] flex items-center justify-center">
@@ -214,7 +214,7 @@ const InstructorProfileForm = ({
                 </div>
               </div>
 
-              {/* Submit Button */}
+            
               <div className="flex justify-center pt-4">
                 <button
                   type="submit"

@@ -201,7 +201,7 @@ export const getAllItemSection = asyncHandler(async (req, res) => {
     select: 'title orderIndex subItemSection totalLectures',
     populate: {
       path: 'subItemSection',
-      select: 'title itemType duration contentUrl',
+      select: 'title itemType duration contentUrl content',
       options: { sort: { orderIndex: 1 } },
     },
     options: { sort: { orderIndex: 1 } },

@@ -1,5 +1,6 @@
 import React from "react";
 import { motion } from "framer-motion";
+import { Link } from "react-router";
 
 const HeroSection = ({ isVisible }) => {
   return (
@@ -32,13 +33,13 @@ const HeroSection = ({ isVisible }) => {
       </p>
 
       <div className="flex flex-col sm:flex-row gap-4 mb-14">
-        <a
-          href="/signup"
+        <Link
+          to="/course"
           className="group relative px-8 py-4 rounded-full bg-gradient-to-r from-[#b08968] to-[#8c5e3c] text-white font-bold text-lg shadow-lg hover:shadow-2xl transform hover:-translate-y-1 transition"
         >
           <span className="relative z-10">Get Started Free</span>
           <div className="absolute inset-0 bg-gradient-to-r from-[#8c5e3c] to-[#6b4226] opacity-0 group-hover:opacity-100 transition-opacity rounded-full" />
-        </a>
+        </Link>
         <a
           href="/demo"
           className="px-8 py-4 rounded-full border-2 border-[#d4b996] bg-[#fdfaf7]/80 text-[#6b4226] font-bold text-lg shadow hover:shadow-xl hover:bg-[#fffaf2] hover:border-[#b08968] transform hover:-translate-y-1 transition"

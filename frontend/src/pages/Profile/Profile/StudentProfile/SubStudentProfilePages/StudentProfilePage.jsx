@@ -10,7 +10,6 @@ import {
   Star,
   GraduationCap,
   Globe,
-  Edit3,
   PlusCircle,
   CheckCircle,
   CheckCircle2,

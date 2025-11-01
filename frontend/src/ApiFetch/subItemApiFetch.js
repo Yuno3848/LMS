@@ -14,8 +14,7 @@ export const subItemApiFetch = {
         }
       );
 
-      console.log("Response status :", res.status)
-      console.log("Response headers :", res.headers)
+  
       const data = await res.json();
       if (!res.ok) {
         throw new Error(data.message || "Failed to create item");

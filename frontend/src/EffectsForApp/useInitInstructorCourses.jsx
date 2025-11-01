@@ -14,9 +14,10 @@ const useInitInstructorCourses = () => {
       dispatch(setLoading(true));
 
       try {
-        const result = await courseApiFetch.getAllCourse();
+        const result = await courseApiFetch.getCourseByInstructorId();
 
         if (result.success && result?.data?.data) {
+          
           dispatch(setCourses(result.data.data));
         } else {
           dispatch(setCourses([]));

@@ -31,7 +31,7 @@ const CourseSectionPage = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isFetchingData, setIsFetchingData] = useState(true);
   const [expandedSection, setExpandedSection] = useState(null);
-
+  const [isAddLoading, setIsAddLoading] = useState(false);
   const [newSection, setNewSection] = useState({ title: "" });
 
   const [newSubItem, setNewSubItem] = useState({
@@ -47,7 +47,6 @@ const CourseSectionPage = () => {
 
   // Get sections from Redux store
   const sections = useSelector((state) => state.itemCourse.item || []);
-  console.log("sections from redux:", sections);
 
   useEffect(() => {
     const fetchSections = async () => {
@@ -60,7 +59,6 @@ const CourseSectionPage = () => {
       setIsFetchingData(true);
       try {
         const res = await itemSectionApiFetch.getAllItemSection(courseId);
-        console.log("get all item section :", res);
         if (res.success && res.data) {
           const formattedSections = (res.data.sections || []).map(
             (section) => ({
@@ -74,11 +72,13 @@ const CourseSectionPage = () => {
                 _id: item._id,
                 title: item.title || "",
                 type: item.itemType,
-                content: item.content || "",
-                contentUrl: item.contentUrl || { url: "", localPath: "" },
+                content: item.content || null,
+                contentUrl: item.contentUrl || null,
               })),
             })
           );
+
+
           dispatch(setItem(formattedSections));
         } else {
           toast.error("Failed to load sections");
@@ -166,11 +166,13 @@ const CourseSectionPage = () => {
     }
 
     try {
+      setIsAddLoading(true);
+
       const formData = new FormData();
       formData.append("title", trimmedTitle);
       formData.append("itemType", newSubItem.type);
 
-      if (newSubItem.content) {
+      if (newSubItem.type === "quiz") {
         formData.append("content", newSubItem.content);
       }
 
@@ -180,9 +182,8 @@ const CourseSectionPage = () => {
       }
 
       const res = await subItemApiFetch.createSubItem(sectionId, formData);
-      console.log("create sub item data response :", res);
       if (res.success) {
-        const createdItem = res.data;
+        const createdItem = res?.data?.data;
 
         const newSubItem = {
           id: createdItem._id,
@@ -194,7 +195,7 @@ const CourseSectionPage = () => {
         };
 
         dispatch(addSubItemToSection({ sectionId, subItem: newSubItem }));
-
+        console.log("dispatching subitem to redux :", newSubItem);
         toast.success("Item added successfully");
         setNewSubItem({
           title: "",
@@ -209,6 +210,8 @@ const CourseSectionPage = () => {
     } catch (error) {
       console.error("Error adding sub item :", error.message);
       toast.error(error.message || "An error occurred while adding sub item");
+    } finally {
+      setIsAddLoading(false);
     }
   };
 
@@ -360,7 +363,6 @@ const CourseSectionPage = () => {
           </div>
         )}
 
-        {/* Sections List */}
         <div className="space-y-4">
           {sections.length === 0 ? (
             <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-[#e0c9a6] p-12 text-center">
@@ -446,7 +448,6 @@ const CourseSectionPage = () => {
                   </div>
                 </div>
 
-                {/* Expanded Content */}
                 {expandedSection === section.id && (
                   <div className="border-t border-[#e0c9a6] bg-[#fdfaf7]/50">
                     <div className="p-6 space-y-4">
@@ -520,22 +521,15 @@ const CourseSectionPage = () => {
 
                           {newSubItem.type === "quiz" && (
                             <div className="md:col-span-3 space-y-3">
-                              <input
-                                type="text"
-                                readOnly
-                                placeholder="Quiz title already set above"
-                                value={newSubItem.title}
-                                className="w-full px-3 py-2 bg-[#fdfaf7] border border-[#e0c9a6] rounded-lg text-sm text-[#6b4226]"
-                              />
                               <textarea
-                                placeholder="Enter quiz description or instructions..."
-                                value={newSubItem.content}
+                                placeholder="Enter quiz content..."
                                 onChange={(e) =>
                                   setNewSubItem((prev) => ({
                                     ...prev,
                                     content: e.target.value,
                                   }))
                                 }
+                                rows={6}
                                 className="w-full px-3 py-2 bg-[#fdfaf7] border border-[#e0c9a6] rounded-lg text-sm text-[#6b4226]"
                               />
                             </div>
@@ -544,20 +538,23 @@ const CourseSectionPage = () => {
                           <div className="flex gap-2">
                             <button
                               onClick={() => handleAddSubItem(section.id)}
-                              disabled={!newSubItem.title.trim()}
+                              disabled={isAddLoading}
                               className={`px-4 py-2 text-white text-sm font-semibold rounded-lg transition ${
                                 !newSubItem.title.trim()
                                   ? "bg-[#d1bfa7] cursor-not-allowed"
                                   : "bg-gradient-to-r from-[#b08968] to-[#8c5e3c] hover:opacity-90"
                               }`}
                             >
-                              <Plus className="w-4 h-4" />
+                              {isAddLoading ? (
+                                <p>Adding....</p>
+                              ) : (
+                                <Plus className="w-4 h-4" />
+                              )}
                             </button>
                           </div>
                         </div>
                       </div>
 
-                      {/* Sub-Items List */}
                       {section.subItemSection.length > 0 ? (
                         <div className="space-y-2">
                           {section.subItemSection.map((item, itemIndex) => (
@@ -565,11 +562,22 @@ const CourseSectionPage = () => {
                               key={item._id}
                               className="flex items-center justify-between p-3 bg-white rounded-lg border border-[#e0c9a6] hover:border-[#b08968] transition"
                             >
-                              <div className="flex items-center gap-3">
-                                <div className="flex flex-col ">
+                              <div className="flex items-center gap-3 flex-1">
+                                <div className="flex flex-col w-full">
                                   <span className="text-2xl font-medium text-[#6b4226] mb-2">
                                     {itemIndex + 1}. {item.title}
                                   </span>
+
+                                  {/* Quiz Content Display */}
+                                  {item.type === "quiz" && item.content && (
+                                    <div className="mt-2 p-4 bg-[#fdfaf7] rounded-lg border border-[#e0c9a6]">
+                                      <p className="text-sm text-[#6b4226] whitespace-pre-wrap">
+                                        {item.content}
+                                      </p>
+                                    </div>
+                                  )}
+
+                                  {/* Video and Assignment Display */}
                                   {item.contentUrl?.url && (
                                     <div>
                                       {item.type === "video" ? (

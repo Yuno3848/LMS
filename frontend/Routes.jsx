@@ -21,19 +21,20 @@ import ProtectedStudentProfile from "./src/ProtectedRoutes/ProtectedStudentProfi
 import StudentProfilePage from "./src/pages/Profile/Profile/StudentProfile/SubStudentProfilePages/StudentProfilePage";
 import UpdateStudentProfile from "./src/pages/Profile/Profile/StudentProfile/SubStudentProfilePages/UpdateStudentProfile";
 import InstructorInfoPage from "./src/pages/InstructorInfoPage.jsx/InstructorInfoPage";
-import InstructorProfileForm from "./src/pages/Profile/Profile/InstructorProfile/InstructorProfileFormPage";
+
 import CreateInstructorProfile from "./src/pages/Profile/Profile/InstructorProfile/InstructorProfileComponents/CreateInstructorProfile";
 import UpdateInstructorProfile from "./src/pages/Profile/Profile/InstructorProfile/InstructorProfileComponents/UpdateInstructorProfile";
 import ProtectedInstructorProfile from "./src/ProtectedRoutes/ProtectedInstructorProfile";
 import ShowInstructorProfile from "./src/pages/Profile/Profile/InstructorProfile/InstructorProfileComponents/ShowInstructorProfile";
-import VerifyStudentProfile from "./src/pages/Profile/Profile/ProfileComponents/VerifyStudentProfile";
+
 import VerifyStudent from "./src/pages/Profile/Profile/StudentProfile/SubStudentProfilePages/VerifyStudent";
 import StudentVerificationSent from "./src/components/StudentVerificationSent";
 import InstructorDashboard from "./src/InstructorCourse/InstructorDashboard";
 import CreateCourseForm from "./src/InstructorCourse/CreateCourseForm";
 import InstructorVerification from "./src/pages/Profile/Profile/InstructorProfile/InstructorProfileComponents/InstructorVerification";
-import CourseManager from "./src/InstructorCourse/CourseManager";
+
 import CourseSectionPage from "./src/InstructorCourse/CourseSectionPage";
+import CourseDetails from "./src/pages/MainCourse/Course/CourseDetails";
 
 export const Routes = createBrowserRouter([
   {
@@ -42,15 +43,6 @@ export const Routes = createBrowserRouter([
       {
         path: "/",
         element: <Home />,
-      },
-
-      {
-        path: "/course",
-        element: (
-          <ProtectedRoute>
-            <Course />
-          </ProtectedRoute>
-        ),
       },
     ],
   },
@@ -65,6 +57,14 @@ export const Routes = createBrowserRouter([
             <Profile />
           </ProtectedRoute>
         ),
+      },
+      {
+        path: "/course",
+        element: <Course />,
+      },
+      {
+        path: "/course-details/:courseId",
+        element: <CourseDetails />,
       },
       {
         path: "/update-profile",
@@ -163,13 +163,12 @@ export const Routes = createBrowserRouter([
       {
         path: "/instructor-dashboard",
         element: (
-          <ProtectedRoute>
-            <ProtectedInstructorProfile>
-              <InstructorDashboard />
-            </ProtectedInstructorProfile>
-          </ProtectedRoute>
+          <ProtectedInstructorProfile>
+            <InstructorDashboard />
+          </ProtectedInstructorProfile>
         ),
       },
+   
       {
         path: "/create-course",
         element: (

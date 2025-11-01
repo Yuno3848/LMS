@@ -9,15 +9,12 @@ import {
 import { Link, useParams } from "react-router";
 
 const CourseManager = () => {
-  const { id } = useParams();
-
   const handleSubmit = async (e) => {
     e.preventDefault();
   };
 
   return (
     <div className="min-h-screen bg-[#f9f4ef] flex">
-      {/* Sidebar */}
       <aside className="w-64 bg-gradient-to-b from-[#b08968] to-[#8c5e3c] text-white flex flex-col justify-between shadow-xl">
         <div>
           <div className="px-6 py-6 border-b border-white/20">
@@ -57,10 +54,8 @@ const CourseManager = () => {
         </div>
       </aside>
 
-      {/* Main Content */}
       <main className="flex-1 p-8 overflow-y-auto">
         <form onSubmit={handleSubmit}>
-          {/* Header */}
           <header className="flex items-center justify-between mb-8">
             <div>
               <h2 className="text-2xl font-bold text-[#6b4226]">
@@ -77,7 +72,6 @@ const CourseManager = () => {
             </button>
           </header>
 
-          {/* Section List Placeholder */}
           <div className="space-y-4">
             {[1, 2, 3].map((section) => (
               <div
