@@ -11,7 +11,7 @@ import {
   ChevronUp,
 } from "lucide-react";
 import { useDispatch } from "react-redux";
-import { setItem } from "../../../redux/slicers/itemSlicer";
+import { addCourse } from "../../../redux/slicers/cartSlicer";
 
 const CourseDetails = () => {
   const [course, setCourse] = useState(null);
@@ -26,7 +26,7 @@ const CourseDetails = () => {
   const handleCart = () => {
     setCart((prev) => (prev == "Add To Cart" ? "Go To Cart" : "Add To Cart"));
     if (cart == "Add To Cart") {
-      dispatch(setItem(course));
+      dispatch(addCourse(course));
     }
   };
 
