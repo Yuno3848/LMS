@@ -35,6 +35,7 @@ import InstructorVerification from "./src/pages/Profile/Profile/InstructorProfil
 
 import CourseSectionPage from "./src/InstructorCourse/CourseSectionPage";
 import CourseDetails from "./src/pages/MainCourse/Course/CourseDetails";
+import CartPage from "./src/pages/cart/Cart";
 
 export const Routes = createBrowserRouter([
   {
@@ -58,6 +59,11 @@ export const Routes = createBrowserRouter([
           </ProtectedRoute>
         ),
       },
+      {
+        path: "/cart",
+        element: <CartPage />,
+      },
+
       {
         path: "/course",
         element: <Course />,
@@ -168,7 +174,7 @@ export const Routes = createBrowserRouter([
           </ProtectedInstructorProfile>
         ),
       },
-   
+
       {
         path: "/create-course",
         element: (
