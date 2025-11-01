@@ -7,17 +7,20 @@ const cartSlice = createSlice({
   },
   reducers: {
     addCourse: (state, action) => {
-      const newCourse = payload.action;
+      const newCourse = action.payload;
 
-      const itemExist = state.items.find((item) => item == newCourse.id);
+      const itemExist = state.items.find((item) => item.id == newCourse.id);
 
       if (!itemExist) {
         state.items.push(newCourse);
       }
     },
     removeCourse: (state, action) => {},
-    countCartItems: () => {},
+
     setQuantity: () => {},
     clearCart: () => {},
   },
 });
+
+export const { addCourse } = cartSlice.actions;
+export default cartSlice.reducer;
