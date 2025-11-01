@@ -11,7 +11,10 @@ import { setClearInstructorProfile } from "../redux/slicers/instructorProfileSli
 import { setCourses } from "../redux/slicers/courseSlicer";
 const Header = () => {
   const user = useSelector((state) => state.auth.user);
-
+  const cart = useSelector((state) => state.cart.items);
+ const cartLength = cart.length
+  console.log("items in the cart :", cart);
+  console.log("items length in the cart :", cart.length);
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const navLink = [
@@ -132,7 +135,7 @@ const Header = () => {
             <div className="relative">
               <ShoppingCart size={20} color="#896439" strokeWidth={3} />
               <span className="absolute rounded-2xl bg-[#EEE0CA] w-6 h-6 inline-block -top-3.5 left-4 text-center text-[#835827] font-extrabold">
-                4
+                {cartLength}
               </span>
             </div>
 
