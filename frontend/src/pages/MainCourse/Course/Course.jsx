@@ -84,8 +84,8 @@ const Course = () => {
 
   const CourseCard = ({ course, isList }) => {
     return (
-      <Link to={`/course-details/${course.id}`}
-      
+      <Link
+        to={`/course-details/${course.id}`}
         className={`${
           isList ? "flex gap-6 items-center" : ""
         } p-6 bg-[#fffaf2]/80 rounded-2xl border border-[#e0c9a6]/40 shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all duration-300 cursor-pointer`}
