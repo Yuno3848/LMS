@@ -10,7 +10,6 @@ import {
 import { useSelector } from "react-redux";
 
 const CartPage = () => {
-  // Mock cart items for display
 
   const cart = useSelector((state) => state.cart.items);
   console.log("cart cart cart :", cart);
@@ -137,7 +136,7 @@ const CartPage = () => {
                         Total
                       </span>
                       <span className="text-3xl font-black text-[#6b4226]">
-                        $109.98
+                       {subTotal}
                       </span>
                     </div>
                   </div>
