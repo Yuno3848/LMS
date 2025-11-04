@@ -12,6 +12,7 @@ import itemSection from './routes/itemSection.route.js';
 import transaction from './routes/transaction.route.js';
 import enrollment from './routes/enrollment.route.js';
 import subItem from './routes/subItem.route.js';
+import cart from './routes/cart.route.js';
 
 const app = express();
 app.use(morgan('dev'));
@@ -38,4 +39,5 @@ app.use('/api/v1/transaction', transaction);
 app.use('/api/v1/enrollment', enrollment);
 app.use('/api/v1/subItem', subItem);
 
+app.use('/api/v1/cart', cart);
 export default app;
