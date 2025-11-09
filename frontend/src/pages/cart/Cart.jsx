@@ -7,13 +7,34 @@ import {
   Tag,
   ArrowRight,
 } from "lucide-react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { cartApiFetch } from "../../ApiFetch/cartApiFetch";
+import { removeCourse } from "../../redux/slicers/cartSlicer";
+import toast from "react-hot-toast";
 
 const CartPage = () => {
+  const dispatch = useDispatch();
 
   const cart = useSelector((state) => state.cart.items);
   console.log("cart cart cart :", cart);
-  const subTotal = cart.reduce((acc, item) => acc + item.price, 0);
+  const subTotal = cart.reduce((acc, item) => acc + item.price.final, 0);
+
+  const handleCartDelete = async (courseId) => {
+    console.log(courseId);
+    try {
+      const response = await cartApiFetch.removeFromCart(courseId);
+
+      if (response?.success) {
+        dispatch(removeCourse(courseId));
+        toast.success(response?.data?.message);
+      } else {
+        toast.error(response?.error || "Failed to remove course from cart");
+      }
+      console.log(response);
+    } catch (error) {
+      toast.error(error.message || "something went wrong");
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#fffaf2] via-[#fff5e6] to-[#f5e6d3] py-8 px-4 md:px-8">
@@ -46,7 +67,7 @@ const CartPage = () => {
                   <div className="flex-shrink-0">
                     <div className="w-full md:w-48 h-32 rounded-xl overflow-hidden shadow-md">
                       <img
-                        src={item.image}
+                        src={item.thumbnail.url}
                         alt={item.title}
                         className="w-full h-full object-cover"
                       />
@@ -64,7 +85,10 @@ const CartPage = () => {
                           by {item.instructor}
                         </p>
                       </div>
-                      <button className="p-2 text-[#8c5e3c] hover:text-red-600 hover:bg-red-50 rounded-lg transition-all duration-300">
+                      <button
+                        onClick={() => handleCartDelete(item._id)}
+                        className="p-2 text-[#8c5e3c] hover:text-red-600 hover:bg-red-50 rounded-lg transition-all duration-300"
+                      >
                         <Trash2 className="w-5 h-5" />
                       </button>
                     </div>
@@ -74,10 +98,10 @@ const CartPage = () => {
                       <div className="text-right">
                         <div className="flex items-center space-x-2">
                           <span className="text-sm text-[#8c5e3c] line-through">
-                            ${item.originalPrice}
+                            ${item.price.base}
                           </span>
                           <span className="text-2xl font-black text-[#6b4226]">
-                            ${item.price}
+                            ${item.price.final}
                           </span>
                         </div>
                       </div>
@@ -136,7 +160,7 @@ const CartPage = () => {
                         Total
                       </span>
                       <span className="text-3xl font-black text-[#6b4226]">
-                       {subTotal}
+                        {subTotal}
                       </span>
                     </div>
                   </div>
