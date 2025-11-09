@@ -12,7 +12,7 @@ import { setCourses } from "../redux/slicers/courseSlicer";
 const Header = () => {
   const user = useSelector((state) => state.auth.user);
   const cart = useSelector((state) => state.cart.items);
- const cartLength = cart.length
+  const cartLength = cart.length;
   console.log("items in the cart :", cart);
   console.log("items length in the cart :", cart.length);
   const navigate = useNavigate();
@@ -129,15 +129,22 @@ const Header = () => {
                 >
                   Apply for Instructor?
                 </Link>
+
+                <Link
+                  to="/cart"
+                  className="block px-4 py-2 text-[#6b4226] hover:bg-[#e0c9a6] rounded-b-lg"
+                >
+                  My Cart
+                </Link>
               </div>
             </div>
 
-            <div className="relative">
+            <Link to="/cart" className="relative">
               <ShoppingCart size={20} color="#896439" strokeWidth={3} />
               <span className="absolute rounded-2xl bg-[#EEE0CA] w-6 h-6 inline-block -top-3.5 left-4 text-center text-[#835827] font-extrabold">
                 {cartLength}
               </span>
-            </div>
+            </Link>
 
             <button
               onClick={handleLogOut}
