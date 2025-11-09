@@ -12,6 +12,8 @@ import {
 } from "lucide-react";
 import { useDispatch } from "react-redux";
 import { addCourse } from "../../../redux/slicers/cartSlicer";
+import { cartApiFetch } from "../../../ApiFetch/cartApiFetch";
+import toast from "react-hot-toast";
 
 const CourseDetails = () => {
   const [course, setCourse] = useState(null);
@@ -23,10 +25,22 @@ const CourseDetails = () => {
 
   const dispatch = useDispatch();
 
-  const handleCart = () => {
-    setCart((prev) => (prev == "Add To Cart" ? "Go To Cart" : "Add To Cart"));
+  const handleCart = async () => {
     if (cart == "Add To Cart") {
-      dispatch(addCourse(course));
+      try {
+        const response = await cartApiFetch.addToCart(courseId);
+        if (response?.data?.data) {
+          setCart("Go To Cart");
+          dispatch(addCourse(response?.data?.data?.courses));
+          toast.success("Add To Cart Successfully!");
+        } else {
+          toast.error("Course Already In Store!");
+        }
+      } catch (error) {
+        toast.error("Something went wrong!");
+      }
+    } else {
+      setCart("Add To Cart");
     }
   };
 
