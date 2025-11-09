@@ -7,7 +7,7 @@ import { asyncHandler } from '../utils/asyncHandler.js';
 
 export const addToCart = asyncHandler(async (req, res) => {
   const userId = req.user.id;
-
+  console.log(userId);
   const { courseId } = req.params;
   console.log('course id :', courseId);
   const isCourseExist = await Course.findById(courseId);
@@ -34,14 +34,19 @@ export const addToCart = asyncHandler(async (req, res) => {
     await cart.save();
   }
 
-  return res.status(201).json(new ApiResponse(201, cart, 'course added to cart successfully!'));
+  await cart.populate({
+    path: 'courses',
+    select: '-thumbnail._id -isPublished -price._id -totalAmount -isCheckedOut -tags -itemSection',
+  });
+
+  return res.status(201).json(new ApiResponse(201, 'course added to cart successfully!', cart));
 });
 
 export const removeFromCart = asyncHandler(async (req, res) => {
   const userId = req.user.id;
-  const { courseId } = req.params;
-
-  if (!mongoose.Types.ObjectId.isValid(userId.toString())) {
+  const { courseId } = req.body;
+  console.log("cart course id :", courseId)
+  if (!mongoose.Types.ObjectId.isValid(userId)) {
     throw new ApiError(401, 'user not authorized!');
   }
 
@@ -74,4 +79,23 @@ export const removeFromCart = asyncHandler(async (req, res) => {
   return res.status(200).json(new ApiResponse(201, 'course removed from cart successfully!'));
 });
 
+export const showCart = asyncHandler(async (req, res) => {
+  const userId = req.user.id;
 
+  if (!mongoose.Types.ObjectId.isValid(userId)) {
+    throw new ApiError(401, 'Unauthorized User');
+  }
+
+  const cart = await Cart.findOne({
+    user: userId,
+  }).populate({
+    path: 'courses',
+    select: '-thumbnail._id -isPublished -price._id -totalAmount -isCheckedOut -tags -itemSection',
+  });
+
+  if (!cart) {
+    throw new ApiError(404, 'Cart not found!');
+  }
+
+  return res.status(200).json(new ApiResponse(200, 'Cart shown successfully!', cart));
+});
