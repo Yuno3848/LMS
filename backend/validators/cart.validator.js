@@ -9,3 +9,13 @@ export const validateCart = () => {
       .withMessage('course id must be a string!'),
   ];
 };
+
+export const validateRemoveCart = () => {
+  return [
+    body('courseId')
+      .notEmpty()
+      .withMessage("param id can't be empty")
+      .isString()
+      .withMessage('course id must be a string!'),
+  ];
+};
