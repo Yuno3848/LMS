@@ -26,13 +26,13 @@ export const createCourse = asyncHandler(async (req, res) => {
   const userId = req.user.id;
   const user = await validateInstructor(userId);
 
-  const requiredFields = ['title', 'description', 'base', 'currency', 'category', 'requirements'];
+  const requiredFields = ['title', 'description', 'base', 'category', 'requirements'];
   const missingFields = requiredFields.filter((field) => !req.body[field]);
   if (missingFields.length > 0) {
     throw new ApiError(400, `Missing required fields: ${missingFields.join(', ')}`);
   }
 
-  const { title, description, base, currency, difficulty, tags, category, requirements } = req.body;
+  const { title, description, base,  difficulty, tags, category, requirements } = req.body;
 
   // Validate thumbnail
   if (!req.file || !req.file.buffer) {
@@ -50,7 +50,7 @@ export const createCourse = asyncHandler(async (req, res) => {
     price: {
       base: Number(base),
       final: Number(base),
-      currency,
+      currency : "INR"
     },
     difficulty,
     tags: Array.isArray(tags) ? tags : tags?.split(',').map((tag) => tag.trim()),
