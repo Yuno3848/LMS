@@ -10,13 +10,9 @@ import { addEnrolledCourse } from "../../redux/slicers/enrollmentSlicer";
 import useInitEnrolledCourses from "../../EffectsForApp/useInitEnrolledCourses";
 
 const CartPage = () => {
-
- 
   const cart = useSelector((state) => state.cart.items);
   const user = useSelector((state) => state.auth.user);
 
-
- 
   const [coupon, setCoupon] = useState("");
 
   const dispatch = useDispatch();
@@ -98,6 +94,7 @@ const CartPage = () => {
         rzp.open();
         // window.location.href = response.data.paymentUrl;
       } else {
+        console.log("error else :", response);
         toast.error(response?.error || "Failed to create order");
       }
     } catch (error) {
