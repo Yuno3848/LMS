@@ -51,6 +51,8 @@ const CartPage = () => {
         courseIds
       );
 
+      console.log("response create order :", response);
+
       if (response?.success) {
         toast.success("Order created successfully!");
 
