@@ -7,16 +7,13 @@ const enrollmentSchema = new Schema({
     index: true,
   },
 
-  courseId: {
-    type: Schema.Types.ObjectId,
-    ref: 'Course',
-    index: true,
-  },
-
-  enrolledAt: {
-    type: Date,
-    default: Date.now,
-  },
+  courseIds: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: 'Course',
+      index: true,
+    },
+  ],
 
   completedLectures: {
     type: Schema.Types.ObjectId,

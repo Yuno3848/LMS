@@ -5,6 +5,7 @@ import instructorProfileReducer from "./slicers/instructorProfileSlicer";
 import courseReducer from "./slicers/courseSlicer";
 import itemCourseReducer from "./slicers/itemSlicer";
 import cartReducer from "./slicers/cartSlicer";
+import enrollReducer from "./slicers/enrollmentSlicer"
 export const store = configureStore({
   reducer: {
     auth: authReducer,
@@ -13,5 +14,6 @@ export const store = configureStore({
     course: courseReducer,
     itemCourse: itemCourseReducer,
     cart: cartReducer,
+    enrolled : enrollReducer
   },
 });

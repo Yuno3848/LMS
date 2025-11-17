@@ -13,11 +13,13 @@ const transactionSchema = new Schema(
       required: true,
     },
 
-    courseId: {
-      type: Schema.Types.ObjectId,
-      ref: 'Course',
-      required: true,
-    },
+    courseId: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: 'Course',
+        required: true,
+      },
+    ],
     amount: {
       type: Number,
       required: true,
@@ -43,7 +45,7 @@ const transactionSchema = new Schema(
     },
     paymentGateway: {
       type: String,
-      default: 'paypal',
+      default: 'razorpay',
     },
 
     email: {

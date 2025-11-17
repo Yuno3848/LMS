@@ -33,7 +33,6 @@ export const registeredUser = asyncHandler(async (req, res) => {
 
   if (req.file) {
     const uploadResult = await uploadOnCloudinary(req.file.buffer, req.file.originalname);
-    console.log("uploadResult",uploadResult);
     avatarData = {
       url: uploadResult.secure_url,
       localPath: uploadResult.public_id,

@@ -38,7 +38,6 @@ const courseSchema = new Schema(
         },
         currency: {
           type: String,
-          enum: ['INR', 'USD'],
           default: 'INR',
         },
       },

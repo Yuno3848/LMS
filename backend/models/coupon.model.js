@@ -36,11 +36,6 @@ const couponSchema = new Schema(
       type: Boolean,
       default: true,
     },
-    appliesTo: {
-      type: String,
-      enum: ['all', 'specific'],
-      default: 'all',
-    },
     courses: {
       type: Schema.Types.ObjectId,
       ref: 'Course',

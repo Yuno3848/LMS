@@ -12,8 +12,11 @@ import {
 } from "lucide-react";
 import { courseApiFetch } from "../../../ApiFetch/courseApiFetch";
 import { Link } from "react-router";
+import useInitEnrolledCourses from "../../../EffectsForApp/useInitEnrolledCourses";
 
 const Course = () => {
+  useInitEnrolledCourses();
+
   const [courses, setCourses] = useState([]);
   const [filteredCourses, setFilteredCourses] = useState([]);
   const [viewMode, setViewMode] = useState("grid");

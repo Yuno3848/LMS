@@ -8,12 +8,14 @@ import useInitInstructorCourses from "./EffectsForApp/useInitInstructorCourses";
 import useInitAuth from "./EffectsForApp/useInitAuth";
 import Routes from "../Routes";
 import useInitCart from "./EffectsForApp/useInitCart";
+import useInitEnrolledCourses from "./EffectsForApp/useInitEnrolledCourses";
 function App() {
   useInitAuth();
   useInitInstructorCourses();
   useInitStudentProfile();
   useInitInstructorProfile();
   useInitCart();
+  
   const authLoading = useSelector((state) => state.auth.loading);
   const user = useSelector((state) => state.auth.user);
   const studentLoading = useSelector((state) => state.studentProfile.loading);

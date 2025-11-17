@@ -7,9 +7,11 @@ import { asyncHandler } from '../utils/asyncHandler.js';
 
 export const addToCart = asyncHandler(async (req, res) => {
   const userId = req.user.id;
-  console.log(userId);
+  if (!userId || !mongoose.Types.ObjectId.isValid(userId)) {
+    throw new ApiError(400, 'Invalid user ID');
+  }
   const { courseId } = req.params;
-  console.log('course id :', courseId);
+
   const isCourseExist = await Course.findById(courseId);
   if (!isCourseExist) {
     throw new ApiError(404, 'Invalid course id');
@@ -45,11 +47,10 @@ export const addToCart = asyncHandler(async (req, res) => {
 export const removeFromCart = asyncHandler(async (req, res) => {
   const userId = req.user.id;
   const { courseId } = req.body;
-  console.log("cart course id :", courseId)
-  if (!mongoose.Types.ObjectId.isValid(userId)) {
-    throw new ApiError(401, 'user not authorized!');
-  }
 
+  if (!userId || !mongoose.Types.ObjectId.isValid(userId)) {
+    throw new ApiError(400, 'Invalid user ID');
+  }
   const isCourseExist = await Course.findById(courseId);
 
   if (!isCourseExist) {
@@ -82,8 +83,8 @@ export const removeFromCart = asyncHandler(async (req, res) => {
 export const showCart = asyncHandler(async (req, res) => {
   const userId = req.user.id;
 
-  if (!mongoose.Types.ObjectId.isValid(userId)) {
-    throw new ApiError(401, 'Unauthorized User');
+  if (!userId || !mongoose.Types.ObjectId.isValid(userId)) {
+    throw new ApiError(400, 'Invalid user ID');
   }
 
   const cart = await Cart.findOne({
@@ -98,4 +99,19 @@ export const showCart = asyncHandler(async (req, res) => {
   }
 
   return res.status(200).json(new ApiResponse(200, 'Cart shown successfully!', cart));
+});
+
+export const removeUserCart = asyncHandler(async (req, res) => {
+  const userId = req.user.id;
+  if (!userId || !mongoose.Types.ObjectId.isValid(userId)) {
+    throw new ApiError(400, 'Invalid user ID');
+  }
+
+  const cart = await Cart.findOneAndDelete({ user: userId });
+
+  if (!cart) {
+    throw new ApiError(400, 'Failed to delete cart!');
+  }
+
+  return res.status(200).json(new ApiResponse(200, 'Cart Removed successfully'));
 });

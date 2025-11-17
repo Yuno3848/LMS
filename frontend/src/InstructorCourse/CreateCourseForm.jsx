@@ -5,7 +5,6 @@ import {
   Tag,
   Image,
   X,
-  Upload,
   AlertCircle,
   Loader2,
 } from "lucide-react";
@@ -15,7 +14,6 @@ import toast from "react-hot-toast";
 import { useDispatch, useSelector } from "react-redux";
 import {
   addInstructorCourse,
-  setInstructorProfile,
 } from "../redux/slicers/instructorProfileSlicer";
 import { addCourse } from "../redux/slicers/courseSlicer";
 
@@ -25,7 +23,6 @@ const CreateCourseForm = () => {
     description: "",
     base: 0,
     final: 0,
-    currency: "",
     courseExpiry: "",
     difficulty: "",
     tags: [],
@@ -68,7 +65,6 @@ const CreateCourseForm = () => {
     form.append("description", formData.description);
     form.append("base", formData.base);
     form.append("final", formData.final);
-    form.append("currency", formData.currency);
     form.append("difficulty", formData.difficulty.toLowerCase());
     form.append("category", formData.category);
     form.append("requirements", formData.requirements);
@@ -211,12 +207,12 @@ const CreateCourseForm = () => {
                       <br />
                       <span className="font-semibold text-[#6b4226]">
                         Recommended:
-                      </span>{" "}
+                      </span>
                       1280x720px
                       <br />
                       <span className="font-semibold text-[#6b4226]">
                         Formats:
-                      </span>{" "}
+                      </span>
                       JPG, PNG, WEBP
                     </p>
                   </div>
@@ -311,15 +307,8 @@ const CreateCourseForm = () => {
                   <label className="block text-sm font-semibold text-[#6b4226] mb-2">
                     Currency <span className="text-red-500">*</span>
                   </label>
-                  <select
-                    value={formData.currency}
-                    onChange={(e) =>
-                      setFormData({ ...formData, currency: e.target.value })
-                    }
-                    className="w-full px-4 py-3 bg-[#fdfaf7] border border-[#e0c9a6] rounded-lg text-[#6b4226] cursor-pointer"
-                  >
+                  <select className="w-full px-4 py-3 bg-[#fdfaf7] border border-[#e0c9a6] rounded-lg text-[#6b4226] cursor-pointer">
                     <option>INR</option>
-                    <option>USD</option>
                   </select>
                 </div>
               </div>

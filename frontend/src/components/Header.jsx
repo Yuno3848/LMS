@@ -95,7 +95,13 @@ const Header = () => {
                   to="/course"
                   className="block px-4 py-2 text-[#6b4226] hover:bg-[#e0c9a6]"
                 >
-                  My Courses
+                  Courses
+                </Link>
+                <Link
+                  to="/my-learning"
+                  className="block px-4 py-2 text-[#6b4226] hover:bg-[#e0c9a6]"
+                >
+                  My Learning
                 </Link>
 
                 <Link

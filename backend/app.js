@@ -1,13 +1,12 @@
 import express from 'express';
 import cookie from 'cookie-parser';
 import cors from 'cors';
-import auth from './routes/user.route.js';
 import morgan from 'morgan';
+import auth from './routes/user.route.js';
 import studentProfile from './routes/studentProfile.route.js';
 import instructor from './routes/instructorProfile.route.js';
 import course from './routes/course.route.js';
 import admin from './routes/admin.route.js';
-
 import itemSection from './routes/itemSection.route.js';
 import transaction from './routes/transaction.route.js';
 import enrollment from './routes/enrollment.route.js';
@@ -22,12 +21,13 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use(
   cors({
-    origin: 'http://localhost:5173',
+    origin: ['http://localhost:5173', 'http://localhost:8080'],
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
   }),
 );
+
 app.use('/api/v1/auth', auth);
 app.use('/api/v1/studentProfile', studentProfile);
 app.use('/api/v1/instructorProfile', instructor);

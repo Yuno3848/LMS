@@ -8,60 +8,42 @@ import crypto from 'crypto';
 import { Course } from '../models/course.model.js';
 import { Coupon } from '../models/coupon.model.js';
 import { Enrollment } from '../models/enrollment.model.js';
-
+import dotenv from 'dotenv';
+dotenv.config();
 export const createOrder = asyncHandler(async (req, res) => {
   const userId = req.user.id;
-  const { courseId } = req.params;
-  const { couponCode } = req.body;
 
-  if (!userId || !isValidObjectId(userId)) throw new ApiError(401, 'User not authorized');
-  if (!courseId || !isValidObjectId(courseId)) throw new ApiError(404, 'Invalid course id');
+  const { subTotal: amount } = req.body;
+  const { courseIds } = req.body;
 
-  const course = await Course.findById(courseId).lean();
-  if (!course) throw new ApiError(404, 'Course not found');
-
-  const alreadyOwned = await Enrollment.exists({
-    userId: new mongoose.Types.ObjectId(userId),
-    courseId: new mongoose.Types.ObjectId(courseId),
-  });
-  if (alreadyOwned) throw new ApiError(400, 'You already own this course.');
-
-  const basePrice = Number(course?.price?.final);
-  if (!Number.isFinite(basePrice)) throw new ApiError(400, 'Course price not available');
-
-  let finalAmount = basePrice;
-
-  if (couponCode) {
-    const coupon = await Coupon.findOne({ couponCode: couponCode.toUpperCase(), isActive: true });
-    if (!coupon) throw new ApiError(404, 'Coupon Code not found');
-    if (coupon.maxUses && coupon.maxUses <= coupon.usedCount)
-      throw new ApiError(400, 'Coupon limit reached');
-    if (
-      coupon.courses?.length > 0 &&
-      !coupon.courses.some((id) => id.equals(new mongoose.Types.ObjectId(courseId)))
-    ) {
-      throw new ApiError(400, 'Coupon not valid for this course');
-    }
-    if (coupon.discountValue < 0) throw new ApiError(400, 'Bad coupon');
-    finalAmount =
-      coupon.discountType === 'percentage'
-        ? finalAmount - (finalAmount * coupon.discountValue) / 100
-        : finalAmount - coupon.discountValue;
-    finalAmount = Math.max(finalAmount, 0);
+  if (!amount) {
+    throw new ApiError(500, 'course not available!');
   }
 
+  const enrolledCourse = await Enrollment.exists({
+    studentId: userId,
+    courseIds: { $in: courseIds },
+  });
+
+  if (enrolledCourse) {
+    throw new ApiError(400, 'User already enrolled in one or more courses');
+  }
+
+  let finalAmount = Number(amount);
+
+  //create options for the razorpay. To create order
   const options = {
-    amount: Math.round(finalAmount * 100), // paise
+    amount: Math.round(finalAmount * 100), //paise
     currency: 'INR',
-    receipt: `crs_${courseId}_${Date.now()}`.slice(0, 40),
+    receipt: `rcpt_${Date.now()}`,
   };
 
   const order = await razorpay.orders.create(options);
 
   const transaction = await Transaction.create({
     receipt: order.receipt,
-    userId: new mongoose.Types.ObjectId(userId),
-    courseId: new mongoose.Types.ObjectId(courseId),
+    userId,
+    courseId: courseIds.map((courseId) => new mongoose.Types.ObjectId(courseId)),
     amount: order.amount,
     currency: order.currency,
     status: 'PENDING',
@@ -72,15 +54,7 @@ export const createOrder = asyncHandler(async (req, res) => {
 
   if (!transaction) throw new ApiError(400, 'failed to create transaction');
 
-  return res.status(201).json(
-    new ApiResponse(201, 'created order successfully', {
-      transactionId: transaction._id,
-      orderId: order.id,
-      amount: order.amount,
-      currency: order.currency,
-      receipt: order.receipt,
-    }),
-  );
+  return res.status(201).json(new ApiResponse(201, 'created order successfully', transaction));
 });
 
 export const verifyPayment = asyncHandler(async (req, res) => {
@@ -91,12 +65,12 @@ export const verifyPayment = asyncHandler(async (req, res) => {
     razorpay_signature,
     transactionId,
     couponCode,
-    courseId,
+    courseIds,
   } = req.body;
 
   const body = `${razorpay_order_id}|${razorpay_payment_id}`;
   const expectedSignature = crypto
-    .createHmac('sha256', process.env.RAZORPAY_KEY_SECRET)
+    .createHmac('sha256', process.env.RAZORPAY_SECRET_KEY)
     .update(body.toString())
     .digest('hex');
 
@@ -118,7 +92,7 @@ export const verifyPayment = asyncHandler(async (req, res) => {
   );
 
   if (!transaction) {
-    throw new ApiError(404, 'transaction verificatino failed.');
+    throw new ApiError(404, 'transaction verification failed.');
   }
 
   if (couponCode) {
@@ -130,45 +104,16 @@ export const verifyPayment = asyncHandler(async (req, res) => {
     );
   }
 
-  const existingEnrollment = await Enrollment.findOne({ studentId: userId, courseId });
-
-  if (existingEnrollment) {
-    throw new ApiError(400, 'You already enrolled in the course');
-  }
-
   const enrollment = await Enrollment.create({
     studentId: userId,
-    courseId,
+    courseIds: courseIds.map((courseId) => new mongoose.Types.ObjectId(courseId)),
     transactionId,
-    enrolledAt: Date.now(),
     isPaid: true,
-    paymentDate: transaction.createdAt,
   });
 
   return res
     .status(200)
     .json(new ApiResponse(200, 'Payment verified successfully', { transaction, enrollment }));
-});
-
-export const cancelTransaction = asyncHandler(async (req, res) => {
-  const userId = req.user.id;
-  const { transactionId } = req.params;
-
-  const transaction = await Transaction.findByIdAndUpdate(
-    { _id: transactionId, userId },
-    {
-      status: 'FAILED',
-    },
-    {
-      new: true,
-    },
-  );
-
-  if (!transaction) {
-    throw new ApiError(404, 'Transaction not found');
-  }
-
-  return res.status(200).json(200, 'Transaction cancelled successfully', Transaction);
 });
 
 export const getTransactionById = asyncHandler(async (req, res) => {

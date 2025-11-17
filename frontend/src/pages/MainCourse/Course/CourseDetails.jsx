@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { courseApiFetch } from "../../../ApiFetch/courseApiFetch";
-import { useParams } from "react-router";
+import { useParams, useNavigate } from "react-router";
 import {
   Clock,
   Users,
@@ -10,37 +10,64 @@ import {
   ChevronDown,
   ChevronUp,
 } from "lucide-react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { addCourse } from "../../../redux/slicers/cartSlicer";
 import { cartApiFetch } from "../../../ApiFetch/cartApiFetch";
 import toast from "react-hot-toast";
+import useInitEnrolledCourses from "../../../EffectsForApp/useInitEnrolledCourses";
 
 const CourseDetails = () => {
+  useInitEnrolledCourses(); // Initialize enrolled courses
+
   const [course, setCourse] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [openSections, setOpenSections] = useState({});
   const { courseId } = useParams();
-  const [cart, setCart] = useState("Add To Cart");
 
   const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  const cartItems = useSelector((state) => state.cart.items);
+  const enrolledCourse = useSelector((state) => state.enrolled.myCourse);
+
+  const isInCart = (courseId) => {
+    return cartItems?.some((item) => item._id === courseId);
+  };
+
+  const isEnrolled = (courseId) => {
+    return enrolledCourse?.some((id) => id === courseId);
+  };
 
   const handleCart = async () => {
-    if (cart == "Add To Cart") {
-      try {
-        const response = await cartApiFetch.addToCart(courseId);
-        if (response?.data?.data) {
-          setCart("Go To Cart");
-          dispatch(addCourse(response?.data?.data?.courses));
-          toast.success("Add To Cart Successfully!");
-        } else {
-          toast.error("Course Already In Store!");
-        }
-      } catch (error) {
-        toast.error("Something went wrong!");
+    try {
+      const response = await cartApiFetch.addToCart(courseId);
+      if (response?.data?.data) {
+        dispatch(addCourse(response?.data?.data?.courses));
+        toast.success("Added to Cart Successfully!");
+      } else {
+        toast.error("Course Already In Cart!");
       }
-    } else {
-      setCart("Add To Cart");
+    } catch (error) {
+      toast.error("Something went wrong!");
+    }
+  };
+
+  const handleGoToCart = () => {
+    navigate("/cart");
+  };
+
+  const handleGoToCourse = () => {
+    navigate(`/course/${courseId}/learn`);
+  };
+
+  const handleEnrollFree = async () => {
+    try {
+      // Add your free enrollment logic here
+      toast.success("Enrolled Successfully!");
+      navigate(`/course/${courseId}/learn`);
+    } catch (error) {
+      toast.error("Enrollment failed!");
     }
   };
 
@@ -394,15 +421,32 @@ const CourseDetails = () => {
               </div>
               {course.price > 0 ? (
                 <>
-                  <button onClick={handleCart} className="cta mb-2">
-                    {cart}
-                  </button>
-                  <button className="cta-outline">Buy now</button>
+                  {isEnrolled(courseId) ? (
+                    // If user is already enrolled → Go to Course
+                    <button
+                      className="cta mb-2"
+                      style={{ background: "#16a34a" }}
+                      onClick={handleGoToCourse}
+                    >
+                      Go To Course
+                    </button>
+                  ) : isInCart(courseId) ? (
+                    // If course is already in cart → Go to Cart
+                    <button className="cta mb-2" onClick={handleGoToCart}>
+                      Go To Cart
+                    </button>
+                  ) : (
+                    // Default → Add to Cart
+                    <button onClick={handleCart} className="cta mb-2">
+                      Add To Cart
+                    </button>
+                  )}
                 </>
               ) : (
                 <button
                   className="cta"
                   style={{ background: "#16a34a", color: "#fff" }}
+                  onClick={handleEnrollFree}
                 >
                   Enroll for Free
                 </button>

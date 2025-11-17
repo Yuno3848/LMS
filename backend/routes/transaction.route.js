@@ -7,7 +7,6 @@ import {
   validateVerifyPayment,
 } from '../validators/transaction.validator.js';
 import {
-  cancelTransaction,
   createOrder,
   getAllTransaction,
   getTransactionById,
@@ -15,29 +14,19 @@ import {
 } from '../controllers/transaction.controller.js';
 
 const transaction = Router();
-transaction.post(
-  '/create-order/:courseId',
-  validateCreateOrder(),
-  validatorError,
-  isLogged,
-  createOrder,
-);
+
+console.log('im inside transaction route');
+transaction.post('/create-order', isLogged, validateCreateOrder(), validatorError, createOrder);
 
 transaction.post(
   '/verify-payment',
+  isLogged,
   validateVerifyPayment(),
   validatorError,
-  isLogged,
   verifyPayment,
 );
 
-transaction.post(
-  '/cancel-transaction/:transactionId',
-  validateTransaction(),
-  validatorError,
-  isLogged,
-  cancelTransaction,
-);
+
 
 transaction.get(
   '/get-transaction-by-id/:transactionId',

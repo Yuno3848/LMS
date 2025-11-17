@@ -1,26 +1,33 @@
 import React from "react";
-import {
-  ShoppingCart,
-  Trash2,
-  Plus,
-  Minus,
-  Tag,
-  ArrowRight,
-} from "lucide-react";
+import { ShoppingCart, Trash2, Tag, ArrowRight } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
 import { cartApiFetch } from "../../ApiFetch/cartApiFetch";
-import { removeCourse } from "../../redux/slicers/cartSlicer";
+import { clearCart, removeCourse } from "../../redux/slicers/cartSlicer";
 import toast from "react-hot-toast";
+import { useState } from "react";
+import transactionApiFetch from "../../ApiFetch/transactionApiFetch";
+import { addEnrolledCourse } from "../../redux/slicers/enrollmentSlicer";
+import useInitEnrolledCourses from "../../EffectsForApp/useInitEnrolledCourses";
 
 const CartPage = () => {
+
+ 
+  const cart = useSelector((state) => state.cart.items);
+  const user = useSelector((state) => state.auth.user);
+
+
+ 
+  const [coupon, setCoupon] = useState("");
+
   const dispatch = useDispatch();
 
-  const cart = useSelector((state) => state.cart.items);
-  console.log("cart cart cart :", cart);
   const subTotal = cart.reduce((acc, item) => acc + item.price.final, 0);
 
+  let courseIds = [];
+
+  cart.forEach((item) => courseIds.push(item._id));
+
   const handleCartDelete = async (courseId) => {
-    console.log(courseId);
     try {
       const response = await cartApiFetch.removeFromCart(courseId);
 
@@ -33,6 +40,113 @@ const CartPage = () => {
       console.log(response);
     } catch (error) {
       toast.error(error.message || "something went wrong");
+    }
+  };
+
+  const handlePayment = async (subTotal, courseIds) => {
+    if (courseIds.length === 0) {
+      toast.error("Your cart is empty");
+      return;
+    }
+
+    try {
+      const response = await transactionApiFetch.createOrder(
+        subTotal,
+        courseIds
+      );
+
+      if (response?.success) {
+        toast.success("Order created successfully!");
+
+        console.log("response payment :", response);
+        const raw = response?.data?.data?.rawResponse;
+        const transactionId = response?.data?.data._id;
+
+        const courseIds_response = response?.data?.data?.courseId;
+        console.log("courseIds_response :", courseIds_response);
+        // TODO: Redirect to payment gateway or next step
+        const options = {
+          key: import.meta.env.VITE_RAZORPAY_KEY_ID, // Enter the Key ID generated from the Dashboard
+          amount: raw.amount, // Amount is in currency subunits.
+          currency: raw.currency,
+          name: "Study Brew", //your business name
+          description: "Test Transaction",
+          image: "https://example.com/your_logo",
+          order_id: raw.id, // This is a sample Order ID. Pass the `id` obtained in the response of Step 1
+          handler: function (response) {
+            console.log("response inside handler :", response);
+            handleVerifyPayment(
+              response,
+              coupon,
+              courseIds_response,
+              transactionId
+            );
+          },
+          prefill: {
+            //We recommend using the prefill parameter to auto-fill customer's contact information especially their phone number
+            name: user?.data?.username, //your customer's name
+            email: user?.data?.email,
+          },
+          notes: {
+            address: "Razorpay Corporate Office",
+          },
+          theme: {
+            color: "#3399cc",
+          },
+        };
+        const rzp = new window.Razorpay(options);
+        rzp.open();
+        // window.location.href = response.data.paymentUrl;
+      } else {
+        toast.error(response?.error || "Failed to create order");
+      }
+    } catch (error) {
+      console.error("Payment error:", error);
+      toast.error(error.message || "Something went wrong with your order");
+    }
+  };
+
+  const handleVerifyPayment = async (
+    response,
+    coupon,
+    courseIds_response,
+    transactionId
+  ) => {
+    try {
+      const res = await transactionApiFetch.verifyPayment({
+        razorpay_order_id: response.razorpay_order_id,
+        razorpay_payment_id: response.razorpay_payment_id,
+        razorpay_signature: response.razorpay_signature,
+        coupon,
+        courseIds: courseIds_response,
+        transactionId,
+      });
+      console.log("verify payment response data :", res);
+      if (res?.success) {
+        console.log("res res res res res :", res);
+        toast.success("Verified Payment");
+        dispatch(addEnrolledCourse(res?.data?.data?.enrollment?.courseIds));
+        dispatch(clearCart());
+
+        try {
+          const res = await cartApiFetch.removeUserCart();
+          if (res?.success) {
+            console.log("remove user cart response :", res);
+            toast.success("Cart removed!");
+          } else {
+            toast.error("Failed to remove cart!");
+          }
+        } catch (error) {
+          toast.error("Something went wrong!");
+        }
+      } else {
+        toast.error(res?.error || "Failed to verify payment");
+      }
+    } catch (error) {
+      console.error("Verification error:", error);
+      toast.error(
+        error.message || "Something went wrong with payment verification"
+      );
     }
   };
 
@@ -98,10 +212,10 @@ const CartPage = () => {
                       <div className="text-right">
                         <div className="flex items-center space-x-2">
                           <span className="text-sm text-[#8c5e3c] line-through">
-                            ${item.price.base}
+                            ₹{item.price.base}
                           </span>
                           <span className="text-2xl font-black text-[#6b4226]">
-                            ${item.price.final}
+                            ₹{item.price.final}
                           </span>
                         </div>
                       </div>
@@ -123,6 +237,7 @@ const CartPage = () => {
                 <input
                   type="text"
                   placeholder="Enter coupon code"
+                  value={coupon}
                   className="flex-grow px-4 py-3 bg-white border-2 border-[#e0c9a6] rounded-xl text-[#6b4226] placeholder-[#b08968] focus:outline-none focus:border-[#8c5e3c] transition-colors duration-300"
                 />
                 <button className="px-6 py-3 bg-gradient-to-r from-[#b08968] to-[#8c5e3c] text-white font-bold rounded-xl hover:shadow-lg hover:shadow-[#8c5e3c]/30 transition-all duration-300">
@@ -143,15 +258,15 @@ const CartPage = () => {
                 <div className="space-y-4 mb-6">
                   <div className="flex justify-between text-[#6b4226]">
                     <span className="font-medium">Subtotal</span>
-                    <span className="font-bold">${subTotal}</span>
+                    <span className="font-bold">₹{subTotal}</span>
                   </div>
                   <div className="flex justify-between text-[#6b4226]">
                     <span className="font-medium">Discount</span>
-                    <span className="font-bold text-green-600">-$60.00</span>
+                    <span className="font-bold text-green-600">-₹60.00</span>
                   </div>
                   <div className="flex justify-between text-[#6b4226]">
                     <span className="font-medium">Tax</span>
-                    <span className="font-bold">$0.00</span>
+                    <span className="font-bold">₹0.00</span>
                   </div>
 
                   <div className="border-t-2 border-[#e0c9a6] pt-4">
@@ -160,13 +275,16 @@ const CartPage = () => {
                         Total
                       </span>
                       <span className="text-3xl font-black text-[#6b4226]">
-                        {subTotal}
+                        ₹{subTotal}
                       </span>
                     </div>
                   </div>
                 </div>
 
-                <button className="w-full py-4 bg-gradient-to-r from-[#b08968] via-[#8c5e3c] to-[#6b4226] text-white font-black text-lg rounded-xl shadow-lg shadow-[#8c5e3c]/30 hover:shadow-xl hover:shadow-[#8c5e3c]/40 transform hover:scale-105 transition-all duration-300 flex items-center justify-center space-x-2 group">
+                <button
+                  onClick={() => handlePayment(subTotal, courseIds)}
+                  className="w-full py-4 bg-gradient-to-r from-[#b08968] via-[#8c5e3c] to-[#6b4226] text-white font-black text-lg rounded-xl shadow-lg shadow-[#8c5e3c]/30 hover:shadow-xl hover:shadow-[#8c5e3c]/40 transform hover:scale-105 transition-all duration-300 flex items-center justify-center space-x-2 group"
+                >
                   <span>Proceed to Checkout</span>
                   <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform duration-300" />
                 </button>

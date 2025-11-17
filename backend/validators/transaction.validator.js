@@ -2,12 +2,12 @@ import { body, param } from 'express-validator';
 
 export const validateCreateOrder = () => {
   return [
-    body('couponCode').optional().isString().withMessage('course section id must be a string'),
-    param('courseId')
-      .notEmpty()
-      .withMessage('course section id is required')
-      .isString()
-      .withMessage('course section id must be a string'),
+    // body('couponCode').optional().isString().withMessage('course section id must be a string'),
+    // body('courseId')
+    //   .notEmpty()
+    //   .withMessage('course section id is required')
+    //   .isString()
+    //   .withMessage('course section id must be a string'),
   ];
 };
 

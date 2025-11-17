@@ -1,5 +1,3 @@
-"use client";
-
 import { useEffect, useState } from "react";
 import {
   BookOpen,
@@ -77,7 +75,6 @@ const CourseSectionPage = () => {
               })),
             })
           );
-
 
           dispatch(setItem(formattedSections));
         } else {
@@ -264,368 +261,355 @@ const CourseSectionPage = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#f5e6ca] via-[#fefaf5] to-[#e7d3b5]">
-      <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10 animate-fadeIn">
         {/* Stats Bar */}
-        <div className="mb-6 grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="bg-white/80 backdrop-blur-sm rounded-xl shadow-md border border-[#e0c9a6] p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-[#6b4226]/60 mb-1">Total Sections</p>
-                <p className="text-2xl font-bold text-[#6b4226]">
-                  {sections.length}
-                </p>
-              </div>
-              <BookOpen className="w-8 h-8 text-[#b08968]" />
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
+          <div className="glass-card p-5 flex items-center justify-between shadow-md">
+            <div>
+              <p className="text-sm text-[#6b4226]/60 mb-1">Total Sections</p>
+              <h2 className="text-3xl font-bold text-[#6b4226]">
+                {sections.length}
+              </h2>
             </div>
+            <BookOpen className="w-9 h-9 text-[#b08968]" />
           </div>
 
-          <div className="bg-white/80 backdrop-blur-sm rounded-xl shadow-md border border-[#e0c9a6] p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-[#6b4226]/60 mb-1">Total Lectures</p>
-                <p className="text-2xl font-bold text-[#6b4226]">
-                  {sections.reduce(
-                    (acc, section) => acc + (section.totalLectures || 0),
-                    0
-                  )}
-                </p>
-              </div>
-              <Video className="w-8 h-8 text-[#b08968]" />
+          <div className="glass-card p-5 flex items-center justify-between shadow-md">
+            <div>
+              <p className="text-sm text-[#6b4226]/60 mb-1">Total Lectures</p>
+              <h2 className="text-3xl font-bold text-[#6b4226]">
+                {sections.reduce(
+                  (acc, section) => acc + (section.totalLectures || 0),
+                  0
+                )}
+              </h2>
             </div>
+            <Video className="w-9 h-9 text-[#b08968]" />
           </div>
         </div>
 
+        {/* Add Section Button */}
         <div className="mb-6">
           <button
-            onClick={() => setIsAddingSection((prev) => !prev)}
-            className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-[#b08968] to-[#8c5e3c] text-white font-semibold rounded-xl hover:opacity-90 transition shadow-md"
+            onClick={() => setIsAddingSection(!isAddingSection)}
+            className="px-6 py-3 bg-gradient-to-r from-[#b08968] to-[#8c5e3c] text-white font-semibold
+                   rounded-xl shadow-lg hover:scale-[1.02] hover:shadow-xl transition-all duration-200 flex items-center gap-2"
           >
-            <Plus className="w-5 h-5" />
-            Add New Section
+            <Plus className="w-5 h-5" /> Add New Section
           </button>
         </div>
 
+        {/* Add Section Form */}
         {isAddingSection && (
-          <div className="mb-6 bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-[#e0c9a6] p-6">
-            <div className="flex items-center gap-3 mb-6 pb-4 border-b border-[#e0c9a6]/50">
-              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#b08968] to-[#8c5e3c] flex items-center justify-center">
-                <BookOpen className="w-4 h-4 text-white" />
-              </div>
-              <h2 className="text-lg font-bold text-[#6b4226]">
-                New Section Details
-              </h2>
-            </div>
+          <div className="glass-card border border-[#e0c9a6] rounded-2xl p-6 shadow-xl mb-10 animate-scaleIn">
+            <h2 className="text-lg font-bold text-[#6b4226] mb-4 flex items-center gap-2">
+              <BookOpen className="w-5 h-5 text-[#b08968]" /> Create Section
+            </h2>
 
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-semibold text-[#6b4226] mb-2">
-                  Section Title <span className="text-red-500">*</span>
-                </label>
-                <input
-                  type="text"
-                  value={newSection.title}
-                  onChange={(e) => setNewSection({ title: e.target.value })}
-                  className="w-full px-4 py-3 bg-[#fdfaf7] border border-[#e0c9a6] rounded-lg text-[#6b4226] placeholder-[#6b4226]/40 focus:outline-none focus:border-[#b08968] transition"
-                  placeholder="e.g., Introduction to React Hooks"
-                />
-              </div>
+            <input
+              type="text"
+              value={newSection.title}
+              onChange={(e) => setNewSection({ title: e.target.value })}
+              placeholder="Section title..."
+              className="w-full px-4 py-3 rounded-lg bg-white/70 focus:bg-white border border-[#e0c9a6]
+                     focus:border-[#b08968] outline-none transition shadow-sm"
+            />
 
-              <div className="flex gap-3">
-                <button
-                  onClick={handleAddSection}
-                  disabled={isLoading || !newSection.title.trim()}
-                  className={`px-6 py-3 font-semibold rounded-lg transition ${
-                    isLoading || !newSection.title.trim()
-                      ? "bg-[#d1bfa7] cursor-not-allowed text-white"
-                      : "bg-gradient-to-r from-[#b08968] to-[#8c5e3c] text-white hover:opacity-90"
-                  }`}
-                >
-                  {isLoading ? (
-                    <span className="flex items-center gap-2">
-                      <Loader2 className="w-4 h-4 animate-spin" />
-                      Adding...
-                    </span>
-                  ) : (
-                    "Add Section"
-                  )}
-                </button>
-                <button
-                  onClick={() => {
-                    setIsAddingSection(false);
-                    setNewSection({ title: "" });
-                  }}
-                  className="px-6 py-3 bg-[#e0c9a6] text-[#6b4226] font-semibold rounded-lg hover:bg-[#d1bfa7] transition"
-                >
-                  Cancel
-                </button>
-              </div>
+            <div className="flex gap-3 mt-4">
+              <button
+                onClick={handleAddSection}
+                disabled={isLoading || !newSection.title.trim()}
+                className={`px-6 py-3 rounded-lg text-white transition shadow-md ${
+                  !newSection.title.trim()
+                    ? "bg-[#d1bfa7]/70 cursor-not-allowed"
+                    : "bg-gradient-to-r from-[#b08968] to-[#8c5e3c] hover:scale-[1.03]"
+                }`}
+              >
+                {isLoading ? "Adding..." : "Add Section"}
+              </button>
+
+              <button
+                onClick={() => {
+                  setIsAddingSection(false);
+                  setNewSection({ title: "" });
+                }}
+                className="px-6 py-3 bg-[#e0c9a6] text-[#6b4226] rounded-lg hover:bg-[#d1bfa7] transition"
+              >
+                Cancel
+              </button>
             </div>
           </div>
         )}
 
-        <div className="space-y-4">
-          {sections.length === 0 ? (
-            <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-[#e0c9a6] p-12 text-center">
-              <BookOpen className="w-16 h-16 text-[#b08968] mx-auto mb-4 opacity-50" />
-              <h3 className="text-lg font-bold text-[#6b4226] mb-2">
-                No Sections Yet
-              </h3>
-              <p className="text-sm text-[#6b4226]/60">
-                Start building your course by adding your first section
-              </p>
-            </div>
-          ) : (
-            sections.map((section, index) => (
+        {/* Section List */}
+        {sections.length === 0 ? (
+          <div className="glass-card text-center py-16 border border-[#e0c9a6] rounded-2xl shadow-lg">
+            <BookOpen className="w-16 h-16 text-[#b08968]/50 mx-auto mb-4" />
+            <h3 className="text-lg font-bold text-[#6b4226]">
+              No Sections Yet
+            </h3>
+            <p className="text-sm text-[#6b4226]/60">
+              Start by adding your first section
+            </p>
+          </div>
+        ) : (
+          <div className="space-y-6">
+            {sections.map((section, index) => (
               <div
                 key={section.id}
-                className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-[#e0c9a6] overflow-hidden"
+                className="glass-card border border-[#e0c9a6] rounded-2xl shadow-xl transition-all hover:shadow-2xl"
               >
-                <div className="p-6">
-                  <div className="flex items-start justify-between gap-4">
-                    <div className="flex items-start gap-3 flex-1">
-                      <div className="flex flex-col gap-1 pt-1">
-                        <button
-                          onClick={() => moveSection(index, "up")}
-                          disabled={index === 0}
-                          className={`p-1 rounded ${
-                            index === 0
-                              ? "text-[#6b4226]/20 cursor-not-allowed"
-                              : "text-[#6b4226]/60 hover:bg-[#fdfaf7]"
-                          }`}
-                        >
-                          <ChevronUp className="w-4 h-4" />
-                        </button>
-                        <GripVertical className="w-4 h-4 text-[#6b4226]/40" />
-                        <button
-                          onClick={() => moveSection(index, "down")}
-                          disabled={index === sections.length - 1}
-                          className={`p-1 rounded ${
-                            index === sections.length - 1
-                              ? "text-[#6b4226]/20 cursor-not-allowed"
-                              : "text-[#6b4226]/60 hover:bg-[#fdfaf7]"
-                          }`}
-                        >
-                          <ChevronDown className="w-4 h-4" />
-                        </button>
-                      </div>
-
-                      <div className="flex-1">
-                        <div className="flex items-center gap-3 mb-2">
-                          <span className="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-gradient-to-br from-[#b08968] to-[#8c5e3c] text-white text-sm font-bold">
-                            {index + 1}
-                          </span>
-                          <h1 className="text-base font-bold text-[#6b4226]">
-                            {section.title}
-                          </h1>
-                          <span className="text-xs text-[#6b4226]/60 bg-[#fdfaf7] px-3 py-1 rounded-full border border-[#e0c9a6]">
-                            {section.totalLectures}{" "}
-                            {section.totalLectures === 1
-                              ? "lecture"
-                              : "lectures"}
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="flex items-center gap-2">
+                {/* Section Header */}
+                <div className="flex items-start justify-between p-6">
+                  {/* Left: reorder + title */}
+                  <div className="flex items-start gap-4 flex-1">
+                    <div className="flex flex-col gap-1 pt-1">
+                      {/* Up */}
                       <button
-                        onClick={() => toggleSection(section.id)}
-                        className="p-2 text-[#6b4226] hover:bg-[#fdfaf7] rounded-lg transition"
+                        onClick={() => moveSection(index, "up")}
+                        disabled={index === 0}
+                        className={`p-1 rounded transition ${
+                          index === 0
+                            ? "text-[#6b4226]/20"
+                            : "text-[#6b4226]/60 hover:bg-white/40"
+                        }`}
                       >
-                        {expandedSection === section.id ? (
-                          <ChevronUp className="w-5 h-5" />
-                        ) : (
-                          <ChevronDown className="w-5 h-5" />
-                        )}
+                        <ChevronUp className="w-4 h-4" />
                       </button>
+
+                      <GripVertical className="w-4 h-4 text-[#6b4226]/40" />
+
+                      {/* Down */}
                       <button
-                        onClick={() => handleDeleteSection(section.id)}
-                        className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition"
+                        onClick={() => moveSection(index, "down")}
+                        disabled={index === sections.length - 1}
+                        className={`p-1 rounded transition ${
+                          index === sections.length - 1
+                            ? "text-[#6b4226]/20"
+                            : "text-[#6b4226]/60 hover:bg-white/40"
+                        }`}
                       >
-                        <Trash2 className="w-5 h-5" />
+                        <ChevronDown className="w-4 h-4" />
                       </button>
                     </div>
+
+                    <div>
+                      <div className="flex items-center gap-3">
+                        <span
+                          className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#b08968] to-[#8c5e3c]
+                                     text-white flex items-center justify-center font-bold"
+                        >
+                          {index + 1}
+                        </span>
+
+                        <h1 className="text-base font-bold text-[#6b4226]">
+                          {section.title}
+                        </h1>
+
+                        <span
+                          className="px-3 py-1 text-xs bg-white/50 border border-[#e0c9a6]
+                                     rounded-full text-[#6b4226]/70"
+                        >
+                          {section.totalLectures}{" "}
+                          {section.totalLectures === 1 ? "lecture" : "lectures"}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Right: toggle + delete */}
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={() => toggleSection(section.id)}
+                      className="p-2 rounded-lg hover:bg-white/40 transition"
+                    >
+                      {expandedSection === section.id ? (
+                        <ChevronUp className="w-5 h-5 text-[#6b4226]" />
+                      ) : (
+                        <ChevronDown className="w-5 h-5 text-[#6b4226]" />
+                      )}
+                    </button>
+
+                    <button
+                      onClick={() => handleDeleteSection(section.id)}
+                      className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition"
+                    >
+                      <Trash2 className="w-5 h-5" />
+                    </button>
                   </div>
                 </div>
 
+                {/* Expanded Section */}
                 {expandedSection === section.id && (
-                  <div className="border-t border-[#e0c9a6] bg-[#fdfaf7]/50">
-                    <div className="p-6 space-y-4">
-                      {/* Add Sub-Item Form */}
-                      <div className="bg-white rounded-lg p-4 border border-[#e0c9a6]">
-                        <h4 className="text-sm font-semibold text-[#6b4226] mb-3">
-                          Add Lecture / Content
-                        </h4>
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                  <div className="border-t border-[#e0c9a6] bg-white/40 p-6 animate-slideDown">
+                    {/* Add Sub Item */}
+                    <div className="glass-card border border-[#e0c9a6] rounded-xl p-4 mb-4">
+                      <h4 className="text-sm font-semibold text-[#6b4226] mb-3">
+                        Add Lecture / Content
+                      </h4>
+
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                        <input
+                          type="text"
+                          value={newSubItem.title}
+                          onChange={(e) =>
+                            setNewSubItem({
+                              ...newSubItem,
+                              title: e.target.value,
+                            })
+                          }
+                          placeholder="Lecture title..."
+                          className="px-3 py-2 rounded-lg bg-white/60 border border-[#e0c9a6] focus:border-[#b08968] outline-none"
+                        />
+
+                        <select
+                          value={newSubItem.type}
+                          onChange={(e) =>
+                            setNewSubItem({
+                              ...newSubItem,
+                              type: e.target.value,
+                            })
+                          }
+                          className="px-3 py-2 rounded-lg bg-white/60 border border-[#e0c9a6]"
+                        >
+                          <option value="">Select type</option>
+                          <option value="video">Video</option>
+                          <option value="quiz">Quiz</option>
+                          <option value="assignment">Assignment</option>
+                        </select>
+
+                        {/* Video Upload */}
+                        {newSubItem.type === "video" && (
                           <input
-                            type="text"
-                            value={newSubItem.title}
+                            type="file"
+                            accept="video/*"
                             onChange={(e) =>
-                              setNewSubItem((prev) => ({
-                                ...prev,
-                                title: e.target.value,
-                              }))
+                              setNewSubItem({
+                                ...newSubItem,
+                                contentUrl: e.target.files[0],
+                              })
                             }
-                            className="px-3 py-2 bg-[#fdfaf7] border border-[#e0c9a6] rounded-lg text-sm text-[#6b4226] focus:outline-none focus:border-[#b08968]"
-                            placeholder="Lecture title"
+                            className="md:col-span-3 px-3 py-2 rounded-lg bg-white/60 border border-[#e0c9a6]"
                           />
-                          <select
-                            value={newSubItem.type}
+                        )}
+
+                        {/* PDF Upload */}
+                        {newSubItem.type === "assignment" && (
+                          <input
+                            type="file"
+                            accept=".pdf"
                             onChange={(e) =>
-                              setNewSubItem((prev) => ({
-                                ...prev,
-                                type: e.target.value,
-                              }))
+                              setNewSubItem({
+                                ...newSubItem,
+                                contentUrl: e.target.files[0],
+                              })
                             }
-                            className="px-3 py-2 bg-[#fdfaf7] border border-[#e0c9a6] rounded-lg text-sm text-[#6b4226] focus:outline-none focus:border-[#b08968]"
-                          >
-                            <option value="">Select type</option>
-                            <option value="video">Video</option>
-                            <option value="quiz">Quiz</option>
-                            <option value="assignment">Assignment</option>
-                          </select>
+                            className="md:col-span-3 px-3 py-2 rounded-lg bg-white/60 border border-[#e0c9a6]"
+                          />
+                        )}
 
-                          {newSubItem.type === "video" && (
-                            <div className="md:col-span-3 space-y-3">
-                              <input
-                                type="file"
-                                accept="video/*"
-                                placeholder="Video"
-                                onChange={(e) =>
-                                  setNewSubItem((prev) => ({
-                                    ...prev,
-                                    contentUrl: e.target.files[0],
-                                  }))
-                                }
-                                className="w-full px-3 py-2 bg-[#fdfaf7] border border-[#e0c9a6] rounded-lg text-sm text-[#6b4226]"
-                              />
-                            </div>
+                        {/* Quiz Content */}
+                        {newSubItem.type === "quiz" && (
+                          <textarea
+                            rows="6"
+                            onChange={(e) =>
+                              setNewSubItem({
+                                ...newSubItem,
+                                content: e.target.value,
+                              })
+                            }
+                            className="md:col-span-3 px-3 py-2 rounded-lg bg-white/60 border border-[#e0c9a6]"
+                            placeholder="Enter quiz content..."
+                          />
+                        )}
+
+                        <button
+                          onClick={() => handleAddSubItem(section.id)}
+                          disabled={isAddLoading}
+                          className={`px-4 py-2 rounded-lg text-white font-semibold transition ${
+                            !newSubItem.title.trim()
+                              ? "bg-[#d1bfa7]/60 cursor-not-allowed"
+                              : "bg-gradient-to-r from-[#b08968] to-[#8c5e3c] hover:scale-[1.03]"
+                          }`}
+                        >
+                          {isAddLoading ? (
+                            "Adding..."
+                          ) : (
+                            <Plus className="w-4 h-4" />
                           )}
-
-                          {newSubItem.type === "assignment" && (
-                            <div className="md:col-span-3 space-y-3">
-                              <input
-                                type="file"
-                                accept=".pdf"
-                                placeholder="add assignment pdf"
-                                onChange={(e) =>
-                                  setNewSubItem((prev) => ({
-                                    ...prev,
-                                    contentUrl: e.target.files[0],
-                                  }))
-                                }
-                                className="w-full px-3 py-2 bg-[#fdfaf7] border border-[#e0c9a6] rounded-lg text-sm text-[#6b4226]"
-                              />
-                            </div>
-                          )}
-
-                          {newSubItem.type === "quiz" && (
-                            <div className="md:col-span-3 space-y-3">
-                              <textarea
-                                placeholder="Enter quiz content..."
-                                onChange={(e) =>
-                                  setNewSubItem((prev) => ({
-                                    ...prev,
-                                    content: e.target.value,
-                                  }))
-                                }
-                                rows={6}
-                                className="w-full px-3 py-2 bg-[#fdfaf7] border border-[#e0c9a6] rounded-lg text-sm text-[#6b4226]"
-                              />
-                            </div>
-                          )}
-
-                          <div className="flex gap-2">
-                            <button
-                              onClick={() => handleAddSubItem(section.id)}
-                              disabled={isAddLoading}
-                              className={`px-4 py-2 text-white text-sm font-semibold rounded-lg transition ${
-                                !newSubItem.title.trim()
-                                  ? "bg-[#d1bfa7] cursor-not-allowed"
-                                  : "bg-gradient-to-r from-[#b08968] to-[#8c5e3c] hover:opacity-90"
-                              }`}
-                            >
-                              {isAddLoading ? (
-                                <p>Adding....</p>
-                              ) : (
-                                <Plus className="w-4 h-4" />
-                              )}
-                            </button>
-                          </div>
-                        </div>
+                        </button>
                       </div>
+                    </div>
 
-                      {section.subItemSection.length > 0 ? (
-                        <div className="space-y-2">
-                          {section.subItemSection.map((item, itemIndex) => (
-                            <div
-                              key={item._id}
-                              className="flex items-center justify-between p-3 bg-white rounded-lg border border-[#e0c9a6] hover:border-[#b08968] transition"
-                            >
-                              <div className="flex items-center gap-3 flex-1">
-                                <div className="flex flex-col w-full">
-                                  <span className="text-2xl font-medium text-[#6b4226] mb-2">
-                                    {itemIndex + 1}. {item.title}
-                                  </span>
+                    {/* Sub Items */}
+                    {section.subItemSection.length > 0 ? (
+                      <div className="space-y-3">
+                        {section.subItemSection.map((item, itemIndex) => (
+                          <div
+                            key={item._id}
+                            className="flex items-center justify-between bg-white/70 p-4 rounded-lg border border-[#e0c9a6]
+                               hover:shadow-md transition"
+                          >
+                            <div className="flex-1">
+                              <p className="text-lg font-semibold text-[#6b4226] mb-2">
+                                {itemIndex + 1}. {item.title}
+                              </p>
 
-                                  {/* Quiz Content Display */}
-                                  {item.type === "quiz" && item.content && (
-                                    <div className="mt-2 p-4 bg-[#fdfaf7] rounded-lg border border-[#e0c9a6]">
-                                      <p className="text-sm text-[#6b4226] whitespace-pre-wrap">
-                                        {item.content}
-                                      </p>
-                                    </div>
-                                  )}
+                              {/* Quiz */}
+                              {item.type === "quiz" && item.content && (
+                                <div className="p-3 bg-white/60 rounded-lg border border-[#e0c9a6]">
+                                  <pre className="whitespace-pre-wrap text-sm text-[#6b4226]">
+                                    {item.content}
+                                  </pre>
+                                </div>
+                              )}
 
-                                  {/* Video and Assignment Display */}
-                                  {item.contentUrl?.url && (
-                                    <div>
-                                      {item.type === "video" ? (
-                                        <video
-                                          controls
-                                          src={item.contentUrl.url}
-                                          className="w-dvw rounded-2xl"
-                                        ></video>
-                                      ) : item.type === "assignment" ? (
-                                        <a
-                                          href={item.contentUrl.url}
-                                          className="flex gap-2 items-center"
-                                        >
-                                          {item.title} <FaExternalLinkAlt />
-                                        </a>
-                                      ) : (
-                                        "View Content"
-                                      )}
-                                    </div>
+                              {/* Video / Assignment */}
+                              {item.contentUrl?.url && (
+                                <div className="mt-2">
+                                  {item.type === "video" ? (
+                                    <video
+                                      controls
+                                      src={item.contentUrl.url}
+                                      className="w-full rounded-xl h-dvh"
+                                    ></video>
+                                  ) : (
+                                    <a
+                                      href={item.contentUrl.url}
+                                      className="text-[#6b4226] underline flex items-center gap-2"
+                                    >
+                                      {item.title} <FaExternalLinkAlt />
+                                    </a>
                                   )}
                                 </div>
-                              </div>
-                              <button
-                                onClick={() =>
-                                  handleDeleteSubItem(section.id, item.id)
-                                }
-                                className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition"
-                              >
-                                <Trash2 className="w-4 h-4" />
-                              </button>
+                              )}
                             </div>
-                          ))}
-                        </div>
-                      ) : (
-                        <div className="text-center py-8 bg-white rounded-lg border border-dashed border-[#e0c9a6]">
-                          <FileText className="w-12 h-12 text-[#b08968]/40 mx-auto mb-2" />
-                          <p className="text-sm text-[#6b4226]/60">
-                            No lectures added yet. Add your first lecture above.
-                          </p>
-                        </div>
-                      )}
-                    </div>
+
+                            <button
+                              onClick={() =>
+                                handleDeleteSubItem(section.id, item.id)
+                              }
+                              className="ml-4 p-2 text-red-500 hover:bg-red-50 rounded-lg transition"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="text-center py-8 rounded-lg bg-white/50 border border-dashed border-[#e0c9a6]">
+                        <FileText className="w-10 h-10 text-[#b08968]/40 mx-auto mb-2" />
+                        <p className="text-sm text-[#6b4226]/60">
+                          No lectures added yet...
+                        </p>
+                      </div>
+                    )}
                   </div>
                 )}
               </div>
-            ))
-          )}
-        </div>
+            ))}
+          </div>
+        )}
       </main>
     </div>
   );

@@ -55,4 +55,20 @@ export const cartApiFetch = {
       return { success: false, error: error.message };
     }
   },
+
+  removeUserCart: async () => {
+    try {
+      const res = await fetch(`${baseURL}/remove-user-cart`, {
+        method: "DELETE",
+        credentials: "include",
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(`failed to delete cart`);
+      }
+      return { success: true, data };
+    } catch (error) {
+      return { success: false, error: error.message };
+    }
+  },
 };
