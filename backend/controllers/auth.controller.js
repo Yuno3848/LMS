@@ -176,7 +176,6 @@ export const loginUser = asyncHandler(async (req, res) => {
   // Set cookies for access and refresh tokens
   const acccesTokenCookieOptions = {
     httpOnly: true,
-    sameSite: 'strict',
     secure: process.env.NODE_ENV !== 'development',
     maxAge: 24 * 60 * 60 * 1000,
   };
@@ -185,8 +184,6 @@ export const loginUser = asyncHandler(async (req, res) => {
     httpOnly: true,
     secure: process.env.NODE_ENV !== 'development',
     maxAge: 7 * 24 * 60 * 60 * 1000,
-    sameSite: 'strict',
-  };
   // Exclude sensitive fields from the user response
   const userResponse = await User.findById(
     user.id,
