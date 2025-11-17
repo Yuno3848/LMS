@@ -176,14 +176,16 @@ export const loginUser = asyncHandler(async (req, res) => {
   // Set cookies for access and refresh tokens
   const acccesTokenCookieOptions = {
     httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'strict',
+    secure: process.env.NODE_ENV === 'development',
     maxAge: 24 * 60 * 60 * 1000,
   };
   // Set cookies for refresh token
   const refreshTokenCookieOptions = {
     httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
+    secure: process.env.NODE_ENV === 'development',
     maxAge: 7 * 24 * 60 * 60 * 1000,
+    sameSite: 'strict',
   };
   // Exclude sensitive fields from the user response
   const userResponse = await User.findById(
