@@ -184,6 +184,7 @@ export const loginUser = asyncHandler(async (req, res) => {
     httpOnly: true,
     secure: process.env.NODE_ENV !== 'development',
     maxAge: 7 * 24 * 60 * 60 * 1000,
+  };
   // Exclude sensitive fields from the user response
   const userResponse = await User.findById(
     user.id,
