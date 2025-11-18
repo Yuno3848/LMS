@@ -8,6 +8,8 @@ import { instructorProfile } from '../models/instructorProfile.model.js';
 export const createInstructorProfile = asyncHandler(async (req, res) => {
   const userId = req.user.id;
 
+  console.log('req user in create instructor profile :-', req.user);
+
   const { bio, expertise, socialLinks, rating } = req.body;
 
   if (!userId || !mongoose.Types.ObjectId.isValid(userId.toString())) {
